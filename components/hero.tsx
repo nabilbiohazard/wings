@@ -1,369 +1,88 @@
 import { Icon } from "./icon";
 import { Reveal } from "./reveal";
 
-
 export function Hero() {
-
   return (
-
-    <section
-      className="
-        relative
-        h-screen
-        min-h-[750px]
-        overflow-hidden
-        text-white
-      "
-    >
-
-
-      {/* VIDEO BACKGROUND */}
-
-      <div
-        className="
-          absolute
-          inset-0
-        "
+    <section className="relative h-screen min-h-[750px] overflow-hidden text-white">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 h-full w-full object-cover"
       >
-
-        <video
-
-          autoPlay
-          loop
-          muted
-          playsInline
-
-          className="
-            w-full
-            h-full
-            object-cover
-          "
-
-        >
-
-          <source
-            src="/videos/videoplayback.mp4"
-            type="video/mp4"
-          />
-
-        </video>
-
-
-      </div>
-
-
-
-
-      {/* PREMIUM OVERLAY */}
-
-      <div
-        className="
-          absolute
-          inset-0
-          bg-gradient-to-l
-          from-black/70
-          via-black/40
-          to-black/20
-        "
-      />
-
-
-
-      {/* CONTENT */}
-
-      <div
-
-        className="
-          relative
-          z-10
-          h-full
-          flex
-          items-center
-        "
-
-      >
-
-
-        <Reveal
-
-          className="
-            w-full
-            max-w-[1600px]
-            mx-auto
-            px-8
-          "
-
-        >
-
-
-          <div
-
-            className="
-    max-w-xl
-    ml-auto
-    text-right
-  "
-
-          >
-
-
-
-
-            <p
-
-              className="
-                text-sm
-                tracking-widest
-                text-pink-200
-                mb-8
-              "
-
-            >
-
-              بیشتر از یک اکسسوری
-
-            </p>
-
-
-
-
-
-            <h1
-
-              className="
-                font-serif
-                text-7xl
-                leading-[1.15]
-                font-medium
-                drop-shadow-lg
-              "
-
-            >
-
-              Your style,
-
-              <br />
-
-              <span
-                className="
-                  text-pink-300
-                "
-              >
-
-                Your choice
-
-              </span>
-
-
-            </h1>
-
-
-
-
-
-            <p
-
-              className="
-                mt-7
-                text-2xl
-                font-serif
-                text-white/90
-              "
-
-            >
-
-              Small charms.
-              <br />
-
-              <span className="italic">
-
-                Brighter days.
-
-              </span>
-
-
-            </p>
-
-
-
-
-
-            <p
-
-              className="
-                mt-7
-                text-gray-200
-                leading-9
-                text-sm
-              "
-
-            >
-
-              برای هر حالِ تو
-              <br />
-
-              هر روز، یک انتخاب تازه
-              <br />
-
-              اکسسوری برای سبک خودت
-
-            </p>
-
-
-
-
-
-
-
-            {/* BUTTONS */}
-
-            <div
-
-              className="
-                mt-10
-                flex
-                items-center
-                justify-end
-                gap-6
-              "
-
-            >
-
-
-
-
-              <a
-
-                href="#new-arrivals"
-
-                className="
-                  group
-                  bg-pink-500
-                  hover:bg-white
-                  hover:text-black
-                  transition-all
-                  duration-300
-                  rounded-full
-                  px-9
-                  py-4
-                  flex
-                  items-center
-                  gap-4
-                  text-sm
-                "
-
-              >
-
-                کشف تازه‌رسیده‌ها
-
-
-                <Icon
-
-                  name="arrow"
-
-                  size={18}
-
-                />
-
-
-              </a>
-
-
-
-
-
-
-
-              <a
-
-                href="#our-story"
-
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  text-sm
-                  hover:opacity-70
-                  transition
-                "
-
-              >
-
-
-                <span
-
-                  className="
-                    border
-                    border-white/60
-                    rounded-full
-                    w-12
-                    h-12
-                    flex
-                    items-center
-                    justify-center
-                    backdrop-blur-sm
-                  "
-
+        <source src="/videos/videoplayback.mp4" type="video/mp4" />
+      </video>
+
+      <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/45 to-black/20" />
+
+      <div className="absolute top-1/2 left-[-120px] h-[550px] w-[550px] -translate-y-1/2 rounded-full bg-pink-300/10 blur-[130px]" />
+
+      <div className="relative z-10 flex h-full items-center">
+        <Reveal className="mx-auto w-full max-w-[1600px] px-8">
+          <div className="items-center gap-12">
+            {/* RIGHT SIDE */}
+
+            <div className="mx-auto max-w-xl text-center">
+              <div className="mb-8 flex items-center justify-center gap-4 text-xs tracking-[5px] text-white/60">
+                <span>01</span>
+
+                <span>THE LITTLE JOYS COLLECTION</span>
+              </div>
+
+              <h1 className="font-serif text-6xl leading-[1.05] sm:text-7xl lg:text-8xl">
+                Your style,
+                <br />
+                <span className="text-pink-300 italic">Your story</span>
+              </h1>
+
+              <p className="mt-8 text-lg leading-9 text-white/80">
+                اکسسوری‌هایی برای لحظه‌هایی که فقط متعلق به تو هستند.
+                <br />
+                هر انتخاب، یک داستان تازه.
+              </p>
+
+              <div className="mt-10 flex items-center justify-center gap-5">
+                <a
+                  href="#our-story"
+                  className="flex items-center gap-3 text-sm transition hover:text-pink-300"
                 >
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/40 backdrop-blur">
+                    ▷
+                  </span>
+                  داستان وینگز
+                </a>
 
-                  ▷
+                <a
+                  href="#new-arrivals"
+                  className="flex items-center gap-4 rounded-full bg-white px-9 py-4 text-sm text-black transition-all duration-300 hover:bg-pink-300"
+                >
+                  کشف کالکشن
+                  <Icon name="arrow" size={18} />
+                </a>
+              </div>
 
-                </span>
+              <div className="mt-12 flex justify-center">
+                <div className="flex items-center gap-4 rounded-2xl border border-white/20 bg-white/10 px-5 py-4 backdrop-blur-lg">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-black">
+                    ✦
+                  </span>
 
+                  <div className="text-center">
+                    <p className="text-sm">خودت بساز</p>
 
-                داستان وینگز
-
-
-
-              </a>
-
-
-
-
+                    <p className="mt-1 text-xs text-white/60">ترکیب چارم‌های مخصوص تو</p>
+                  </div>
+                </div>
+              </div>
             </div>
-
-
-
-
-
           </div>
-
-
-
         </Reveal>
-
-
       </div>
 
-
-
-
-
-      {/* COLLECTION LABEL */}
-
-      <div
-
-        className="
-          absolute
-          bottom-8
-          right-10
-          z-10
-          text-xs
-          tracking-[3px]
-          text-white/70
-        "
-
-      >
-
-        THE LITTLE JOYS COLLECTION — 2026
-
-
+      <div className="absolute right-10 bottom-10 z-10 flex items-center gap-4 text-xs tracking-[4px] text-white/60">
+        SCROLL ↓
       </div>
-
-
-
     </section>
-
-  )
-
+  );
 }
