@@ -13,7 +13,7 @@ import {
 export function CustomBuilder() {
   const [productType, setProductType] = useState<ProductType>("necklace");
   const [selectedBase, setSelectedBase] = useState<BaseOption | null>(null);
-  const [selectedCharms, setSelectedCharms] = useState<string[]>([]);
+  const [selectedCharms, setSelectedCharms] = useState<number[]>([])
 
   function handleProductTypeChange(type: ProductType) {
     setProductType(type);

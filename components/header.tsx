@@ -1,17 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 import { Icon } from "./icon";
-
 import { useShop } from "./shop-provider";
-
 import { Wordmark } from "./wordmark";
 
 const links = [
-  { name: "خانه", href: "/" },
+  { name: "وینگز", href: "/" },
   { name: "فروشگاه", href: "/shop" },
   { name: "خودت بساز", href: "/custom-design" },
   { name: "کالکشن‌ها", href: "/collections" },
@@ -20,11 +18,22 @@ const links = [
   { name: "تماس با ما", href: "/contact" },
 ];
 
-function CountBadge({ children }: { children: number }) {
+function CountBadge({ children, solid }: { children: number; solid: boolean }) {
   if (!children) return null;
 
   return (
-    <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-black text-[9px] text-white">
+    <span
+      className={`
+        absolute -right-1.5 -top-1.5
+        flex h-4.25 min-w-4.25
+        items-center justify-center
+        rounded-full px-1
+        text-[9px] font-medium
+        shadow-sm
+        transition-all duration-500
+        ${solid ? "bg-black text-white" : "bg-white text-black"}
+      `}
+    >
       {children}
     </span>
   );
@@ -34,17 +43,20 @@ export function Header() {
   const pathname = usePathname();
 
   const [scrolled, setScrolled] = useState(false);
-
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { openPanel, favorites, cart } = useShop();
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
+  const solid = scrolled || mobileOpen;
+
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      setScrolled(window.scrollY > 30);
     };
+
+    handleScroll();
 
     window.addEventListener("scroll", handleScroll);
 
@@ -53,150 +65,505 @@ export function Header() {
     };
   }, []);
 
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileOpen]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(href);
+  };
+
   return (
-    <header
-      className={`fixed top-0 left-0 z-50 w-full transition-all duration-500 ${
-        scrolled ? "bg-white/90 text-black shadow-sm backdrop-blur-xl" : "bg-transparent text-white"
-      } `}
-    >
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
-        {/* TOP AREA */}
+    <>
+      <header
+        className={`
+          fixed left-0 top-0 z-100
+          w-full
+          transition-all duration-500
+          ${solid ? "text-black" : "text-white"}
+        `}
+      >
+        {/* BACKGROUND */}
 
-        <div className="flex flex-col gap-4 py-4 md:h-[78px] md:flex-row md:items-center md:justify-between md:py-0">
-          {/* LOGO */}
+        <div
+          className={`
+            absolute inset-0
+            border-b
+            transition-all duration-500
+            ${
+              solid
+                ? `
+                  border-black/6
+                  bg-white/94
+                  shadow-[0_10px_45px_rgba(0,0,0,0.045)]
+                  backdrop-blur-2xl
+                `
+                : `
+                  border-white/8
+                  bg-linear-to-b
+                  from-black/35
+                  via-black/10
+                  to-transparent
+                  backdrop-blur-[2px]
+                `
+            }
+          `}
+        />
 
-          <div className="flex w-full justify-center md:w-auto">
-            <Wordmark />
-          </div>
+        <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8">
+          {/* ========================
+              TOP AREA
+          ======================== */}
 
-          {/* DESKTOP SEARCH */}
-
-          <button
-            onClick={() => openPanel("search")}
-
-            className={`group hidden h-11 w-[330px] items-center gap-4 rounded-full border px-6 transition-all duration-300 lg:flex ${
-              scrolled ? "border-black/10 bg-black/[0.03]" : "border-white/30 bg-white/5"
-            } hover:bg-white hover:text-black`}
+          <div
+            className="
+              flex flex-col
+              gap-3
+              py-4
+              md:h-20.5
+              md:flex-row
+              md:items-center
+              md:justify-between
+              md:gap-8
+              md:py-0
+            "
           >
-            <Icon name="search" size={19} />
+            {/* LOGO */}
 
-            <span className="flex-1 text-right text-sm">جستجو در محصولات...</span>
-          </button>
+            <div className="flex w-full justify-center md:w-auto md:justify-start">
+              <Wordmark />
+            </div>
 
-          {/* ACTIONS */}
-
-          <div className="flex w-full items-center justify-center gap-6 md:w-auto">
-            {/* MOBILE MENU */}
+            {/* DESKTOP SEARCH */}
 
             <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-
-              className="transition hover:scale-110 md:hidden"
-            >
-              <Icon name={mobileOpen ? "close" : "menu"} />
-            </button>
-            {/* MOBILE SEARCH */}
-
-            <button
+              type="button"
               onClick={() => openPanel("search")}
-
-              className="transition hover:scale-110 lg:hidden"
+              className={`
+                group
+                hidden h-11.5
+                w-82.5
+                items-center gap-4
+                rounded-full
+                border
+                px-5
+                text-sm
+                transition-all duration-300
+                lg:flex
+                ${
+                  solid
+                    ? `
+                      border-black/8
+                      bg-black/2.5
+                      text-black
+                      hover:border-black/20
+                      hover:bg-black/4.5
+                    `
+                    : `
+                      border-white/18
+                      bg-white/[0.07]
+                      text-white
+                      backdrop-blur-xl
+                      hover:border-white/35
+                      hover:bg-white/12
+                    `
+                }
+              `}
             >
-              <Icon name="search" />
-            </button>
-
-            {/* CART */}
-
-            <button
-              onClick={() => openPanel("cart")}
-
-              className="relative transition hover:scale-110"
-            >
-              <Icon name="bag" />
-
-              <CountBadge>{cartCount}</CountBadge>
-            </button>
-
-            {/* WISHLIST */}
-
-            <button
-              onClick={() => openPanel("wishlist")}
-
-              className="relative transition hover:scale-110"
-            >
-              <Icon name="heart" />
-
-              <CountBadge>{favorites.length}</CountBadge>
-            </button>
-
-            {/* ACCOUNT */}
-
-            <button
-              onClick={() => openPanel("account")}
-
-              className="transition hover:scale-110"
-            >
-              <Icon name="user" />
-            </button>
-          </div>
-        </div>
-
-        {/* DESKTOP NAV */}
-
-        <nav className="hidden h-14 items-center justify-center gap-2 md:flex">
-          {links.map((link) => {
-            const active = pathname === link.href;
-
-            return (
-              <a
-                key={link.href}
-
-                href={link.href}
-
-                className={`rounded-full px-7 py-2 text-sm font-medium transition-all duration-300 ${
-                  active
-                    ? scrolled
-                      ? "bg-black text-white"
-                      : "bg-white text-black"
-                    : scrolled
-                      ? "text-black hover:bg-black hover:text-white"
-                      : "text-white hover:bg-white hover:text-black"
-                } `}
+              <span
+                className="
+                  transition-transform duration-300
+                  group-hover:scale-110
+                "
               >
-                {link.name}
-              </a>
-            );
-          })}
-        </nav>
-      </div>
+                <Icon name="search" size={18} />
+              </span>
 
-      {/* MOBILE MENU */}
+              <span
+                className={`
+                  flex-1 text-right
+                  transition-opacity duration-300
+                  ${solid ? "text-black/45" : "text-white/60"}
+                `}
+              >
+                جستجو در محصولات...
+              </span>
+
+              <span
+                dir="ltr"
+                className={`
+                  text-[9px]
+                  tracking-[1.5px]
+                  ${solid ? "text-black/20" : "text-white/25"}
+                `}
+              >
+                SEARCH
+              </span>
+            </button>
+
+            {/* ACTIONS */}
+
+            <div className="flex w-full items-center justify-center md:w-auto md:justify-end">
+              <div
+                className={`
+                  flex items-center
+                  gap-1
+                  rounded-full
+                  border
+                  p-1.5
+                  transition-all duration-500
+                  ${
+                    solid
+                      ? `
+                        border-black/[0.07]
+                        bg-black/2.5
+                      `
+                      : `
+                        border-white/16
+                        bg-white/[0.07]
+                        backdrop-blur-xl
+                      `
+                  }
+                `}
+              >
+                {/* MOBILE MENU */}
+
+                <button
+                  type="button"
+                  aria-label="منو"
+                  onClick={() => setMobileOpen((prev) => !prev)}
+                  className={`
+                    flex h-9 w-9
+                    items-center justify-center
+                    rounded-full
+                    transition-all duration-300
+                    hover:scale-105
+                    md:hidden
+                    ${
+                      solid
+                        ? "hover:bg-black hover:text-white"
+                        : "hover:bg-white hover:text-black"
+                    }
+                  `}
+                >
+                  <Icon name={mobileOpen ? "close" : "menu"} size={19} />
+                </button>
+
+                {/* MOBILE SEARCH */}
+
+                <button
+                  type="button"
+                  aria-label="جستجو"
+                  onClick={() => openPanel("search")}
+                  className={`
+                    flex h-9 w-9
+                    items-center justify-center
+                    rounded-full
+                    transition-all duration-300
+                    hover:scale-105
+                    lg:hidden
+                    ${
+                      solid
+                        ? "hover:bg-black hover:text-white"
+                        : "hover:bg-white hover:text-black"
+                    }
+                  `}
+                >
+                  <Icon name="search" size={18} />
+                </button>
+
+                {/* CART */}
+
+                <button
+                  type="button"
+                  aria-label="سبد خرید"
+                  onClick={() => openPanel("cart")}
+                  className={`
+                    relative
+                    flex h-9 w-9
+                    items-center justify-center
+                    rounded-full
+                    transition-all duration-300
+                    hover:scale-105
+                    ${
+                      solid
+                        ? `
+                          bg-black
+                          text-white
+                          hover:bg-black/80
+                        `
+                        : `
+                          bg-white
+                          text-black
+                          hover:bg-white/85
+                        `
+                    }
+                  `}
+                >
+                  <Icon name="bag" size={18} />
+
+                  <CountBadge solid={solid}>{cartCount}</CountBadge>
+                </button>
+
+                {/* WISHLIST */}
+
+                <button
+                  type="button"
+                  aria-label="علاقه‌مندی‌ها"
+                  onClick={() => openPanel("wishlist")}
+                  className={`
+                    relative
+                    flex h-9 w-9
+                    items-center justify-center
+                    rounded-full
+                    transition-all duration-300
+                    hover:scale-105
+                    ${
+                      solid
+                        ? "hover:bg-black hover:text-white"
+                        : "hover:bg-white hover:text-black"
+                    }
+                  `}
+                >
+                  <Icon name="heart" size={18} />
+
+                  <CountBadge solid={solid}>{favorites.length}</CountBadge>
+                </button>
+
+                {/* ACCOUNT */}
+
+                <button
+                  type="button"
+                  aria-label="حساب کاربری"
+                  onClick={() => openPanel("account")}
+                  className={`
+                    flex h-9 w-9
+                    items-center justify-center
+                    rounded-full
+                    transition-all duration-300
+                    hover:scale-105
+                    ${
+                      solid
+                        ? "hover:bg-black hover:text-white"
+                        : "hover:bg-white hover:text-black"
+                    }
+                  `}
+                >
+                  <Icon name="user" size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ========================
+              DESKTOP NAV
+          ======================== */}
+
+          <nav
+            className="
+              hidden h-13.5
+              items-center justify-center
+              border-t
+              md:flex
+              
+            "
+            style={{
+              borderColor: solid
+                ? "rgba(0,0,0,0.05)"
+                : "rgba(255,255,255,0.08)",
+            }}
+          >
+            <div className="flex h-full items-center justify-center gap-1">
+              {links.map((link) => {
+                const active = isActive(link.href);
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`
+                      group
+                      relative
+                      flex h-full
+                      items-center
+                      px-5
+                      text-[14px]
+                      font-bold
+                      transition-all duration-300
+                      lg:px-10
+                      ${
+                        active
+                          ? solid
+                            ? "text-black"
+                            : "text-white"
+                          : solid
+                            ? "text-black/50 hover:text-black"
+                            : "text-white/60 hover:text-white"
+                      }
+                    `}
+                  >
+                    {link.name}
+
+                    {/* ACTIVE / HOVER LINE */}
+
+                    <span
+                      className={`
+                        absolute
+                        bottom-0 left-1/2
+                        h-0.5
+                        -translate-x-1/2
+                        transition-all duration-300
+                        ${
+                          active
+                            ? solid
+                              ? "w-7 bg-black"
+                              : "w-7 bg-white"
+                            : solid
+                              ? "w-0 bg-black group-hover:w-5"
+                              : "w-0 bg-white group-hover:w-5"
+                        }
+                      `}
+                    />
+
+                    {/* ACTIVE DOT */}
+
+                    {active && (
+                      <span
+                        className={`
+                          absolute
+                          top-2
+                          left-1/2
+                          h-1 w-1
+                          -translate-x-1/2
+                          rounded-full
+                          ${solid ? "bg-black" : "bg-white"}
+                        `}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {/* ========================
+          MOBILE MENU
+      ======================== */}
 
       <div
-        className={`fixed top-[150px] right-0 left-0 min-h-[calc(100vh-150px)] bg-white text-black transition-all duration-500 md:hidden ${
-          mobileOpen
-            ? "translate-x-0 opacity-100"
-            : "pointer-events-none translate-x-full opacity-0"
-        } `}
+        className={`
+          fixed inset-0 z-90
+          bg-white
+          text-black
+          transition-all duration-500
+          md:hidden
+          ${
+            mobileOpen
+              ? `
+                visible
+                translate-y-0
+                opacity-100
+              `
+              : `
+                invisible
+                -translate-y-4
+                opacity-0
+              `
+          }
+        `}
       >
-        <nav className="flex flex-col items-center gap-4 pt-8">
-          {links.map((link) => (
-            <a
-              key={link.href}
+        <div className="flex min-h-screen flex-col px-6 pb-8 pt-36.25">
+          {/* TOP LABEL */}
 
-              href={link.href}
+          <div className="flex items-center justify-between border-b border-black/8 pb-4">
+            <span className="text-[10px] tracking-[4px] text-black/30">
+              WINGS GALLERY
+            </span>
 
-              onClick={() => setMobileOpen(false)}
+            <span className="text-[10px] tracking-[2px] text-black/30">
+              MENU
+            </span>
+          </div>
 
-              className={`w-[85%] rounded-full px-6 py-4 text-center text-lg transition-all ${
-                pathname === link.href ? "bg-black text-white" : "bg-black/[0.04]"
-              } `}
+          {/* LINKS */}
+
+          <nav className="flex flex-1 flex-col justify-center">
+            {links.map((link, index) => {
+              const active = isActive(link.href);
+
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="
+                    group
+                    flex items-center
+                    justify-between
+                    border-b border-black/[0.07]
+                    py-4
+                  "
+                >
+                  <span
+                    className={`
+                      text-2xl
+                      transition-all duration-300
+                      group-hover:-translate-x-1
+                      ${
+                        active
+                          ? "font-medium text-black"
+                          : "text-black/55 group-hover:text-black"
+                      }
+                    `}
+                  >
+                    {link.name}
+                  </span>
+
+                  <div className="flex items-center gap-4">
+                    <span className="text-[10px] text-black/20">
+                      0{index + 1}
+                    </span>
+
+                    {active && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-black" />
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* MOBILE FOOTER */}
+
+          <div className="border-t border-black/8 pt-5">
+            <p
+              dir="ltr"
+              className="
+                text-center
+                font-serif
+                text-lg italic
+                text-black/50
+              "
             >
-              {link.name}
-            </a>
-          ))}
-        </nav>
+              Your style, your story.
+            </p>
+          </div>
+        </div>
       </div>
-    </header>
+    </>
   );
 }

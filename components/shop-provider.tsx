@@ -2,13 +2,14 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { categories, products, persianNumber, type Category, type Product } from "@/lib/products";
+import { categories, persianNumber } from "@/lib/products";
+import type { Category, Product } from "@/lib/types";
 import { Icon } from "./icon";
 
 type Panel = "search" | "wishlist" | "cart" | "account" | "product" | null;
 
 type CartLine = {
-  id: string;
+  id: number;
   quantity: number;
 };
 
@@ -16,10 +17,12 @@ type ShopContextValue = {
   category: Category;
   setCategory: (category: Category) => void;
 
-  favorites: string[];
-  toggleFavorite: (id: string) => void;
+  favorites: number[];
+  toggleFavorite: (id: number) => void;
 
   cart: CartLine[];
+
+  products: Product[];
 
   openPanel: (panel: Panel) => void;
 
@@ -38,7 +41,13 @@ export function useShop() {
   return context;
 }
 
-function MiniProduct({ product, children }: { product: Product; children?: React.ReactNode }) {
+function MiniProduct({
+  product,
+  children,
+}: {
+  product: Product;
+  children?: React.ReactNode;
+}) {
   const { viewProduct } = useShop();
 
   return (
@@ -48,7 +57,13 @@ function MiniProduct({ product, children }: { product: Product; children?: React
         aria-label={`مشاهده ${product.name}`}
         className="relative h-[86px] w-[86px] shrink-0 overflow-hidden rounded-xl"
       >
-        <Image src={product.image} alt={product.name} fill sizes="86px" className="object-cover" />
+        <Image
+          src={product.image}
+          alt={product.name}
+          fill
+          sizes="86px"
+          className="object-cover"
+        />
       </button>
 
       <div className="flex flex-1 flex-col gap-2 text-right">
@@ -59,7 +74,9 @@ function MiniProduct({ product, children }: { product: Product; children?: React
           {product.name}
         </button>
 
-        <p className="text-sm text-black/60">{persianNumber(product.price)} تومان</p>
+        <p className="text-sm text-black/60">
+          {persianNumber(product.price)} تومان
+        </p>
 
         {children}
       </div>
@@ -70,9 +87,11 @@ function MiniProduct({ product, children }: { product: Product; children?: React
 export function ShopProvider({ children }: { children: React.ReactNode }) {
   const [category, setCategory] = useState<Category>("all");
 
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<number[]>([]);
 
   const [cart, setCart] = useState<CartLine[]>([]);
+
+  const [products, setProducts] = useState<Product[]>([]);
 
   const [panel, setPanel] = useState<Panel>(null);
 
@@ -82,9 +101,11 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  const toggleFavorite = (id: string) => {
+  const toggleFavorite = (id: number) => {
     setFavorites((current) =>
-      current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
+      current.includes(id)
+        ? current.filter((item) => item !== id)
+        : [...current, id],
     );
   };
 
@@ -94,7 +115,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     setPanel("product");
   };
 
-  const changeQuantity = (id: string, amount: number) => {
+  const changeQuantity = (id: number, amount: number) => {
     setCart((current) =>
       current
         .map((line) =>
@@ -109,7 +130,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const addToCart = (id: string) => {
+  const addToCart = (id: number) => {
     setCart((current) => {
       const exists = current.some((line) => line.id === id);
 
@@ -135,6 +156,13 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
     setPanel("cart");
   };
+
+  useEffect(() => {
+    fetch("/api/woo/products")
+      .then((response) => response.json())
+      .then((data) => setProducts(data.products || []))
+      .catch(() => setProducts([]));
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -168,7 +196,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
   };
 
   const searchResults = products.filter((product) => {
-    const categoryName = categories.find((item) => item.id === product.category)?.name;
+    const categoryName = categories.find(
+      (item) => item.id === product.category,
+    )?.name;
 
     const searchable = `${product.name}
         ${product.english}
@@ -199,6 +229,8 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     toggleFavorite,
 
     cart,
+
+    products,
 
     openPanel: setPanel,
 
@@ -259,7 +291,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
             <div aria-live="polite">
               {searchResults.length ? (
-                searchResults.map((product) => <MiniProduct key={product.id} product={product} />)
+                searchResults.map((product) => (
+                  <MiniProduct key={product.id} product={product} />
+                ))
               ) : (
                 <div className="flex flex-col items-center gap-5 py-12 text-center">
                   <Icon name="search" size={36} />
@@ -299,7 +333,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
             <div className="flex flex-col items-center gap-5 py-12 text-center">
               <Icon name="heart" size={42} />
 
-              <h3 className="text-lg font-medium">جای دوست‌داشتنی‌هایت اینجاست</h3>
+              <h3 className="text-lg font-medium">
+                جای دوست‌داشتنی‌هایت اینجاست
+              </h3>
 
               <p className="text-sm text-black/60">
                 قلب کنار هر محصول را لمس کن تا اینجا پیدایش کنی.
@@ -350,7 +386,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
                 <strong>
                   {persianNumber(
                     cart.reduce((sum, line) => {
-                      const product = products.find((item) => item.id === line.id);
+                      const product = products.find(
+                        (item) => item.id === line.id,
+                      );
 
                       return sum + (product?.price ?? 0) * line.quantity;
                     }, 0),
@@ -402,7 +440,12 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         {panel === "product" && selected && (
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="relative aspect-square overflow-hidden rounded-3xl">
-              <Image src={selected.image} alt={selected.name} fill className="object-cover" />
+              <Image
+                src={selected.image}
+                alt={selected.name}
+                fill
+                className="object-cover"
+              />
             </div>
 
             <div className="text-right">
@@ -430,7 +473,10 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
                 onClick={() => toggleFavorite(selected.id)}
                 className="mt-4 flex w-full items-center justify-center gap-3 py-3"
               >
-                <Icon name={favorites.includes(selected.id) ? "check" : "heart"} size={18} />
+                <Icon
+                  name={favorites.includes(selected.id) ? "check" : "heart"}
+                  size={18}
+                />
 
                 {favorites.includes(selected.id)
                   ? "در لیست دوست‌داشتنی‌ها"

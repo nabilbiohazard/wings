@@ -6,7 +6,7 @@ import type { BaseOption } from "./base-selector";
 import type { ProductType } from "./product-type-selector";
 
 export type CharmOption = {
-  id: string;
+  id: number;
   title: string;
   englishTitle: string;
   price: number;
@@ -17,57 +17,57 @@ export type CharmOption = {
 type CharmSelectorProps = {
   productType: ProductType;
   selectedBase: BaseOption | null;
-  value: string[];
-  onChange: (ids: string[]) => void;
+  value: number[];
+  onChange: (ids: number[]) => void;
 };
 
 export const charms: CharmOption[] = [
   {
-    id: "heart",
+    id: 1,
     title: "قلب",
     englishTitle: "HEART",
     price: 290000,
-    image: "/images/charm-heart.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet", "earring"],
   },
   {
-    id: "star",
+    id: 2,
     title: "ستاره",
     englishTitle: "STAR",
     price: 320000,
-    image: "/images/charm-star.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet", "earring"],
   },
   {
-    id: "moon",
+    id: 3,
     title: "ماه",
     englishTitle: "MOON",
     price: 350000,
-    image: "/images/charm-moon.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet", "earring"],
   },
   {
-    id: "butterfly",
+    id: 4,
     title: "پروانه",
     englishTitle: "BUTTERFLY",
     price: 390000,
-    image: "/images/charm-butterfly.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet"],
   },
   {
-    id: "letter",
+    id: 5,
     title: "حرف",
     englishTitle: "LETTER",
     price: 420000,
-    image: "/images/charm-letter.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet"],
   },
   {
-    id: "pearl",
+    id: 6,
     title: "مروارید",
     englishTitle: "PEARL",
     price: 450000,
-    image: "/images/charm-pearl.jpg",
+    image: "/images/hero.png",
     compatibleWith: ["necklace", "bracelet", "earring"],
   },
 ];
@@ -97,7 +97,7 @@ export function CharmSelector({
 
   const totalPrice = (selectedBase?.price ?? 0) + charmsPrice;
 
-  function toggleCharm(id: string) {
+  function toggleCharm(id: number) {
     if (value.includes(id)) {
       onChange(value.filter((charmId) => charmId !== id));
       return;

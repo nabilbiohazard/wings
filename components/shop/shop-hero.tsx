@@ -3,7 +3,7 @@ import { Reveal } from "../reveal";
 
 export function ShopHero() {
   return (
-    <section className="relative min-h-[85vh] overflow-hidden text-white">
+    <section className="relative min-h-[92vh] overflow-hidden text-white">
       <Image
         src="/images/shop-hero.png"
         alt="Wings collection"
@@ -15,7 +15,7 @@ export function ShopHero() {
 
       <div className="absolute inset-0 bg-linear-to-b from-black/50 via-black/40 to-black/60" />
 
-      <div className="relative z-10 mx-auto flex min-h-[70vh] max-w-[1600px] items-center justify-center px-5 sm:px-8">
+      <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] items-center justify-center px-5 sm:px-8">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="mt-6 font-serif text-5xl leading-tight sm:text-6xl lg:text-7xl">

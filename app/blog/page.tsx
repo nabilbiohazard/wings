@@ -3,17 +3,26 @@ import { FeaturedPost } from "@/components/blog/featured-post";
 import { BlogCategories } from "@/components/blog/blog-categories";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { BlogNewsletter } from "@/components/blog/blog-newsletter";
+import { BrandMarquee } from "@/components/homepage/brand-marquee";
 
-export default function BlogPage() {
+import { getPosts } from "@/lib/get-posts";
+
+export default async function BlogPage() {
+  const posts = await getPosts();
+
+  const featuredPost = posts[0];
+  const remainingPosts = posts.slice(1);
+
   return (
     <main className="min-h-screen bg-white">
       <BlogHero />
+      <BrandMarquee />
 
-      <FeaturedPost />
+      {featuredPost && <FeaturedPost post={featuredPost} />}
 
       <BlogCategories />
 
-      <BlogGrid />
+      <BlogGrid posts={remainingPosts} />
 
       <BlogNewsletter />
     </main>

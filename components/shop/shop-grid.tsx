@@ -1,7 +1,5 @@
 "use client";
 
-import { products } from "@/lib/products";
-
 import { ProductCard } from "../product-card";
 
 import { Reveal } from "../reveal";
@@ -10,13 +8,14 @@ import { useShop } from "../shop-provider";
 
 import { Icon } from "../icon";
 
-export function ShopGrid() {
+import type { Product } from "@/lib/types";
+
+export function ShopGrid({ products }: { products: Product[] }) {
   const { category } = useShop();
 
   const filteredProducts = products.filter(
     (product) => category === "all" || product.category === category,
   );
-
   return (
     <Reveal>
       {filteredProducts.length > 0 ? (
@@ -42,7 +41,7 @@ export function ShopGrid() {
           </div>
         </>
       ) : (
-        <div className="flex min-h-[350px] flex-col items-center justify-center rounded-[32px] bg-black/[0.03] text-center">
+        <div className="flex min-h-87.5 flex-col items-center justify-center rounded-4xl bg-black/3 text-center">
           <Icon
             name="search"
 
@@ -52,7 +51,8 @@ export function ShopGrid() {
           <h3 className="mt-6 text-xl font-medium">محصولی پیدا نشد</h3>
 
           <p className="mt-3 max-w-sm text-sm leading-8 text-black/60">
-            دسته‌بندی دیگری را امتحان کن، شاید قطعه‌ی مورد علاقه‌ات آنجا منتظر تو باشد.
+            دسته‌بندی دیگری را امتحان کن، شاید قطعه‌ی مورد علاقه‌ات آنجا منتظر
+            تو باشد.
           </p>
         </div>
       )}

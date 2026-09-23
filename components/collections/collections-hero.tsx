@@ -3,7 +3,7 @@ import { Reveal } from "../reveal";
 
 export function CollectionsHero() {
   return (
-    <section className="relative min-h-[85vh] overflow-hidden text-white">
+    <section className="relative min-h-[92vh] overflow-hidden text-white">
       <Image
         src="/images/collections-hero.png"
 
@@ -20,7 +20,7 @@ export function CollectionsHero() {
 
       <div className="absolute inset-0 bg-black/55" />
 
-      <div className="relative z-10 flex min-h-[85vh] items-center justify-center px-5 text-center sm:px-8">
+      <div className="relative z-10 flex min-h-[92vh] items-center justify-center px-5 text-center sm:px-8">
         <Reveal>
           <div className="max-w-3xl">
             <p className="text-xs tracking-[6px] text-white/60">WINGS COLLECTIONS</p>

@@ -1,1 +1,32 @@
 @import "tailwindcss";
+
+@keyframes wings-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-33.333333%, 0, 0);
+  }
+}
+
+.wings-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: wings-marquee 60s linear infinite;
+  will-change: transform;
+}
+
+.wings-marquee-group {
+  flex: 0 0 auto;
+}
+
+.wings-marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wings-marquee-track {
+    animation: none;
+  }
+}

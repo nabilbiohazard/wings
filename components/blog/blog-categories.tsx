@@ -30,9 +30,13 @@ export function BlogCategories() {
       <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
         <Reveal>
           <div className="text-center">
-            <p className="text-xs tracking-[5px] text-black/40">EXPLORE JOURNAL</p>
+            <p className="text-xs tracking-[5px] text-black/40">
+              EXPLORE JOURNAL
+            </p>
 
-            <h2 className="mt-5 font-serif text-4xl sm:text-5xl">موضوعات مجله</h2>
+            <h2 className="mt-5 font-serif text-4xl sm:text-5xl">
+              موضوعات مجله
+            </h2>
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -52,7 +56,9 @@ export function BlogCategories() {
                   />
                 </span>
 
-                <p className="mt-8 text-xs tracking-[3px] text-black/40">{item.subtitle}</p>
+                <p className="mt-8 text-xs tracking-[3px] text-black/40">
+                  {item.subtitle}
+                </p>
 
                 <h3 className="mt-3 text-xl font-medium">{item.title}</h3>
 

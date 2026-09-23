@@ -3,7 +3,7 @@ import { Reveal } from "../reveal";
 
 export function AboutHero() {
   return (
-    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden text-white">
+    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden text-white">
       {/* IMAGE */}
 
       <Image
@@ -17,7 +17,7 @@ export function AboutHero() {
       />
       {/* OVERLAY */}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
+      <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/50 to-black/70" />
 
       {/* CONTENT */}
 

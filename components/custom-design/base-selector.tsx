@@ -27,7 +27,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "DELICATE CHAIN",
       description: "مینیمال و ظریف، مناسب ترکیب با یک یا چند چارم کوچک.",
       price: 890000,
-      image: "/images/base-necklace-delicate.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "necklace-classic",
@@ -35,7 +35,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "CLASSIC CHAIN",
       description: "انتخابی همه‌کاره برای استفاده روزمره و ترکیب چند چارم.",
       price: 1190000,
-      image: "/images/base-necklace-classic.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "necklace-bold",
@@ -43,7 +43,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "LINK CHAIN",
       description: "فرم برجسته‌تر برای استایل‌های جسورانه و متفاوت.",
       price: 1490000,
-      image: "/images/base-necklace-bold.jpg",
+      image: "/images/hero.png",
     },
   ],
   bracelet: [
@@ -53,7 +53,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "DELICATE BRACELET",
       description: "پایه‌ای سبک و مینیمال برای چارم‌های ظریف.",
       price: 690000,
-      image: "/images/base-bracelet-delicate.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "bracelet-classic",
@@ -61,7 +61,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "CLASSIC BRACELET",
       description: "مناسب ترکیب چند چارم و استفاده روزمره.",
       price: 790000,
-      image: "/images/base-bracelet-classic.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "bracelet-link",
@@ -69,7 +69,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "LINK BRACELET",
       description: "ظاهر مدرن‌تر با حلقه‌های درشت‌تر و استایل خاص.",
       price: 990000,
-      image: "/images/base-bracelet-link.jpg",
+      image: "/images/hero.png",
     },
   ],
   earring: [
@@ -79,7 +79,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "STUD BASE",
       description: "ساده، سبک و مناسب طراحی‌های مینیمال.",
       price: 690000,
-      image: "/images/base-earring-stud.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "earring-hoop-small",
@@ -87,7 +87,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "SMALL HOOP",
       description: "حلقه کوچک برای اضافه کردن یک چارم ظریف.",
       price: 790000,
-      image: "/images/base-earring-small.jpg",
+      image: "/images/hero.png",
     },
     {
       id: "earring-hoop-medium",
@@ -95,7 +95,7 @@ const baseOptions: Record<ProductType, BaseOption[]> = {
       englishTitle: "CLASSIC HOOP",
       description: "اندازه متعادل برای ساخت ترکیب‌های متفاوت‌تر.",
       price: 890000,
-      image: "/images/base-earring-medium.jpg",
+      image: "/images/hero.png",
     },
   ],
 };

@@ -22,21 +22,21 @@ const productTypes: {
     title: "گردنبند",
     englishTitle: "NECKLACE",
     description: "زنجیر مورد علاقه‌ات را انتخاب کن و با چارم‌های خودت کاملش کن.",
-    image: "/images/custom-necklace.jpg",
+    image: "/images/hero.png",
   },
   {
     id: "bracelet",
     title: "دستبند",
     englishTitle: "BRACELET",
     description: "یک دستبند شخصی بساز و داستانت را با جزئیات کوچک تعریف کن.",
-    image: "/images/custom-bracelet.jpg",
+    image: "/images/hero.png",
   },
   {
     id: "earring",
     title: "گوشواره",
     englishTitle: "EARRING",
     description: "ترکیبی متفاوت بساز که دقیقاً با استایل تو هماهنگ باشد.",
-    image: "/images/custom-earring.jpg",
+    image: "/images/hero.png",
   },
 ];
 

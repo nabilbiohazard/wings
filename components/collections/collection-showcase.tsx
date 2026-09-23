@@ -6,22 +6,22 @@ const collections = [
   {
     title: "Necklace",
     subtitle: "گردنبندها",
-    image: "/images/collection-necklace.jpg",
+    image: "/images/hero.png",
   },
   {
     title: "Bracelet",
     subtitle: "دستبندها",
-    image: "/images/collection-bracelet.jpg",
+    image: "/images/hero.png",
   },
   {
     title: "Charm",
     subtitle: "چارم‌های خاص",
-    image: "/images/collection-charm.jpg",
+    image: "/images/hero.png",
   },
   {
     title: "Gift",
     subtitle: "هدیه‌های ماندگار",
-    image: "/images/collection-gift.jpg",
+    image: "/images/hero.png",
   },
 ];
 

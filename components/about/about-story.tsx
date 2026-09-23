@@ -12,7 +12,7 @@ export function AboutStory() {
 
             <div className="relative aspect-[4/5] overflow-hidden rounded-[40px]">
               <Image
-                src="/images/about-story.jpg"
+                src="/images/hero.png"
 
                 alt="داستان وینگز گالری"
 

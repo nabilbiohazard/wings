@@ -3,7 +3,7 @@ import { Reveal } from "../reveal";
 
 export function ContactHero() {
   return (
-    <section className="relative flex min-h-[85vh] items-center justify-center overflow-hidden text-white">
+    <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden text-white">
       <Image
         src="/images/contact-hero.jpg"
 

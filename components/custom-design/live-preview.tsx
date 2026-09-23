@@ -8,7 +8,7 @@ import type { ProductType } from "./product-type-selector";
 type LivePreviewProps = {
   productType: ProductType;
   selectedBase: BaseOption | null;
-  selectedCharms: string[];
+  selectedCharms: number[];
 };
 
 const productLabels: Record<ProductType, string> = {
@@ -18,24 +18,24 @@ const productLabels: Record<ProductType, string> = {
 };
 
 const previewBases: Record<string, string> = {
-  "necklace-delicate": "/images/preview/base-necklace-delicate.png",
-  "necklace-classic": "/images/preview/base-necklace-classic.png",
-  "necklace-bold": "/images/preview/base-necklace-bold.png",
-  "bracelet-delicate": "/images/preview/base-bracelet-delicate.png",
-  "bracelet-classic": "/images/preview/base-bracelet-classic.png",
-  "bracelet-link": "/images/preview/base-bracelet-link.png",
-  "earring-stud": "/images/preview/base-earring-stud.png",
-  "earring-hoop-small": "/images/preview/base-earring-small.png",
-  "earring-hoop-medium": "/images/preview/base-earring-medium.png",
+  "necklace-delicate": "/images/hero.png",
+  "necklace-classic": "/images/hero.png",
+  "necklace-bold": "/images/hero.png",
+  "bracelet-delicate": "/images/hero.png",
+  "bracelet-classic": "/images/hero.png",
+  "bracelet-link": "/images/hero.png",
+  "earring-stud": "/images/hero.png",
+  "earring-hoop-small": "/images/hero.png",
+  "earring-hoop-medium": "/images/hero.png",
 };
 
 const charmImages: Record<string, string> = {
-  heart: "/images/preview/charm-heart.png",
-  star: "/images/preview/charm-star.png",
-  moon: "/images/preview/charm-moon.png",
-  butterfly: "/images/preview/charm-butterfly.png",
-  letter: "/images/preview/charm-letter.png",
-  pearl: "/images/preview/charm-pearl.png",
+  heart: "/images/hero.png",
+  star: "/images/hero.png",
+  moon: "/images/hero.png",
+  butterfly: "/images/hero.png",
+  letter: "/images/hero.png",
+  pearl: "/images/hero.png",
 };
 
 type Position = {

@@ -6,7 +6,7 @@ export function CollectionsCTA() {
   return (
     <section className="relative min-h-[65vh] overflow-hidden text-white">
       <Image
-        src="/images/collections-cta.jpg"
+        src="/images/hero.png"
 
         alt="Create your collection"
 

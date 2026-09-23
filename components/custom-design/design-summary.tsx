@@ -8,7 +8,7 @@ import type { ProductType } from "./product-type-selector";
 type DesignSummaryProps = {
   productType: ProductType;
   selectedBase: BaseOption | null;
-  selectedCharms: string[];
+  selectedCharms: number[];
   onAddToCart: () => void;
 };
 

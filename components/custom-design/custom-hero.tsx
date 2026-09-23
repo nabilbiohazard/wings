@@ -5,7 +5,7 @@ import { Reveal } from "../reveal";
 
 export function CustomHero() {
   return (
-    <section className="relative min-h-[85vh] overflow-hidden bg-[#f6f0eb]">
+    <section className="relative min-h-[92vh] overflow-hidden bg-[#f6f0eb]">
       <Image
         src="/images/custom-hero.png"
         alt="Create your own jewelry"
@@ -17,7 +17,7 @@ export function CustomHero() {
 
       <div className="absolute inset-0 bg-black/45" />
 
-      <div className="relative z-10 mx-auto flex min-h-[85vh] max-w-[1600px] items-center justify-center px-5 pt-28 sm:px-8 lg:pt-32">
+      <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] items-center justify-center px-5 pt-28 sm:px-8 lg:pt-32">
         <Reveal className="w-full">
           <div
             className="mx-auto max-w-3xl text-center text-white"
