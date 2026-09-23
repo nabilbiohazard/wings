@@ -1,14 +1,15 @@
-import { CustomBuilder } from "@/components/custom-design/custom-builder";
+import { CharmBuilder } from "@/components/custom-design/CharmBuilder";
 import { CustomHero } from "@/components/custom-design/custom-hero";
-import { BrandMarquee } from "@/components/homepage/brand-marquee";
-
-export default function CustomDesignPage() {
+export const metadata = {
+  title: "Charm Builder",
+};
+ 
+export default function CharmBuilderPage() {
   return (
     <main className="min-h-screen bg-white">
-      <CustomHero />
-      <BrandMarquee />
-
-      <CustomBuilder />
+      <CustomHero/>
+      <CharmBuilder />
     </main>
   );
 }
+ 
