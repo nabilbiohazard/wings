@@ -2,619 +2,205 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
 import type { Product } from "@/lib/types";
-
 import { persianNumber } from "@/lib/products";
-
 import { Icon } from "./icon";
-
 import { useShop } from "./shop-provider";
 
 type ProductCardProps = {
   product: Product;
+  sizes?: string;
 };
 
-function stripHtml(html?: string) {
-  if (!html) {
-    return "";
-  }
+const previewColors = [
+  "bg-pink-100 text-pink-400",
+  "bg-[#f6e9ef] text-[#ca94ae]",
+  "bg-[#eee8f4] text-[#b29ac8]",
+  "bg-[#fce8e1] text-[#d5a391]",
+];
 
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/\s+/g, " ")
-    .trim();
+function ImagePlaceholder({ index = 0 }: { index?: number }) {
+  return (
+    <div
+      className={`flex h-full w-full flex-col items-center justify-center gap-5 ${previewColors[index % previewColors.length]}`}
+    >
+      <div
+        className="flex h-24 w-24 items-center justify-center rounded-full border border-current/20"
+        aria-hidden="true"
+      >
+        <Icon name="sparkle" size={38} />
+      </div>
+      <span className="text-[10px] text-[#835567]">تصویر به‌زودی</span>
+    </div>
+  );
+}
+
+export function ProductPreviewCard({
+  name,
+  index,
+}: {
+  name: string;
+  index: number;
+}) {
+  return (
+    <article
+      dir="rtl"
+      aria-label={`${name}، کارت نمونه`}
+      className="flex h-full flex-col rounded-[22px] border border-pink-200/70 bg-white p-2"
+    >
+      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+        <ImagePlaceholder index={index} />
+        <span className="absolute top-3 right-3 rounded-full bg-white/80 px-3 py-1.5 text-[10px] text-pink-800">
+          پیش‌نمایش
+        </span>
+        <span
+          aria-hidden="true"
+          className="absolute bottom-3 left-3 text-xs text-[#835567]"
+        >
+          {persianNumber(index + 1).padStart(2, "۰")} / ۰۷
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col px-2 pt-4 pb-2">
+        <p className="mb-2 text-[10px] text-pink-700/70">وینگز گالری</p>
+        <h3 className="min-h-12 text-sm leading-6 font-medium text-[#211b18]">
+          {name}
+        </h3>
+        <div className="mt-4 flex min-h-12 items-end">
+          <p className="text-sm text-[#835567]">به‌زودی</p>
+        </div>
+        <p className="mt-4 flex min-h-10 items-center justify-between gap-2 rounded-xl bg-pink-50 px-3 py-2.5 text-[11px] text-pink-800">
+          یک انتخاب تازه در راه است <Icon name="sparkle" size={15} />
+        </p>
+      </div>
+    </article>
+  );
 }
 
 export function ProductCard({
   product,
+  sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
 }: ProductCardProps) {
-  const {
-    favorites,
-    toggleFavorite,
-  } = useShop();
-
-  const saved =
-    favorites.includes(product.id);
-
-  const productHref =
-    `/shop/${product.slug}`;
-
-  const secondImage =
-    product.images?.length > 1
-      ? product.images[1]
-      : null;
-
-  const category =
-    product.categories?.[0]?.name;
-
-  const description =
-    stripHtml(product.shortDescription);
-
-  const material =
-    product.attributes
-      ?.find(
-        (attribute) =>
-          attribute.name === "جنس"
-      )
-      ?.options?.[0];
-
-  const weight =
-    product.attributes
-      ?.find(
-        (attribute) =>
-          attribute.name === "وزن"
-      )
-      ?.options?.[0];
-
+  const { favorites, toggleFavorite } = useShop();
+  const saved = favorites.includes(product.id);
+  const href = `/shop/${product.slug}`;
+  const secondImage = product.images?.[1];
+  const regularPrice = product.regularPrice ?? product.price;
+  const salePrice = product.salePrice ?? product.price;
   const hasDiscount =
-    Boolean(product.onSale) &&
-    Boolean(product.regularPrice) &&
-    Boolean(product.salePrice) &&
-    Number(product.regularPrice) >
-      Number(product.salePrice);
-
-  const discountPercent =
-    hasDiscount
-      ? Math.round(
-          ((Number(
-            product.regularPrice
-          ) -
-            Number(
-              product.salePrice
-            )) /
-            Number(
-              product.regularPrice
-            )) *
-            100
-        )
-      : 0;
-
-  /*
-   * undefined را ناموجود حساب نمی‌کنیم.
-   */
-  const inStock =
-    product.isInStock !== false;
+    Boolean(product.onSale) && regularPrice > salePrice && salePrice >= 0;
+  const discount = hasDiscount
+    ? Math.round(((regularPrice - salePrice) / regularPrice) * 100)
+    : 0;
+  const inStock = product.isInStock !== false;
+  const material = product.attributes?.find(
+    (attribute) => attribute.name === "جنس",
+  )?.options[0];
 
   return (
     <article
-      className="
-        group
-        relative
-        w-full
-      "
+      dir="rtl"
+      className="group flex h-full w-full flex-col rounded-[22px] border border-pink-200/70 bg-white p-2 transition-colors duration-300 hover:border-pink-400 focus-within:border-pink-400"
     >
-      {/* =========================
-          IMAGE
-      ========================= */}
-
-      <div
-        className="
-          relative
-          aspect-[4/5]
-          overflow-hidden
-          rounded-[30px]
-          bg-[#f7f7f7]
-        "
-      >
+      <div className="relative isolate aspect-[4/5] overflow-hidden rounded-2xl bg-[#f4f1ed]">
         <Link
-          href={productHref}
+          href={href}
           aria-label={`مشاهده ${product.name}`}
-          className="relative block h-full w-full"
+          className="relative block h-full w-full focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-black"
         >
-          {/* MAIN IMAGE */}
-
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="
-              (max-width:600px) 50vw,
-              (max-width:1000px) 45vw,
-              25vw
-            "
-            className={`
-              object-cover
-              transition-all
-              duration-700
-              ease-out
-
-              ${
-                secondImage
-                  ? `
-                    scale-100
-                    opacity-100
-                    group-hover:scale-[1.03]
-                    group-hover:opacity-0
-                  `
-                  : `
-                    group-hover:scale-[1.05]
-                  `
-              }
-            `}
-          />
-
-          {/* SECOND IMAGE */}
-
+          {product.image ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes={sizes}
+              className={`object-cover transition-[transform,opacity] duration-700 motion-reduce:transition-none group-hover:scale-105 ${secondImage ? "group-hover:opacity-0" : ""}`}
+            />
+          ) : (
+            <ImagePlaceholder />
+          )}
           {secondImage && (
             <Image
               src={secondImage}
-              alt={`${product.name} - تصویر دوم`}
+              alt=""
               fill
-              sizes="
-                (max-width:600px) 50vw,
-                (max-width:1000px) 45vw,
-                25vw
-              "
-              className="
-                scale-[1.05]
-                object-cover
-                opacity-0
-                transition-all
-                duration-700
-                ease-out
-
-                group-hover:scale-100
-                group-hover:opacity-100
-              "
+              sizes={sizes}
+              className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 motion-reduce:transition-none"
             />
           )}
-
-          {/* GRADIENT */}
-
-          <div
-            className="
-              absolute inset-x-0 bottom-0
-              h-[35%]
-              bg-gradient-to-t
-              from-black/35
-              via-black/5
-              to-transparent
-
-              opacity-0
-              transition-opacity
-              duration-500
-
-              group-hover:opacity-100
-            "
-          />
-
-          {/* PRODUCT CTA */}
-
-          <div
-            className="
-              absolute
-              bottom-5
-              left-5 right-5
-
-              flex
-              translate-y-5
-              items-center
-              justify-between
-
-              rounded-full
-              bg-white/95
-              px-5 py-3.5
-
-              text-xs
-              text-black
-
-              opacity-0
-
-              shadow-[0_12px_35px_rgba(0,0,0,0.12)]
-              backdrop-blur-xl
-
-              transition-all
-              duration-400
-
-              group-hover:translate-y-0
-              group-hover:opacity-100
-            "
-          >
-            <span>
-              مشاهده محصول
-            </span>
-
-            <span
-              className="
-                flex h-7 w-7
-                items-center justify-center
-                rounded-full
-                bg-black
-                text-white
-              "
-            >
-              ←
-            </span>
-          </div>
         </Link>
-
-        {/* =========================
-            BADGES
-        ========================= */}
-
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-4 top-4
-            z-20
-
-            flex
-            flex-col
-            items-start
-            gap-2
-          "
-        >
-          {hasDiscount && (
-            <span
-              className="
-                rounded-full
-                bg-black
-                px-3 py-1.5
-
-                text-[10px]
-                font-medium
-                text-white
-              "
-            >
-              ٪
-              {persianNumber(
-                discountPercent
-              )}
-              {" "}
-              تخفیف
-            </span>
-          )}
-
-          {!inStock && (
-            <span
-              className="
-                rounded-full
-                bg-white/95
-                px-3 py-1.5
-
-                text-[10px]
-                text-black/60
-
-                shadow-sm
-                backdrop-blur
-              "
-            >
-              ناموجود
-            </span>
-          )}
-        </div>
-
-        {/* =========================
-            FAVORITE
-        ========================= */}
-
         <button
           type="button"
-          onClick={() =>
-            toggleFavorite(product.id)
-          }
+          onClick={() => toggleFavorite(product.id)}
           aria-pressed={saved}
-          aria-label={`${
-            saved
-              ? "حذف از"
-              : "افزودن به"
-          } علاقه‌مندی‌ها: ${product.name}`}
-          className={`
-            absolute
-            right-4 top-4
-            z-30
-
-            flex h-10 w-10
-            items-center justify-center
-
-            rounded-full
-            border
-
-            shadow-sm
-            backdrop-blur-xl
-
-            transition-all
-            duration-300
-
-            ${
-              saved
-                ? `
-                  border-black
-                  bg-black
-                  text-white
-                `
-                : `
-                  border-white/50
-                  bg-white/90
-                  text-black
-
-                  hover:scale-105
-                  hover:bg-black
-                  hover:text-white
-                `
-            }
-          `}
+          aria-label={`${saved ? "حذف از" : "افزودن به"} علاقه‌مندی‌ها: ${product.name}`}
+          className={`absolute top-2 left-2 flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${saved ? "border-[#e8c4ce] bg-[#f8e4e9] text-[#a33c58]" : "border-white/70 bg-white/90 text-[#3d302b] hover:bg-[#f8e4e9]"}`}
         >
           <Icon
             name="heart"
-            size={18}
+            size={17}
+            className={saved ? "fill-current" : ""}
           />
         </button>
+        {(!inStock || hasDiscount) && (
+          <span
+            className={`pointer-events-none absolute right-2 bottom-2 rounded-lg px-2.5 py-1.5 text-[10px] font-medium ${!inStock ? "bg-white/95 text-black/60" : "bg-pink-300 text-pink-950"}`}
+          >
+            {!inStock ? "ناموجود" : `${persianNumber(discount)}٪ تخفیف`}
+          </span>
+        )}
       </div>
 
-      {/* =========================
-          PRODUCT CONTENT
-      ========================= */}
-
-      <div className="px-1 pt-5 text-right">
-        {/* META */}
-
-        <div className="flex min-h-5 items-center justify-between gap-4">
-          <span
-            className="
-              text-[10px]
-              tracking-[1px]
-              text-black/35
-            "
-          >
-            {category || "WINGS GALLERY"}
-          </span>
-
-          <div
-            className="
-              flex items-center
-              gap-2
-              text-[10px]
-            "
-          >
-            <span
-              className="
-                flex items-center
-                gap-1.5
-                text-black/45
-              "
-            >
-              <span
-                className={`
-                  h-1.5 w-1.5
-                  rounded-full
-
-                  ${
-                    inStock
-                      ? "bg-emerald-500"
-                      : "bg-black/20"
-                  }
-                `}
-              />
-
-              {inStock
-                ? "موجود"
-                : "ناموجود"}
-            </span>
-          </div>
-        </div>
-
-        {/* TITLE */}
-
+      <div className="flex flex-1 flex-col px-2 pt-4 pb-2">
+        <p className="mb-2 truncate text-[10px] text-black/50">
+          {material || "وینگز گالری"}
+        </p>
         <Link
-          href={productHref}
-          className="block"
+          href={href}
+          className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           <h3
-            className="
-              mt-3
-              text-[17px]
-              font-medium
-              leading-8
-              text-black
-
-              transition-opacity
-              duration-300
-
-              hover:opacity-55
-            "
+            className="line-clamp-2 min-h-12 text-sm leading-6 font-medium text-[#211b18] transition-colors hover:text-[#97566a]"
+            title={product.name}
           >
             {product.name}
           </h3>
         </Link>
-
-        {/* ATTRIBUTES */}
-
-        {(material || weight) && (
-          <div className="mt-2.5 flex flex-wrap items-center gap-2">
-            {material && (
-              <span
-                className="
-                  rounded-full
-                  bg-black/[0.045]
-                  px-3 py-1.5
-
-                  text-[10px]
-                  text-black/55
-                "
-              >
-                {material}
-              </span>
+        <div className="mt-4 flex min-h-12 flex-wrap items-end justify-between gap-x-2 gap-y-1">
+          <div>
+            {hasDiscount && (
+              <del className="mb-1 block text-[11px] text-black/40">
+                <span className="sr-only">قیمت قبلی: </span>
+                {persianNumber(regularPrice)}
+                <span className="sr-only"> تومان</span>
+              </del>
             )}
-
-            {weight && (
-              <span
-                className="
-                  rounded-full
-                  bg-black/[0.045]
-                  px-3 py-1.5
-
-                  text-[10px]
-                  text-black/55
-                "
-              >
-                {weight}
-              </span>
-            )}
-          </div>
-        )}
-
-        {/* DESCRIPTION */}
-
-        {description && (
-          <p
-            className="
-              mt-3
-              line-clamp-2
-              text-xs
-              leading-6
-              text-black/45
-            "
-          >
-            {description}
-          </p>
-        )}
-
-        {/* PRICE */}
-
-        <div
-          className="
-            mt-4
-            flex
-            min-h-8
-            items-center
-            justify-between
-            gap-3
-          "
-        >
-          {hasDiscount ? (
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-              <span
-                className="
-                  text-[17px]
-                  font-semibold
-                  tracking-tight
-                  text-black
-                "
-              >
-                {persianNumber(
-                  product.salePrice!
-                )}
-
-                <small
-                  className="
-                    mr-1
-                    text-[10px]
-                    font-normal
-                    text-black/40
-                  "
-                >
-                  تومان
-                </small>
-              </span>
-
-              <span
-                className="
-                  text-[11px]
-                  text-black/30
-                  line-through
-                "
-              >
-                {persianNumber(
-                  product.regularPrice!
-                )}
-              </span>
-            </div>
-          ) : (
-            <span
-              className="
-                text-[17px]
-                font-semibold
-                tracking-tight
-                text-black
-              "
-            >
-              {persianNumber(
-                product.price
-              )}
-
-              <small
-                className="
-                  mr-1
-                  text-[10px]
-                  font-normal
-                  text-black/40
-                "
-              >
+            <p className="text-[15px] font-medium tabular-nums text-[#211b18]">
+              {persianNumber(hasDiscount ? salePrice : product.price)}{" "}
+              <span className="text-[10px] font-normal text-black/50">
                 تومان
-              </small>
-            </span>
-          )}
-
-          {/* RATING */}
-
-          {Boolean(
-            product.averageRating &&
-              product.averageRating > 0
-          ) && (
+              </span>
+            </p>
+          </div>
+          {Boolean(product.averageRating && product.averageRating > 0) && (
             <span
-              dir="ltr"
-              className="
-                flex items-center
-                gap-1
-                text-[10px]
-                text-black/40
-              "
+              className="text-[10px] text-black/50"
+              aria-label={`امتیاز ${persianNumber(product.averageRating!)} از ۵`}
             >
-              <span className="text-black">
+              <span aria-hidden="true" className="ml-1 text-[#b68a49]">
                 ★
               </span>
-
-              {product.averageRating?.toFixed(
-                1
-              )}
+              {persianNumber(product.averageRating!)}
             </span>
           )}
         </div>
-
-        {/* BOTTOM ACCENT */}
-
-        <div
-          className="
-            mt-5
-            h-px
-            w-full
-
-            origin-right
-            scale-x-0
-
-            bg-black/15
-
-            transition-transform
-            duration-500
-
-            group-hover:scale-x-100
-          "
-        />
+        <Link
+          href={href}
+          aria-label={`مشاهده ${product.name}`}
+          className="mt-4 flex min-h-10 items-center justify-between gap-2 rounded-xl bg-pink-100 px-3 py-2.5 text-[11px] text-pink-950 transition-colors hover:bg-pink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600"
+        >
+          {product.hasOptions ? "انتخاب مدل" : "مشاهده محصول"}
+          <Icon name="arrow" size={15} />
+        </Link>
       </div>
     </article>
   );

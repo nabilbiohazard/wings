@@ -23,6 +23,8 @@ type ShopContextValue = {
   cart: CartLine[];
 
   products: Product[];
+  productsLoading: boolean;
+  productsError: boolean;
 
   openPanel: (panel: Panel) => void;
 
@@ -92,6 +94,8 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartLine[]>([]);
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState(false);
 
   const [panel, setPanel] = useState<Panel>(null);
 
@@ -159,9 +163,21 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetch("/api/woo/products")
-      .then((response) => response.json())
-      .then((data) => setProducts(data.products || []))
-      .catch(() => setProducts([]));
+      .then((response) => {
+        if (!response.ok) throw new Error("Unable to load products");
+        return response.json();
+      })
+      .then((data) => {
+        if (data.success === false || !Array.isArray(data.products)) {
+          throw new Error("Invalid product response");
+        }
+        setProducts(data.products);
+      })
+      .catch(() => {
+        setProducts([]);
+        setProductsError(true);
+      })
+      .finally(() => setProductsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -231,6 +247,8 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     cart,
 
     products,
+    productsLoading,
+    productsError,
 
     openPanel: setPanel,
 

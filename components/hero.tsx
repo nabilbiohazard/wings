@@ -3,7 +3,7 @@ import { Reveal } from "./reveal";
 
 export function Hero() {
   return (
-    <section className="relative h-screen min-h-[750px] overflow-hidden text-white">
+    <section className="relative h-dvh min-h-dvh overflow-hidden text-white">
       <video
         autoPlay
         loop

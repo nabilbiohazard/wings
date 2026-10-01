@@ -100,18 +100,15 @@ export function Header() {
         <div
           className={`
             absolute inset-0
-            border-b
             transition-all duration-500
             ${
               solid
                 ? `
-                  border-black/6
                   bg-white/94
                   shadow-[0_10px_45px_rgba(0,0,0,0.045)]
                   backdrop-blur-2xl
                 `
                 : `
-                  border-white/8
                   bg-linear-to-b
                   from-black/35
                   via-black/10
@@ -375,7 +372,6 @@ export function Header() {
             className="
               hidden h-13.5
               items-center justify-center
-              border-t
               md:flex
               
             "

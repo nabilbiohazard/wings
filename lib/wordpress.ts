@@ -34,5 +34,12 @@ export async function wpFetch<T>(
     );
   }
 
+  const contentType = res.headers.get("content-type") ?? "";
+  if (!contentType.includes("application/json")) {
+    throw new Error(
+      `WordPress API returned ${contentType || "an unknown content type"} instead of JSON. Check WP_API_URL and the WordPress REST API.`
+    );
+  }
+
   return res.json() as Promise<T>;
 }

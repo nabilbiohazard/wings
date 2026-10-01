@@ -1,0 +1,70 @@
+.carousel :global(.swiper-pagination.swiper-pagination-horizontal) {
+  position: relative;
+  inset: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 28px auto 0;
+  padding: 4px 10px;
+  border: 1px solid #fbcfe8;
+  border-radius: 999px;
+  background: #fff;
+  transform: none;
+}
+
+.carousel :global(.swiper-pagination-bullet) {
+  position: relative;
+  width: 28px;
+  height: 32px;
+  margin: 0;
+  border-radius: 999px;
+  background: transparent;
+  opacity: 1;
+  transition: width 250ms ease;
+}
+
+.carousel :global(.swiper-pagination-bullet)::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #fbcfe8;
+  transform: translate(-50%, -50%);
+  transition:
+    width 250ms ease,
+    background-color 250ms ease;
+}
+
+.carousel :global(.swiper-pagination-bullet):hover::after {
+  background: #f9a8d4;
+}
+
+.carousel :global(.swiper-pagination-bullet-active) {
+  width: 44px;
+}
+
+.carousel :global(.swiper-pagination-bullet-active)::after {
+  width: 30px;
+  background: #f472b6;
+}
+
+.carousel :global(.swiper-pagination-bullet):focus-visible {
+  outline: 2px solid #be185d;
+  outline-offset: 2px;
+}
+
+.carousel :global(.swiper-pagination.swiper-pagination-lock) {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel :global(.swiper-pagination-bullet),
+  .carousel :global(.swiper-pagination-bullet)::after {
+    transition: none;
+  }
+}
