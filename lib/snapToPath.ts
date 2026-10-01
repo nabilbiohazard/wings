@@ -31,9 +31,10 @@ export function getClosestPointOnPath(
   // Refine pass: zoom into the neighborhood of the coarse result for precision
   const refineSteps = 40;
   const window = 1 / coarseSteps; // one coarse step wide, on each side
+  const coarseT = best.t;
  
   for (let i = -refineSteps; i <= refineSteps; i++) {
-    const t = Math.min(1, Math.max(0, best.t + (i / refineSteps) * window));
+    const t = Math.min(1, Math.max(0, coarseT + (i / refineSteps) * window));
     const pt = path.getPointAtLength(t * pathLength);
     const dist = Math.hypot(pt.x - point.x, pt.y - point.y);
     if (dist < bestDist) {
