@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icon } from "../icon";
+import { HoverVideoSection } from "./hover-video-section";
 
 export function AboutJournal() {
   return (
@@ -9,11 +10,15 @@ export function AboutJournal() {
       aria-label="درباره ما و مجله وینگر"
       className="grid w-full grid-cols-1 md:grid-cols-2"
     >
-      <article
+      <HoverVideoSection
+        as="article"
+        src="/videos/about_us.mp4"
         aria-labelledby="about-preview-heading"
         className="group relative isolate flex min-h-[480px] flex-col justify-between overflow-hidden bg-[#623c50] px-6 py-9 text-white grayscale transition-[filter] duration-500 hover:grayscale-0 focus-within:grayscale-0 motion-reduce:transition-none sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-16 lg:py-14 xl:px-20"
       >
-        <div className="flex items-center justify-between gap-4">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#24151f]/60" />
+
+        <div className="relative flex items-center justify-between gap-4">
           <p
             lang="en"
             dir="ltr"
@@ -24,7 +29,7 @@ export function AboutJournal() {
           <Icon name="sparkle" size={24} className="text-pink-200" />
         </div>
 
-        <div className="mt-24 max-w-lg">
+        <div className="relative mt-24 max-w-lg">
           <p className="mb-4 text-xs text-pink-200">
             پشت هر جزئیات، یک قصه است
           </p>
@@ -48,13 +53,17 @@ export function AboutJournal() {
             </span>
           </Link>
         </div>
-      </article>
+      </HoverVideoSection>
 
-      <article
+      <HoverVideoSection
+        as="article"
+        src="/videos/magazine.mp4"
         aria-labelledby="journal-preview-heading"
-        className="group relative isolate flex min-h-[480px] flex-col justify-between overflow-hidden bg-[#f7c9dc] px-6 py-9 text-[#542f3d] grayscale transition-[filter] duration-500 hover:grayscale-0 focus-within:grayscale-0 motion-reduce:transition-none sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-16 lg:py-14 xl:px-20"
+        className="group relative isolate flex min-h-[480px] flex-col justify-between overflow-hidden bg-[#542f3d] px-6 py-9 text-white grayscale transition-[filter] duration-500 hover:grayscale-0 focus-within:grayscale-0 motion-reduce:transition-none sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-16 lg:py-14 xl:px-20"
       >
-        <div className="flex items-center justify-between gap-4">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[#24151f]/60" />
+
+        <div className="relative flex items-center justify-between gap-4">
           <p lang="en" dir="ltr" className="text-[10px] tracking-[4px]">
             THE WINGS JOURNAL
           </p>
@@ -66,8 +75,8 @@ export function AboutJournal() {
           </span>
         </div>
 
-        <div className="mt-24 max-w-lg">
-          <p className="mb-4 text-xs text-[#86566a]">
+        <div className="relative mt-24 max-w-lg">
+          <p className="mb-4 text-xs text-pink-200">
             کمی بخوان، کلی الهام بگیر
           </p>
           <h2
@@ -76,21 +85,21 @@ export function AboutJournal() {
           >
             مجله وینگر
           </h2>
-          <p className="mt-5 max-w-md text-sm leading-8 text-[#654453] sm:text-base sm:leading-9">
+          <p className="mt-5 max-w-md text-sm leading-8 text-white/85 sm:text-base sm:leading-9">
             از کنار هم گذاشتن چارم‌ها تا پیدا کردن هدیه‌ای به‌یادماندنی؛ ایده‌ها
             و قصه‌هایی برای اینکه استایلت، بیشتر شبیه خودت باشد.
           </p>
           <Link
             href="/blog"
-            className="mt-8 inline-flex min-h-12 items-center gap-6 rounded-full bg-[#542f3d] py-2 pr-6 pl-2 text-sm font-medium text-white transition-colors hover:bg-[#713b54] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#542f3d]"
+            className="mt-8 inline-flex min-h-12 items-center gap-6 rounded-full bg-pink-200 py-2 pr-6 pl-2 text-sm font-medium text-[#35232c] transition-colors hover:bg-pink-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-pink-200"
           >
             ورق زدن مجله
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/60">
               <Icon name="arrow" size={17} />
             </span>
           </Link>
         </div>
-      </article>
+      </HoverVideoSection>
     </section>
   );
 }
