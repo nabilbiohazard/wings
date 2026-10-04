@@ -197,3 +197,16 @@ export type ProductDimensions = {
   height?: string;
 
 };
+
+export type BlogPost = {
+  id: number;
+  slug: string;
+  date: string;
+  title: { rendered: string };
+  excerpt?: { rendered: string };
+  content?: { rendered: string };
+  _embedded?: {
+    "wp:featuredmedia"?: { source_url?: string; alt_text?: string }[];
+    "wp:term"?: { id: number; name: string; slug: string; taxonomy: string }[][];
+  };
+};

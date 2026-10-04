@@ -154,74 +154,395 @@ export function CharmBuilder() {
   const hasCompletePricing = placedCharms.every((pc) => pc.charm.price !== undefined);
   const total = placedCharms.reduce((sum, pc) => sum + (pc.charm.price ?? 0), 0);
  
-  return (
+    return (
     <DndContext
       id="custom-design-dnd"
       sensors={sensors}
       collisionDetection={(args) =>
-        args.pointerCoordinates ? pointerWithin(args) : rectIntersection(args)
+        args.pointerCoordinates
+          ? pointerWithin(args)
+          : rectIntersection(args)
       }
       onDragEnd={handleDragEnd}
     >
-      <div className="mx-auto max-w-6xl p-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-neutral-800">دستبندت را بساز</h1>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="rounded-full border border-neutral-300 px-4 py-1.5 text-sm text-neutral-600 hover:bg-neutral-100"
-          >
-            پاک کردن
-          </button>
-        </div>
- 
-        {/* Image (chain) on the left, charms on the right — stacks on mobile */}
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[3fr_2fr]">
-          <div className="flex flex-col items-center justify-center gap-2 rounded-2xl bg-neutral-50 p-2 sm:p-5 md:p-8">
-            <Chain
-              placedCharms={placedCharms}
-              onRemove={handleRemove}
-              onMove={(instanceId) => setSelection({ type: "move", instanceId })}
-              onCanvasTap={handleCanvasTap}
-              placementHint={selection?.type === "add"
-                ? `برای افزودن ${selection.charm.name} روی دستبند بزنید`
-                : selection?.type === "move"
-                  ? "جای جدید چارم را روی دستبند لمس کنید"
-                  : undefined}
-              pathRef={pathRef}
-            />
-            {selection && (
-              <button
-                type="button"
-                onClick={() => setSelection(null)}
-                className="rounded-full px-4 py-2 text-sm text-neutral-600 underline-offset-4 hover:underline md:hidden"
+      <div
+        dir="rtl"
+        className="min-h-screen bg-[#f8f5f0] text-[#38292e]"
+      >
+        <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
+          {/* عنوان استودیو */}
+          <header className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div>
+              <p
+                dir="ltr"
+                className="flex items-center gap-3 text-[10px] font-medium tracking-[0.22em] text-[#95677b]"
               >
-                لغو انتخاب
-              </button>
+                <span className="h-px w-8 bg-current" />
+                WINGS DESIGN STUDIO
+              </p>
+
+              <h1 className="mt-4 text-3xl font-medium leading-relaxed sm:text-4xl">
+                دستبندی با
+                <span className="text-[#a16c80]"> امضای خودت.</span>
+              </h1>
+
+              <p className="mt-3 max-w-xl text-sm leading-8 text-[#796770]">
+                چارم‌های دلخواهت را انتخاب کن و کنار هم بچین؛
+                هر قطعه، بخشی از داستان تو.
+              </p>
+            </div>
+
+            <div className="flex w-fit items-center gap-3 rounded-full border border-[#e1d3d8] bg-white/70 px-4 py-3">
+              <span
+                aria-hidden="true"
+                className="flex size-8 items-center justify-center rounded-full bg-[#f0e1e7] text-[#95677b]"
+              >
+                ✦
+              </span>
+
+              <span className="text-xs text-[#796770]">
+                انتخاب کن، بچین، شخصی‌اش کن
+              </span>
+            </div>
+          </header>
+
+          {/* محیط طراحی */}
+          <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] lg:gap-6">
+            {/* بوم دستبند */}
+            <section
+              aria-labelledby="builder-canvas-title"
+              className="min-w-0 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-[#fffdf9] shadow-[0_12px_40px_rgba(56,41,46,0.04)]"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-[#eee5e1] px-5 py-5 sm:px-7">
+                <div className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f1e7e3] text-lg text-[#95677b]"
+                  >
+                    ♡
+                  </span>
+
+                  <div>
+                    <h2
+                      id="builder-canvas-title"
+                      className="text-sm font-semibold"
+                    >
+                      میز طراحی تو
+                    </h2>
+                    <p className="mt-1 text-[11px] text-[#796770]">
+                      پیش‌نمایش چیدمان دستبند
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  disabled={placedCharms.length === 0 && !selection}
+                  className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-[#e0cdd4] px-3 py-2 text-xs text-[#87586c] transition-colors hover:bg-[#f4e8ed] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b] disabled:cursor-not-allowed disabled:opacity-40 sm:px-4"
+                >
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 10a9 9 0 1 1 2.6 8.4" />
+                    <path d="M3 4v6h6" />
+                  </svg>
+                  شروع دوباره
+                </button>
+              </div>
+
+              {/* پس‌زمینه بوم */}
+              <div className="relative isolate overflow-hidden bg-[#f6f0e9] px-2 py-8 sm:px-5 sm:py-12">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 -z-10 opacity-40 [background-image:radial-gradient(#c7b5ac_1px,transparent_1px)] [background-size:22px_22px]"
+                />
+
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[75%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fffdf9] blur-3xl"
+                />
+
+                <div className="mb-5 flex justify-center">
+                  <span
+                    dir="ltr"
+                    className="rounded-full border border-[#d7c8be] bg-[#fffdf9]/90 px-4 py-2 text-[9px] tracking-[0.2em] text-[#917b72]"
+                  >
+                    YOUR LITTLE MASTERPIECE
+                  </span>
+                </div>
+
+                <div className="mx-auto w-full max-w-[760px]">
+                  <Chain
+                    placedCharms={placedCharms}
+                    onRemove={handleRemove}
+                    onMove={(instanceId) =>
+                      setSelection({ type: "move", instanceId })
+                    }
+                    onCanvasTap={handleCanvasTap}
+                    placementHint={
+                      selection?.type === "add"
+                        ? `برای افزودن ${selection.charm.name} روی دستبند بزنید`
+                        : selection?.type === "move"
+                          ? "جای جدید چارم را روی دستبند لمس کنید"
+                          : undefined
+                    }
+                    pathRef={pathRef}
+                  />
+                </div>
+
+                <p className="mt-5 text-center text-xs leading-6 text-[#88766d]">
+                  {placedCharms.length === 0
+                    ? "اولین چارم را انتخاب کن؛ داستان از همین‌جا شروع می‌شود."
+                    : "می‌توانی جای چارم‌ها را تغییر بدهی و ترکیب تازه‌ای بسازی."}
+                </p>
+              </div>
+
+              {/* وضعیت انتخاب */}
+              <div
+                role="status"
+                aria-live="polite"
+                className={`flex min-h-[84px] items-center justify-between gap-3 border-t px-5 py-4 sm:px-7 ${
+                  selection
+                    ? "border-[#e3c7d2] bg-[#f5e7ed]"
+                    : "border-[#eee5e1] bg-[#fffdf9]"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm ${
+                      selection
+                        ? "bg-[#95677b] text-white"
+                        : "bg-[#f1e7e3] text-[#95677b]"
+                    }`}
+                  >
+                    {selection ? "↙" : "✦"}
+                  </span>
+
+                  <div>
+                    <p className="text-xs font-medium sm:text-sm">
+                      {selection?.type === "add"
+                        ? `${selection.charm.name} انتخاب شده`
+                        : selection?.type === "move"
+                          ? "یک جای تازه انتخاب کن"
+                          : "آماده طراحی هستی؟"}
+                    </p>
+
+                    <p className="mt-1 text-[11px] leading-6 text-[#796770]">
+                      {selection
+                        ? "روی محل دلخواه دستبند بزن."
+                        : "چارم را انتخاب کن یا روی دستبند بکش."}
+                    </p>
+                  </div>
+                </div>
+
+                {selection && (
+                  <button
+                    type="button"
+                    onClick={() => setSelection(null)}
+                    className="min-h-10 shrink-0 rounded-full border border-[#cfa8b8] px-4 py-2 text-xs text-[#87586c] transition-colors hover:bg-white/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b]"
+                  >
+                    لغو انتخاب
+                  </button>
+                )}
+              </div>
+            </section>
+
+            {/* پنل چارم‌ها */}
+            <aside
+              aria-labelledby="charm-palette-title"
+              className="min-w-0 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-white shadow-[0_12px_40px_rgba(56,41,46,0.04)]"
+            >
+              <div className="bg-[#38292e] px-5 py-6 text-[#fff8f3] sm:px-6">
+                <div className="flex items-center justify-between gap-4">
+                  <p
+                    dir="ltr"
+                    className="text-[9px] tracking-[0.2em] text-[#dfb2c3]"
+                  >
+                    THE CHARM COLLECTION
+                  </p>
+
+                  <span aria-hidden="true" className="text-[#dfb2c3]">
+                    ✳
+                  </span>
+                </div>
+
+                <h2
+                  id="charm-palette-title"
+                  className="mt-4 text-xl font-medium"
+                >
+                  جزئیات را تو انتخاب کن
+                </h2>
+
+                <p className="mt-2 text-xs leading-7 text-[#e0cdd5]">
+                  از بین چارم‌ها، آن‌هایی را پیدا کن که شبیه تو هستند.
+                </p>
+              </div>
+
+              <div className="p-4 sm:p-5">
+                <div className="mb-5 flex items-start gap-3 rounded-xl border border-[#eadde2] bg-[#faf5f7] p-3">
+                  <span
+                    aria-hidden="true"
+                    className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#cba8b7] text-xs text-[#95677b]"
+                  >
+                    i
+                  </span>
+
+                  <p className="text-[11px] leading-6 text-[#796770]">
+                    برای افزودن، چارم را انتخاب کن و روی دستبند بزن.
+                    برای جابه‌جایی، از دکمه کنار چارم یا کشیدن آن
+                    استفاده کن.
+                  </p>
+                </div>
+
+                <CharmPalette
+                  charms={CHARMS}
+                  selectedCharmId={
+                    selection?.type === "add"
+                      ? selection.charm.id
+                      : undefined
+                  }
+                  onSelect={handleSelectCharm}
+                />
+              </div>
+            </aside>
+          </div>
+
+          {/* خلاصه طرح */}
+          <section
+            aria-labelledby="design-summary-title"
+            className="mt-6 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-[#fffdf9]"
+          >
+            <div className="flex flex-col justify-between gap-5 p-5 sm:flex-row sm:items-center sm:p-7">
+              <div className="flex items-center gap-4">
+                <span
+                  aria-hidden="true"
+                  className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#efe0e6] text-2xl text-[#95677b]"
+                >
+                  ✦
+                </span>
+
+                <div>
+                  <h2
+                    id="design-summary-title"
+                    className="text-base font-medium"
+                  >
+                    ترکیب مخصوص تو
+                  </h2>
+
+                  <p className="mt-1 text-xs leading-6 text-[#796770]">
+                    {placedCharms.length > 0
+                      ? `${placedCharms.length.toLocaleString("fa-IR")} چارم در طرح فعلی`
+                      : "هنوز چارمی به دستبند اضافه نکرده‌ای."}
+                  </p>
+                </div>
+              </div>
+
+              {placedCharms.length > 0 && (
+                <div className="rounded-xl border border-[#e4d9d7] bg-[#f8f3ee] px-5 py-3 sm:text-left">
+                  <p className="text-[10px] text-[#796770]">
+                    {hasCompletePricing
+                      ? "مجموع قیمت چارم‌ها"
+                      : "وضعیت قیمت‌گذاری"}
+                  </p>
+
+                  {hasCompletePricing ? (
+                    <p
+                      dir="ltr"
+                      className="mt-1 text-xl font-semibold text-[#87586c]"
+                    >
+                      ${total.toFixed(2)}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs leading-6 text-[#87586c]">
+                      قیمت همه چارم‌ها هنوز ثبت نشده است.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {placedCharms.length > 0 && (
+              <div className="border-t border-[#eee5e1] px-5 py-5 sm:px-7">
+                <ul className="flex flex-wrap gap-2">
+                  {placedCharms.map((placedCharm, index) => (
+                    <li
+                      key={placedCharm.instanceId}
+                      className="flex items-center gap-3 rounded-full border border-[#e1cfd7] bg-[#f9f0f4] py-1.5 pr-2 pl-1.5"
+                    >
+                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white text-[10px] text-[#95677b]">
+                        {(index + 1).toLocaleString("fa-IR")}
+                      </span>
+
+                      <span className="text-xs text-[#68515b]">
+                        {placedCharm.charm.name}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleRemove(placedCharm.instanceId)
+                        }
+                        aria-label={`حذف ${placedCharm.charm.name} شماره ${index + 1}`}
+                        className="flex size-9 shrink-0 items-center justify-center rounded-full text-lg text-[#95677b] transition-colors hover:bg-[#ecd5df] hover:text-[#38292e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#95677b]"
+                      >
+                        <span aria-hidden="true">×</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
+          </section>
+
+          {/* راهنمای کوتاه */}
+          <div className="mt-8 grid gap-5 px-1 sm:grid-cols-3 sm:gap-8">
+            {[
+              {
+                number: "۰۱",
+                title: "چارم‌ها را کشف کن",
+                description: "از رنگ‌ها و نشانه‌های موردعلاقه‌ات شروع کن.",
+              },
+              {
+                number: "۰۲",
+                title: "ترکیبت را بچین",
+                description: "هر چارم را در جای دلخواه دستبند قرار بده.",
+              },
+              {
+                number: "۰۳",
+                title: "به سلیقه خودت تغییر بده",
+                description: "جابه‌جا کن، حذف کن و ترکیب تازه‌ای بساز.",
+              },
+            ].map((step) => (
+              <div key={step.number} className="flex items-start gap-3">
+                <span className="pt-0.5 text-xs text-[#a16c80]">
+                  {step.number}
+                </span>
+
+                <div>
+                  <h3 className="text-xs font-medium">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-[11px] leading-6 text-[#796770]">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
- 
-          <div>
-            <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-neutral-500">
-              چارم دلخواهت را انتخاب کن
-            </h2>
-            <p className="mb-4 text-sm text-neutral-500 md:hidden">
-              چارم را انتخاب کن، سپس روی جای دلخواه دستبند بزن. برای جابه‌جایی از دکمهٔ کنار چارم استفاده کن.
-            </p>
-            <CharmPalette charms={CHARMS} selectedCharmId={selection?.type === "add" ? selection.charm.id : undefined} onSelect={handleSelectCharm} />
-          </div>
-        </div>
- 
-        <div className="mt-6 flex items-center justify-between rounded-xl bg-neutral-50 px-4 py-3">
-          <span className="text-sm text-neutral-600">
-            {placedCharms.length} چارم روی دستبند
-          </span>
-          {hasCompletePricing && (
-            <span className="text-lg font-semibold text-neutral-800">${total.toFixed(2)}</span>
-          )}
         </div>
       </div>
     </DndContext>
   );
+
 }
  

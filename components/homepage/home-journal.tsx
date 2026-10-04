@@ -10,7 +10,7 @@ type HomeJournalProps = {
 function getFeaturedImage(post: BlogPost) {
   return (
     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
-    "/images/blog-1.jpg"
+    "/images/blog-hero.png"
   );
 }
 

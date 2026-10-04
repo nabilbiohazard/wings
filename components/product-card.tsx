@@ -93,19 +93,21 @@ export function ProductCard({
     : 0;
   const inStock = product.isInStock !== false;
   const material = product.attributes?.find(
-    (attribute) => attribute.name === "جنس",
+    (attribute) => /جنس|material/i.test(attribute.name),
   )?.options[0];
+  const category = product.categories?.[0]?.name;
+  const rating = product.averageRating ?? 0;
 
   return (
     <article
       dir="rtl"
-      className="group flex h-full w-full flex-col rounded-[22px] border border-pink-200/70 bg-white p-2 transition-colors duration-300 hover:border-pink-400 focus-within:border-pink-400"
+      className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[24px] border border-[#ede3e2] bg-white p-1.5 shadow-[0_8px_28px_rgba(74,43,52,0.035)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[#d8bac3] hover:shadow-[0_20px_48px_rgba(74,43,52,0.11)] focus-within:border-[#b4778c] motion-reduce:transform-none"
     >
-      <div className="relative isolate aspect-[4/5] overflow-hidden rounded-2xl bg-[#f4f1ed]">
+      <div className="relative isolate aspect-[4/5] overflow-hidden rounded-[19px] bg-[#f7f1ef]">
         <Link
           href={href}
           aria-label={`مشاهده ${product.name}`}
-          className="relative block h-full w-full focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-black"
+          className="relative block h-full w-full focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-[#9b5870]"
         >
           {product.image ? (
             <Image
@@ -113,7 +115,7 @@ export function ProductCard({
               alt={product.name}
               fill
               sizes={sizes}
-              className={`object-cover transition-[transform,opacity] duration-700 motion-reduce:transition-none group-hover:scale-105 ${secondImage ? "group-hover:opacity-0" : ""}`}
+              className={`object-cover transition-[transform,opacity] duration-700 motion-reduce:transition-none group-hover:scale-[1.04] ${secondImage ? "group-hover:opacity-0" : ""}`}
             />
           ) : (
             <ImagePlaceholder />
@@ -124,16 +126,24 @@ export function ProductCard({
               alt=""
               fill
               sizes={sizes}
-              className="object-cover opacity-0 transition-opacity duration-700 group-hover:opacity-100 motion-reduce:transition-none"
+              className="object-cover opacity-0 transition-[transform,opacity] duration-700 group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none"
             />
           )}
         </Link>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        {(!inStock || hasDiscount) && (
+          <span
+            className={`pointer-events-none absolute top-2.5 right-2.5 rounded-full px-3 py-1.5 text-[10px] font-semibold shadow-sm sm:text-[11px] ${!inStock ? "bg-white/95 text-[#74686b]" : "bg-[#8f425f] text-white"}`}
+          >
+            {!inStock ? "ناموجود" : `${persianNumber(discount)}٪ تخفیف`}
+          </span>
+        )}
         <button
           type="button"
           onClick={() => toggleFavorite(product.id)}
           aria-pressed={saved}
           aria-label={`${saved ? "حذف از" : "افزودن به"} علاقه‌مندی‌ها: ${product.name}`}
-          className={`absolute top-2 left-2 flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${saved ? "border-[#e8c4ce] bg-[#f8e4e9] text-[#a33c58]" : "border-white/70 bg-white/90 text-[#3d302b] hover:bg-[#f8e4e9]"}`}
+          className={`absolute top-2.5 left-2.5 flex h-9 w-9 items-center justify-center rounded-full border shadow-sm backdrop-blur-sm transition-[background-color,color,transform] hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870] sm:h-10 sm:w-10 ${saved ? "border-[#e6bbc9] bg-[#fbe8ed] text-[#9b3f61]" : "border-white/80 bg-white/90 text-[#47363c] hover:bg-[#fbe8ed] hover:text-[#9b3f61]"}`}
         >
           <Icon
             name="heart"
@@ -141,64 +151,52 @@ export function ProductCard({
             className={saved ? "fill-current" : ""}
           />
         </button>
-        {(!inStock || hasDiscount) && (
-          <span
-            className={`pointer-events-none absolute right-2 bottom-2 rounded-lg px-2.5 py-1.5 text-[10px] font-medium ${!inStock ? "bg-white/95 text-black/60" : "bg-pink-300 text-pink-950"}`}
-          >
-            {!inStock ? "ناموجود" : `${persianNumber(discount)}٪ تخفیف`}
-          </span>
-        )}
       </div>
 
-      <div className="flex flex-1 flex-col px-2 pt-4 pb-2">
-        <p className="mb-2 truncate text-[10px] text-black/50">
-          {material || "وینگز گالری"}
-        </p>
-        <Link
-          href={href}
-          className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2"
-        >
-          <h3
-            className="line-clamp-2 min-h-12 text-sm leading-6 font-medium text-[#211b18] transition-colors hover:text-[#97566a]"
-            title={product.name}
-          >
-            {product.name}
-          </h3>
-        </Link>
-        <div className="mt-4 flex min-h-12 flex-wrap items-end justify-between gap-x-2 gap-y-1">
-          <div>
-            {hasDiscount && (
-              <del className="mb-1 block text-[11px] text-black/40">
-                <span className="sr-only">قیمت قبلی: </span>
-                {persianNumber(regularPrice)}
-                <span className="sr-only"> تومان</span>
-              </del>
-            )}
-            <p className="text-[15px] font-medium tabular-nums text-[#211b18]">
-              {persianNumber(hasDiscount ? salePrice : product.price)}{" "}
-              <span className="text-[10px] font-normal text-black/50">
-                تومان
-              </span>
-            </p>
-          </div>
-          {Boolean(product.averageRating && product.averageRating > 0) && (
-            <span
-              className="text-[10px] text-black/50"
-              aria-label={`امتیاز ${persianNumber(product.averageRating!)} از ۵`}
-            >
-              <span aria-hidden="true" className="ml-1 text-[#b68a49]">
-                ★
-              </span>
-              {persianNumber(product.averageRating!)}
+      <div className="flex flex-1 flex-col px-2.5 pt-4 pb-2.5 sm:px-3.5">
+        <div className="mb-2 flex min-w-0 items-center justify-between gap-2 text-[10px] text-[#9b7883] sm:text-[11px]">
+          <span className="truncate">{category || "وینگز گالری"}</span>
+          {rating > 0 && (
+            <span className="shrink-0 text-[#9d7041]" aria-label={`امتیاز ${persianNumber(rating)} از ۵`}>
+              <span aria-hidden="true">★</span> {persianNumber(rating)}
             </span>
           )}
         </div>
         <Link
           href={href}
-          aria-label={`مشاهده ${product.name}`}
-          className="mt-4 flex min-h-10 items-center justify-between gap-2 rounded-xl bg-pink-100 px-3 py-2.5 text-[11px] text-pink-950 transition-colors hover:bg-pink-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600"
+          className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870]"
         >
-          {product.hasOptions ? "انتخاب مدل" : "مشاهده محصول"}
+          <h3
+            className="line-clamp-2 min-h-12 text-[13px] leading-6 font-medium text-[#30262a] transition-colors hover:text-[#9b5870] sm:text-sm"
+            title={product.name}
+          >
+            {product.name}
+          </h3>
+        </Link>
+        <p className="mt-1 min-h-4 truncate text-[10px] text-[#ad9ca0] sm:text-[11px]">
+          {material || "انتخابی برای لحظه‌های تو"}
+        </p>
+        <div className="mt-auto flex min-h-20 flex-col justify-end border-t border-[#f1e8e8] pt-3">
+          {hasDiscount && (
+            <del className="mb-0.5 block text-[11px] text-[#aa9b9e]">
+              <span className="sr-only">قیمت قبلی: </span>
+              {persianNumber(regularPrice)}
+              <span className="sr-only"> تومان</span>
+            </del>
+          )}
+          <p className="text-[15px] font-semibold tabular-nums text-[#35262c] sm:text-base">
+            {persianNumber(hasDiscount ? salePrice : product.price)}{" "}
+            <span className="text-[10px] font-normal text-[#95858a] sm:text-[11px]">
+              تومان
+            </span>
+          </p>
+        </div>
+        <Link
+          href={href}
+          aria-label={`مشاهده ${product.name}`}
+          className="mt-2 flex min-h-10 items-center justify-between gap-1 rounded-xl bg-[#f8eef1] px-3 py-2.5 text-[11px] font-medium text-[#79465a] transition-[background-color,color] hover:bg-[#8f425f] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870] sm:px-4 sm:text-xs"
+        >
+          <span className="truncate">{product.hasOptions ? "انتخاب مدل" : "مشاهده محصول"}</span>
           <Icon name="arrow" size={15} />
         </Link>
       </div>
