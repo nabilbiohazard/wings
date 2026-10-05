@@ -3,8 +3,11 @@
 "use client";
  
 import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import Image from "next/image";
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   TouchSensor,
   pointerWithin,
@@ -14,7 +17,7 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { CharmPalette } from "./CharmPalette";
-import { Chain, VIEWBOX_HEIGHT, VIEWBOX_WIDTH, getCharmRotation, type PlacedCharm } from "./Chain";
+import { Chain, VIEWBOX_HEIGHT, VIEWBOX_WIDTH, getCharmRotation, isCharmPositionBlocked, type PlacedCharm } from "./Chain";
 import type { CharmData } from "./Charm";
 import { getClosestPointOnPath } from "@/lib/snapToPath";
  
@@ -38,6 +41,7 @@ const CHARMS: CharmData[] = [
 ];
  
 export function CharmBuilder() {
+  const [draggedCharm, setDraggedCharm] = useState<CharmData | null>(null);
   const [placedCharms, setPlacedCharms] = useState<PlacedCharm[]>([]);
   const [selection, setSelection] = useState<
     | { type: "add"; charm: CharmData }
@@ -71,6 +75,7 @@ export function CharmBuilder() {
       x: ((clientX - rect.left) / rect.width) * VIEWBOX_WIDTH,
       y: ((clientY - rect.top) / rect.height) * VIEWBOX_HEIGHT,
     });
+    if (isCharmPositionBlocked(snapped.x, snapped.y)) return false;
     const position = {
       x: snapped.x,
       y: snapped.y,
@@ -94,6 +99,7 @@ export function CharmBuilder() {
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    setDraggedCharm(null);
     lastDragEnd.current = Date.now();
     const { active } = event;
     const data = active.data.current as
@@ -164,6 +170,14 @@ export function CharmBuilder() {
           : rectIntersection(args)
       }
       onDragEnd={handleDragEnd}
+      onDragStart={({ active }) => {
+        const data = active.data.current;
+        setDraggedCharm(data?.type === "palette" ? data.charm : null);
+      }}
+      onDragCancel={() => {
+        setDraggedCharm(null);
+        lastDragEnd.current = Date.now();
+      }}
     >
       <div
         dir="rtl"
@@ -541,6 +555,16 @@ export function CharmBuilder() {
           </div>
         </div>
       </div>
+      {draggedCharm && createPortal(
+        <DragOverlay dropAnimation={null} zIndex={1000}>
+          <div className="pointer-events-none flex h-full w-full items-center justify-center rounded-xl border border-amber-200 bg-white/90 shadow-xl" aria-hidden="true">
+            <div className="relative h-14 w-14">
+              <Image src={draggedCharm.image} alt="" fill unoptimized className="object-contain" sizes="56px" />
+            </div>
+          </div>
+        </DragOverlay>,
+        document.body,
+      )}
     </DndContext>
   );
 

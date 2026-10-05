@@ -24,22 +24,14 @@ export function PaletteCharm({
   selected: boolean;
   onSelect: (charm: CharmData) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${charm.id}`,
     data: { type: "palette" as const, charm },
   });
  
-  const style = transform
-    ? {
-        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-        zIndex: 50,
-      }
-    : undefined;
- 
   return (
     <div
       ref={setNodeRef}
-      style={style}
       className={`flex flex-col items-center gap-1 rounded-xl border bg-white p-3 shadow-sm transition-shadow hover:shadow-md ${
         selected ? "border-amber-500 ring-2 ring-amber-200" : "border-neutral-200"
       } ${

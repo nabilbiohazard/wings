@@ -20,6 +20,26 @@ export const CHAIN_CENTER_Y = 305;
 const RADIUS_X = 227;
 const RADIUS_Y = 211;
 
+// Editable blocked arc, in degrees clockwise from the top:
+// 0 = top, 90 = right, 180 = bottom, 270 = left.
+// Example: block from 330 degrees (upper left) to 30 (upper right).
+export const BLOCKED_ARC_START_DEG = 310;
+export const BLOCKED_ARC_END_DEG = 50;
+
+export function isCharmPositionBlocked(x: number, y: number): boolean {
+  const normalize = (angle: number) => ((angle % 360) + 360) % 360;
+  const angle = normalize(
+    (Math.atan2((x - CHAIN_CENTER_X) / RADIUS_X, -(y - CHAIN_CENTER_Y) / RADIUS_Y) * 180) / Math.PI,
+  );
+  const start = normalize(BLOCKED_ARC_START_DEG);
+  const end = normalize(BLOCKED_ARC_END_DEG);
+  // Equal endpoints disable the blocked arc.
+  if (start === end) return false;
+  return start < end
+    ? angle >= start && angle <= end
+    : angle >= start || angle <= end;
+}
+
 export const CHAIN_PATH_D = `M ${CHAIN_CENTER_X} ${CHAIN_CENTER_Y - RADIUS_Y} A ${RADIUS_X} ${RADIUS_Y} 0 1 1 ${
   CHAIN_CENTER_X - 0.01
 } ${CHAIN_CENTER_Y - RADIUS_Y} Z`;

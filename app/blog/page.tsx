@@ -1,35 +1,81 @@
-import Image from "next/image";
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Journal } from "@/components/blog/journal";
 import { getPosts } from "@/lib/get-posts";
 
 export default async function BlogPage() {
-  const { posts, failed } = await getPosts().then((posts) => ({ posts, failed: false })).catch((error: unknown) => {
-    console.error("Wings journal could not be loaded:", error);
-    return { posts: [], failed: true };
-  });
+  const { posts, failed } = await getPosts()
+    .then((posts) => ({ posts, failed: false }))
+    .catch((error: unknown) => {
+      console.error("Wings journal could not be loaded:", error);
+      return { posts: [], failed: true };
+    });
 
   return (
-    <main className="overflow-hidden bg-[#faf7f4] text-[#30252a]">
-      <div aria-hidden="true" className="relative h-[140px] overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent" />
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[90px]" />
-      </div>
+    <main
+      dir="rtl"
+      className="min-h-screen bg-[#faf7f4] text-[#30252a]"
+    >
+      {/* اگر هدر سایت ثابت نیست، این فاصله را حذف کن. */}
+      <div aria-hidden="true" className="h-[140px] bg-[#171315]" />
 
       
 
       {posts.length > 0 ? (
         <Journal posts={posts} />
       ) : (
-        <section id="journal-posts" className="mx-auto max-w-[1000px] px-5 py-24 text-center sm:px-8" dir="rtl">
-          <h2 className="text-3xl font-medium sm:text-4xl">{failed ? "مجله فعلاً در دسترس نیست." : "داستان تازه‌ای به‌زودی اینجا می‌نشیند."}</h2>
-          <p className="mt-5 text-sm leading-8 text-[#817176]">{failed ? "لطفاً کمی بعد دوباره سر بزنید." : "تا آن زمان، می‌توانی کالکشن‌های وینگز را ببینی."}</p>
-          <Link href="/collections" className="mt-8 inline-flex rounded-full bg-[#49313b] px-7 py-3 text-sm text-white hover:bg-[#945e73]">دیدن کالکشن‌ها</Link>
+        <section className="mx-auto max-w-2xl px-5 py-24 text-center">
+          <p className="text-xs text-[#945e73]">مجله وینگز</p>
+          <h2 className="mt-4 text-2xl font-medium leading-relaxed sm:text-3xl">
+            {failed
+              ? "مجله فعلاً در دسترس نیست."
+              : "اولین داستان، به‌زودی اینجاست."}
+          </h2>
+          <p className="mt-4 text-sm leading-8 text-[#75676c]">
+            {failed
+              ? "لطفاً کمی بعد دوباره سر بزن."
+              : "تا آن زمان، انتخاب‌های وینگز را کشف کن."}
+          </p>
+          <Link
+            href="/collections"
+            className="mt-8 inline-flex min-h-12 items-center gap-5 rounded-md bg-[#49313b] px-6 text-sm text-white transition-colors hover:bg-[#704658] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#49313b]"
+          >
+            دیدن کالکشن‌ها <span aria-hidden="true">←</span>
+          </Link>
         </section>
       )}
 
-      <section className="px-5 py-20 text-center sm:px-8 sm:py-28" aria-labelledby="journal-cta-title" dir="rtl">
-        <div className="mx-auto max-w-2xl"><p className="text-[11px] tracking-[0.25em] text-[#a06b7d]" dir="ltr">FROM INSPIRATION TO YOU</p><h2 id="journal-cta-title" className="mt-5 text-4xl leading-[1.4] font-medium sm:text-5xl">ایده‌ات را به انتخابی واقعی تبدیل کن.</h2><p className="mt-5 text-sm leading-8 text-[#817176]">از میان قطعه‌های وینگز انتخاب کن یا دستبند خودت را با چارم‌های دلخواهت بساز.</p><div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/shop" className="inline-flex min-h-12 items-center rounded-full bg-[#49313b] px-7 py-3 text-sm text-white hover:bg-[#945e73]">دیدن محصولات</Link><Link href="/custom-design" className="inline-flex min-h-12 items-center rounded-full border border-[#bb9ba4] px-7 py-3 text-sm text-[#755362] hover:bg-[#f1e3e7]">خودت بساز</Link></div></div>
+      <section className="border-t border-[#ddcbd0] bg-[#f1e3e7]">
+        <div className="mx-auto grid max-w-[1320px] items-center gap-8 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20 lg:px-12">
+          <div>
+            <p className="text-xs text-[#805163]">از الهام تا انتخاب</p>
+            <h2 className="mt-4 text-3xl font-medium leading-[1.6] sm:text-4xl">
+              حالا نوبت
+              <br className="hidden sm:block" />
+              <span className="text-[#945e73]"> داستان توست.</span>
+            </h2>
+          </div>
+
+          <div>
+            <p className="max-w-md text-sm leading-9 text-[#6e5962]">
+              قطعه‌ای انتخاب کن که به استایلت معنا بدهد، یا دستبندت را
+              با چارم‌های دلخواهت بساز.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-6">
+              <Link
+                href="/shop"
+                className="inline-flex min-h-12 items-center gap-6 rounded-md bg-[#49313b] px-6 text-sm text-white transition-colors hover:bg-[#704658] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#49313b]"
+              >
+                دیدن محصولات <span aria-hidden="true">←</span>
+              </Link>
+              <Link
+                href="/custom-design"
+                className="inline-flex min-h-11 items-center border-b border-[#945e73] text-sm text-[#49313b] transition-colors hover:text-[#945e73]"
+              >
+                دستبندت را بساز
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
