@@ -1,5 +1,7 @@
 "use client";
 
+import { HeaderBackdrop } from "@/components/header-backdrop";
+
 import Image from "next/image";
 import Link from "next/link";
 import { useShop } from "@/components/shop-provider";
@@ -48,14 +50,10 @@ export default function CollectionsPage() {
 
   return (
     <main className="overflow-hidden bg-[#faf7f4] text-[#30252a]">
-      <div className="relative h-[140px] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent" />
-
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[90px]" />
-      </div>
+      <HeaderBackdrop />
       <section
         id="explore-collections"
-        className="mx-auto max-w-[1500px] px-5 py-20 sm:px-8 sm:py-28 lg:py-36"
+        className="mx-auto site-container  py-20  sm:py-28 lg:py-36"
         aria-labelledby="explore-title"
       >
         <div
@@ -137,7 +135,7 @@ export default function CollectionsPage() {
         className="bg-[#efe4df] px-5 py-20 sm:px-8 sm:py-28"
         aria-labelledby="signature-title"
       >
-        <div className="mx-auto grid max-w-[1400px] items-center gap-10 lg:grid-cols-2 lg:gap-20">
+        <div className="mx-auto grid site-content items-center gap-10 lg:grid-cols-2 lg:gap-20">
           <div className="relative aspect-[4/3] overflow-hidden rounded-[28px] bg-[#ead2be] lg:aspect-[4/5]">
             <Image
               src="/images/custom-hero.png"

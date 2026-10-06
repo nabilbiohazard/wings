@@ -5,7 +5,7 @@ import { Reveal } from "../reveal";
 export function FeaturedCollection() {
   return (
     <section className="w-full bg-[#faf8f5] py-16 sm:py-20 lg:py-28">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         <Reveal>
           <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-20">
             {/* IMAGE */}

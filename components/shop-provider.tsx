@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useSavedDesigns, removeSavedDesign } from "@/lib/saved-designs";
+import { Wishlist } from "./wishlist";
 import { categories, persianNumber } from "@/lib/products";
 import type { Category, Product } from "@/lib/types";
 import { Icon } from "./icon";
@@ -87,6 +89,8 @@ function MiniProduct({
 }
 
 export function ShopProvider({ children }: { children: React.ReactNode }) {
+  const savedDesigns = useSavedDesigns();
+  const [savedDesignError, setSavedDesignError] = useState("");
   const [category, setCategory] = useState<Category>("all");
 
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -261,8 +265,12 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
       <dialog
         ref={dialogRef}
-        className={`fixed inset-0 m-auto w-[90%] max-w-xl rounded-3xl bg-white p-6 text-black shadow-2xl backdrop:bg-black/40 ${
-          panel === "product" ? "max-w-4xl" : ""
+        className={`fixed inset-0 m-auto w-[90%] max-h-[90dvh] overflow-y-auto rounded-3xl bg-white p-4 sm:p-6 text-black shadow-2xl backdrop:bg-black/40 ${
+          panel === "wishlist"
+            ? "max-w-[900px]"
+            : panel === "product"
+              ? "max-w-4xl"
+              : "max-w-xl"
         } `}
         aria-labelledby="dialog-title"
         onCancel={() => setPanel(null)}
@@ -331,43 +339,25 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        {panel === "wishlist" &&
-          (favorites.length ? (
-            <div>
-              {products
-                .filter((product) => favorites.includes(product.id))
-                .map((product) => (
-                  <MiniProduct key={product.id} product={product}>
-                    <button
-                      onClick={() => toggleFavorite(product.id)}
-                      className="mt-2 text-xs text-black/60 transition hover:text-black"
-                    >
-                      حذف از علاقه‌مندی‌ها
-                    </button>
-                  </MiniProduct>
-                ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-5 py-12 text-center">
-              <Icon name="heart" size={42} />
-
-              <h3 className="text-lg font-medium">
-                جای دوست‌داشتنی‌هایت اینجاست
-              </h3>
-
-              <p className="text-sm text-black/60">
-                قلب کنار هر محصول را لمس کن تا اینجا پیدایش کنی.
-              </p>
-
-              <button
-                className="rounded-full bg-black px-7 py-3 text-sm text-white"
-                onClick={() => setPanel(null)}
-              >
-                ادامه گشت‌وگذار
-                <Icon name="arrow" size={17} />
-              </button>
-            </div>
-          ))}
+        {panel === "wishlist" && (
+          <Wishlist
+            products={products}
+            favorites={favorites}
+            designs={savedDesigns}
+            loading={productsLoading}
+            failed={productsError}
+            error={savedDesignError}
+            onRemoveProduct={toggleFavorite}
+            onRemoveDesign={(id) => {
+              setSavedDesignError(
+                removeSavedDesign(id)
+                  ? ""
+                  : "حذف طرح انجام نشد؛ دوباره تلاش کن.",
+              );
+            }}
+            onClose={() => setPanel(null)}
+          />
+        )}
 
         {panel === "cart" &&
           (cart.length ? (

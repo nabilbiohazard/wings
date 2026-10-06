@@ -21,7 +21,7 @@ const details = [
 export function WingsManifesto() {
   return (
     <section className="w-full border-y border-black/[0.07] bg-[#fafafa] py-20 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         {/* HEADER */}
 
         <div className="grid gap-12 lg:grid-cols-2 lg:items-end">

@@ -1,15 +1,13 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
-import type { CharmData } from "./Charm";
-import { PaletteCharm } from "./Charm";
+import { useId, useMemo, useState } from "react";
+import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { PaletteCharm, type CharmData } from "./Charm";
+import styles from "./builder-studio.module.css";
 
-const PAGE_SIZE = 18;
-const ALL_CATEGORIES = "همه";
-const collator = new Intl.Collator("fa", { numeric: true, sensitivity: "base" });
+const PAGE_SIZE = 12;
 
-function normalizeSearch(value: string) {
+function normalize(value: string) {
   return value
     .normalize("NFKC")
     .toLowerCase()
@@ -20,95 +18,108 @@ function normalizeSearch(value: string) {
     .trim();
 }
 
-function persianDigits(value: number) {
-  return String(value).replace(/\d/g, (digit) => "۰۱۲۳۴۵۶۷۸۹"[Number(digit)]);
+interface CharmPaletteProps {
+  charms: CharmData[];
+  selectedCharmId?: string;
+  counts: Record<string, number>;
+  onSelect: (charm: CharmData) => void;
+  onAdd: (charm: CharmData) => void;
 }
 
 export function CharmPalette({
   charms,
   selectedCharmId,
+  counts,
   onSelect,
-}: {
-  charms: CharmData[];
-  selectedCharmId?: string;
-  onSelect: (charm: CharmData) => void;
-}) {
+  onAdd,
+}: CharmPaletteProps) {
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(ALL_CATEGORIES);
+  const [category, setCategory] = useState("همه");
   const [sort, setSort] = useState("default");
   const [page, setPage] = useState(1);
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const searchId = useId();
 
-  const categories = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const charm of charms) {
-      const name = charm.category ?? "سایر";
-      counts.set(name, (counts.get(name) ?? 0) + 1);
-    }
-    return Array.from(counts, ([name, count]) => ({ name, count }));
-  }, [charms]);
+  const categories = useMemo(
+    () => ["همه", ...new Set(charms.map((item) => item.category ?? "سایر"))],
+    [charms],
+  );
 
-  const filteredCharms = useMemo(() => {
-    const terms = normalizeSearch(search).split(/\s+/).filter(Boolean);
-    const matches = charms.filter((charm) => {
-      if (category !== ALL_CATEGORIES && (charm.category ?? "سایر") !== category) {
+  const filtered = useMemo(() => {
+    const terms = normalize(search).split(" ").filter(Boolean);
+    const result = charms.filter((charm) => {
+      if (
+        category !== "همه" &&
+        (charm.category ?? "سایر") !== category
+      ) {
         return false;
       }
-      const searchable = normalizeSearch(
-        [charm.name, charm.id.replaceAll("-", " "), charm.category, ...(charm.keywords ?? [])]
+
+      const text = normalize(
+        [
+          charm.name,
+          charm.id.replaceAll("-", " "),
+          charm.category,
+          ...(charm.keywords ?? []),
+        ]
           .filter(Boolean)
           .join(" "),
       );
-      return terms.every((term) => searchable.includes(term));
+
+      return terms.every((term) => text.includes(term));
     });
 
     if (sort !== "default") {
-      matches.sort((a, b) =>
-        sort === "name-asc"
-          ? collator.compare(a.name, b.name)
-          : collator.compare(b.name, a.name),
+      result.sort((a, b) =>
+        sort === "asc"
+          ? a.name.localeCompare(b.name, "fa", { numeric: true })
+          : b.name.localeCompare(a.name, "fa", { numeric: true }),
       );
     }
-    return matches;
+
+    return result;
   }, [charms, search, category, sort]);
 
-  const pageCount = Math.max(1, Math.ceil(filteredCharms.length / PAGE_SIZE));
+  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
-  const visibleCharms = filteredCharms.slice(
+  const visible = filtered.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
   );
 
   function resetFilters() {
     setSearch("");
-    setCategory(ALL_CATEGORIES);
+    setCategory("همه");
     setSort("default");
     setPage(1);
+
   }
 
-  function goToPage(nextPage: number) {
-    setPage(nextPage);
-    resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  function changePage(next: number) {
+    setPage(Math.max(1, Math.min(next, pageCount)));
+
   }
 
   return (
-    <div dir="rtl" className="space-y-5">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm">
-        <label htmlFor="charm-search" className="mb-2 block text-sm font-medium text-neutral-700">
-          جست‌وجوی چارم
-        </label>
-        <div className="relative">
-          <Search aria-hidden="true" size={18} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400" />
+    <div className={styles.palette}>
+      <div className={styles.paletteFilters}>
+        <div className={styles.paletteTitle}>
+          <h2>کدام چارم شبیه توست؟</h2>
+          <p>برای کشیدن در موبایل، تصویر را کمی نگه دار و حرکت بده.</p>
+        </div>
+
+        <label className={styles.searchBox} htmlFor={searchId}>
+          <Search size={18} aria-hidden="true" />
           <input
-            id="charm-search"
+            id={searchId}
             type="search"
             value={search}
             onChange={(event) => {
               setSearch(event.target.value);
               setPage(1);
+
             }}
-            placeholder="نام یا موضوع چارم را بنویسید..."
-            className="w-full rounded-xl border border-neutral-200 bg-neutral-50 py-2.5 pe-10 ps-10 text-sm text-neutral-800 outline-none transition focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-100"
+            placeholder="جست‌وجوی نام یا موضوع..."
+            aria-label="جست‌وجوی چارم"
           />
           {search && (
             <button
@@ -116,118 +127,103 @@ export function CharmPalette({
               onClick={() => {
                 setSearch("");
                 setPage(1);
+
               }}
               aria-label="پاک کردن جست‌وجو"
-              className="absolute left-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-neutral-500 hover:bg-neutral-200"
             >
-              <X size={15} />
+              <X size={17} />
             </button>
           )}
-        </div>
+        </label>
 
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="text-xs font-medium text-neutral-500">دسته‌بندی</span>
-          {(search || category !== ALL_CATEGORIES || sort !== "default") && (
-            <button type="button" onClick={resetFilters} className="text-xs font-medium text-amber-700 hover:underline">
-              پاک کردن فیلترها
-            </button>
-          )}
-        </div>
-        <div role="group" className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-1" aria-label="دسته‌بندی چارم‌ها">
-          {[{ name: ALL_CATEGORIES, count: charms.length }, ...categories].map(({ name, count }) => (
+        <div
+          className={styles.categories}
+          role="group"
+          aria-label="دسته‌بندی چارم‌ها"
+        >
+          {categories.map((name) => (
             <button
               key={name}
               type="button"
               aria-pressed={category === name}
+              className={category === name ? styles.categoryActive : ""}
               onClick={() => {
                 setCategory(name);
                 setPage(1);
+
               }}
-              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition ${
-                category === name
-                  ? "border-neutral-800 bg-neutral-800 text-white"
-                  : "border-neutral-200 bg-white text-neutral-600 hover:border-amber-400 hover:text-neutral-900"
-              }`}
             >
-              {name} <span className={category === name ? "text-white/70" : "text-neutral-400"}>{count}</span>
+              {name}
             </button>
           ))}
         </div>
-      </div>
 
-      <div ref={resultsRef} className="flex scroll-mt-6 items-center justify-between gap-3">
-        <p role="status" className="text-sm text-neutral-600">
-          {persianDigits(filteredCharms.length)} چارم پیدا شد
-        </p>
-        <label className="flex items-center gap-2 text-xs text-neutral-500">
-          مرتب‌سازی
+        <div className={styles.filterMeta}>
+          <span>{filtered.length.toLocaleString("fa-IR")} چارم</span>
           <select
             value={sort}
+            aria-label="مرتب‌سازی چارم‌ها"
             onChange={(event) => {
               setSort(event.target.value);
               setPage(1);
+
             }}
-            className="rounded-lg border border-neutral-200 bg-white px-2 py-1.5 text-xs text-neutral-700 outline-none focus:border-amber-500"
           >
-            <option value="default">پیش‌فرض</option>
-            <option value="name-asc">نام: الف تا ی</option>
-            <option value="name-desc">نام: ی تا الف</option>
+            <option value="default">ترتیب پیش‌فرض</option>
+            <option value="asc">نام: الف تا ی</option>
+            <option value="desc">نام: ی تا الف</option>
           </select>
-        </label>
+        </div>
       </div>
 
-      {visibleCharms.length ? (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-3">
-          {visibleCharms.map((charm) => (
-            <PaletteCharm key={charm.id} charm={charm} selected={selectedCharmId === charm.id} onSelect={onSelect} />
+      <div className={styles.paletteResults}>
+        <div className={styles.charmGrid}>
+          {visible.map((charm) => (
+            <PaletteCharm
+              key={charm.id}
+              charm={charm}
+              selected={selectedCharmId === charm.id}
+              count={counts[charm.id] ?? 0}
+              onSelect={onSelect}
+              onAdd={onAdd}
+            />
           ))}
         </div>
-      ) : (
-        <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 px-5 py-10 text-center">
-          <p className="text-sm font-medium text-neutral-700">چارمی با این جست‌وجو پیدا نشد.</p>
-          <p className="mt-1 text-xs text-neutral-500">نام دیگری بنویسید یا فیلترها را پاک کنید.</p>
-          <button type="button" onClick={resetFilters} className="mt-4 rounded-full border border-neutral-300 bg-white px-4 py-2 text-xs text-neutral-700 hover:border-amber-400">
-            نمایش همهٔ چارم‌ها
-          </button>
-        </div>
-      )}
 
-      {pageCount > 1 && (
-        <nav aria-label="صفحه‌های چارم‌ها" className="flex items-center justify-between gap-3 border-t border-neutral-200 pt-4">
-          <button
-            type="button"
-            disabled={currentPage === 1}
-            onClick={() => goToPage(currentPage - 1)}
-            className="flex items-center gap-1 rounded-full border border-neutral-200 px-3 py-2 text-xs text-neutral-700 hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronRight size={15} /> قبلی
-          </button>
-          <label className="flex items-center gap-1 text-xs text-neutral-500">
-            صفحهٔ
-            <select
-              aria-label="انتخاب صفحهٔ چارم‌ها"
-              value={currentPage}
-              onChange={(event) => goToPage(Number(event.target.value))}
-              className="rounded-lg border border-neutral-200 bg-white px-1 py-1.5 text-xs text-neutral-700"
+        {!visible.length && (
+          <div className={styles.noResults}>
+            <p>چارمی با این مشخصات پیدا نشد.</p>
+            <button type="button" onClick={resetFilters}>
+              نمایش همهٔ چارم‌ها
+            </button>
+          </div>
+        )}
+
+        {pageCount > 1 && (
+          <nav className={styles.pagination} aria-label="صفحه‌های چارم‌ها">
+            <button
+              type="button"
+              disabled={currentPage === 1}
+              onClick={() => changePage(currentPage - 1)}
+              aria-label="صفحهٔ قبلی"
             >
-              {Array.from({ length: pageCount }, (_, index) => (
-                <option key={index + 1} value={index + 1}>
-                  {persianDigits(index + 1)}
-                </option>
-              ))}
-            </select>
-            از {persianDigits(pageCount)}
-          </label>
-          <button
-            type="button"
-            disabled={currentPage === pageCount}
-            onClick={() => goToPage(currentPage + 1)}
-            className="flex items-center gap-1 rounded-full border border-neutral-200 px-3 py-2 text-xs text-neutral-700 hover:border-neutral-400 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            بعدی <ChevronLeft size={15} />
-          </button>
-        </nav>
-      )}
+              <ChevronRight size={18} />
+            </button>
+            <span>
+              {currentPage.toLocaleString("fa-IR")} از{" "}
+              {pageCount.toLocaleString("fa-IR")}
+            </span>
+            <button
+              type="button"
+              disabled={currentPage === pageCount}
+              onClick={() => changePage(currentPage + 1)}
+              aria-label="صفحهٔ بعدی"
+            >
+              <ChevronLeft size={18} />
+            </button>
+          </nav>
+        )}
+      </div>
     </div>
   );
 }

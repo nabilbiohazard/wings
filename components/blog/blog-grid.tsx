@@ -48,7 +48,7 @@ export function BlogGrid({ posts }: BlogGridProps) {
 
   return (
     <section className="w-full py-16 sm:py-20 lg:py-28">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         <Reveal>
           <div className="flex items-end justify-between gap-5">
             <h2 className="font-serif text-4xl sm:text-5xl">

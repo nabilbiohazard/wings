@@ -1,19 +1,28 @@
-import { CharmBuilder } from "@/components/custom-design/CharmBuilder";
-import { CustomHero } from "@/components/custom-design/custom-hero";
+import { HeaderBackdrop } from "@/components/header-backdrop";
+import { DesignStudio } from "@/components/custom-design/DesignStudio";
+import { getProducts } from "@/lib/get-products";
+import { toDesignProduct } from "@/lib/design-products";
 export const metadata = {
   title: "Charm Builder",
 };
- 
-export default function CharmBuilderPage() {
+
+export default async function CharmBuilderPage({ searchParams }: {
+  searchParams: Promise<{ product?: string | string[]; design?: string | string[] }>;
+}) {
+  const query = await searchParams;
+  const requestedId = typeof query.product === "string" ? Number(query.product) : undefined;
+  const { products, failed } = await getProducts()
+    .then((items) => ({ products: items.filter((product) => product.isInStock !== false).map(toDesignProduct), failed: false }))
+    .catch(() => {
+      console.error("Design catalogue could not be loaded.");
+      return { products: [], failed: true };
+    });
+  const initialProduct = products.find((product) => product.id === requestedId) ?? null;
   return (
     <main className="min-h-screen bg-white">
-       <div className="relative h-[140px] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent" />
-
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[90px]" />
-      </div>
-      <CharmBuilder />
+       <HeaderBackdrop />
+      <DesignStudio products={products} initialProduct={initialProduct} initialDesignId={typeof query.design === "string" ? query.design : undefined} catalogueFailed={failed} requestedUnavailable={Boolean(query.product && !initialProduct && !failed)} />
     </main>
   );
 }
- 
+

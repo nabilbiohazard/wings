@@ -1,3 +1,4 @@
+import { HeaderBackdrop } from "@/components/header-backdrop";
 ﻿import Link from "next/link";
 import { Journal } from "@/components/blog/journal";
 import { getPosts } from "@/lib/get-posts";
@@ -16,7 +17,7 @@ export default async function BlogPage() {
       className="min-h-screen bg-[#faf7f4] text-[#30252a]"
     >
       {/* اگر هدر سایت ثابت نیست، این فاصله را حذف کن. */}
-      <div aria-hidden="true" className="h-[140px] bg-[#171315]" />
+      <HeaderBackdrop />
 
       
 
@@ -45,7 +46,7 @@ export default async function BlogPage() {
       )}
 
       <section className="border-t border-[#ddcbd0] bg-[#f1e3e7]">
-        <div className="mx-auto grid max-w-[1320px] items-center gap-8 px-5 py-14 sm:px-8 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20 lg:px-12">
+        <div className="mx-auto grid site-container items-center gap-8  py-14  sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20 ">
           <div>
             <p className="text-xs text-[#805163]">از الهام تا انتخاب</p>
             <h2 className="mt-4 text-3xl font-medium leading-[1.6] sm:text-4xl">

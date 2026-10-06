@@ -1,0 +1,21 @@
+@media (width < 640px) {
+  .card[data-mobile-horizontal] {
+    flex-direction: row;
+  }
+
+  .card[data-mobile-horizontal] .image {
+    width: 40%;
+    flex-shrink: 0;
+    aspect-ratio: auto;
+    min-height: 240px;
+  }
+
+  .card[data-mobile-horizontal] .details {
+    padding-top: 10px;
+  }
+
+  .card[data-mobile-horizontal] .price {
+    min-height: 60px;
+    padding-top: 8px;
+  }
+}

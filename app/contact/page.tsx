@@ -1,3 +1,4 @@
+import { HeaderBackdrop } from "@/components/header-backdrop";
 ﻿import { ContactInfo } from "@/components/contact/contact-info";
 import { ContactForm } from "@/components/contact/contact-form";
 import { ContactFaq } from "@/components/contact/contact-faq";
@@ -5,9 +6,9 @@ import { ContactFaq } from "@/components/contact/contact-faq";
 export default function ContactPage() {
   return (
     <main className="min-h-screen bg-[#f8f5f1] text-[#32262a]">
-      <div aria-hidden="true" className="h-[140px] bg-[#171315]" />
+      <HeaderBackdrop />
 
-      <section className="mx-auto max-w-[1440px] px-5 pt-14 pb-16 sm:px-8 sm:pt-20 lg:pt-24 lg:pb-24" aria-labelledby="contact-title">
+      <section className="mx-auto site-container  pt-14 pb-16  sm:pt-20 lg:pt-24 lg:pb-24" aria-labelledby="contact-title">
         <div className="grid gap-7 border-b border-[#d9ccc8] pb-10 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-end lg:gap-14 lg:pb-14" dir="rtl">
           <div>
             <p className="flex items-center gap-3 text-[11px] tracking-[0.16em] text-[#a56f7b]"><span className="h-px w-8 bg-[#bf929b]" aria-hidden="true" />راه ارتباطی وینگز <span dir="ltr">/ ۰۱</span></p>
@@ -19,7 +20,7 @@ export default function ContactPage() {
           <p className="hidden border-r border-[#cdb7b9] pr-5 font-['Cormorant_Garamond'] text-4xl leading-none italic text-[#ae7d89] lg:block" dir="ltr">A little note<br />goes a long way.</p>
         </div>
 
-        <div className="mt-10 grid items-start gap-8 lg:mt-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,1.1fr)] lg:gap-10 xl:gap-14" dir="rtl">
+        <div className="mt-10 grid items-stretch gap-8 lg:mt-14 lg:grid-cols-[minmax(0,0.9fr)_minmax(320px,1.1fr)] lg:gap-10 xl:gap-14" dir="rtl">
           <ContactInfo />
           <ContactForm />
         </div>
@@ -28,7 +29,7 @@ export default function ContactPage() {
       <ContactFaq />
 
       <div className="border-t border-[#d9ccc8] px-5 py-8 sm:px-8" aria-hidden="true">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 text-[10px] tracking-[0.2em] text-[#a88b91]" dir="ltr"><span>WINGS GALLERY</span><span>MADE OF LITTLE MOMENTS ✦</span></div>
+        <div className="mx-auto flex site-content items-center justify-between gap-4 text-[10px] tracking-[0.2em] text-[#a88b91]" dir="ltr"><span>WINGS GALLERY</span><span>MADE OF LITTLE MOMENTS ✦</span></div>
       </div>
     </main>
   );

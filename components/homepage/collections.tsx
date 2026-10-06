@@ -139,7 +139,7 @@ export function Collections() {
       className="w-full bg-[#f7f4f0] py-20 sm:py-24 lg:py-32"
       aria-labelledby="collections-heading"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto w-full site-container  ">
         <div className="mb-12 text-center sm:mb-16 lg:mb-20" dir="rtl">
           <div className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-white/70 px-4 py-2 shadow-[0_8px_30px_rgba(34,25,20,0.04)]">
             <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />

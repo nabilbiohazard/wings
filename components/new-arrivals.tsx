@@ -40,7 +40,7 @@ export function NewArrivals() {
       className="w-full py-16 sm:py-20 lg:py-24"
       aria-labelledby="arrivals-heading"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-8">
+      <div className="mx-auto w-full site-container ">
         <Reveal>
           <div className="mb-10 flex flex-col gap-6 text-right lg:flex-row lg:items-end lg:justify-between">
             <div>

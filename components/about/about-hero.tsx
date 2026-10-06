@@ -21,7 +21,7 @@ export function AboutHero() {
 
       {/* CONTENT */}
 
-      <div className="relative z-10 mx-auto w-full max-w-[1600px] px-6 sm:px-8">
+      <div className="relative z-10 mx-auto w-full site-container  ">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs tracking-[6px] text-white/70">WINGS GALLERY</p>

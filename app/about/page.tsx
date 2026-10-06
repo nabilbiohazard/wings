@@ -1,3 +1,4 @@
+import { HeaderBackdrop } from "@/components/header-backdrop";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -84,7 +85,7 @@ function Eyebrow({
 }
 
 const container =
-  "mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12";
+  "mx-auto w-full site-container   ";
 
 const buttonFocus =
   "focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#936577]";
@@ -96,10 +97,7 @@ export default function AboutPage() {
       className="overflow-hidden bg-[#faf7f2] text-[#38292e]"
     >
       {/* فضای پشت هدر */}
-      <div
-        aria-hidden="true"
-        className=" bg-[#30252a] h-[140px]"
-      />
+      <HeaderBackdrop />
 
       {/* معرفی */}
       <section
@@ -526,9 +524,9 @@ export default function AboutPage() {
       {/* دعوت پایانی */}
       <section
         aria-labelledby="next-story-title"
-        className="px-5 pb-12 sm:px-8 sm:pb-16 lg:px-12"
+        className="px-5 pb-12 sm:px-8 sm:pb-16"
       >
-        <div className="relative isolate mx-auto max-w-[1344px] overflow-hidden rounded-2xl bg-[#38292e] px-6 py-16 text-center text-white sm:px-12 sm:py-24">
+        <div className="relative isolate mx-auto site-content overflow-hidden rounded-2xl bg-[#38292e] px-6 py-16 text-center text-white sm:px-12 sm:py-24">
           <Image
             src="/images/hero-butterfly.png"
             alt=""

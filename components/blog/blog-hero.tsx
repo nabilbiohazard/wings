@@ -20,7 +20,7 @@ export function BlogHero() {
 
       <div className="absolute inset-0 bg-black/55" />
 
-      <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] items-center justify-center px-5 text-center sm:px-8">
+      <div className="relative z-10 mx-auto flex min-h-[92vh] site-container items-center justify-center  text-center ">
         <Reveal>
           <div className="max-w-3xl">
             <p className="text-xs tracking-[6px] text-white/60">WINGS JOURNAL</p>

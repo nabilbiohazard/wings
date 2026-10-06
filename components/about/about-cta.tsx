@@ -21,7 +21,7 @@ export function AboutCTA() {
 
       <div className="absolute inset-0 bg-black/60" />
 
-      <div className="relative z-10 mx-auto max-w-[1600px] px-5 text-center sm:px-8">
+      <div className="relative z-10 mx-auto site-container  text-center ">
         <Reveal>
           <div className="mx-auto max-w-3xl">
             <p className="text-xs tracking-[6px] text-white/60">YOUR STORY</p>

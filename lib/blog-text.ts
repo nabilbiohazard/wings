@@ -62,3 +62,18 @@ export function postMedia(post: BlogPost) {
     return undefined;
   }
 }
+
+export function postImageSources(post: BlogPost): string[] {
+  const bodyImage = post.content?.rendered.match(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/i)?.[1];
+  return [...new Set([
+    post._embedded?.["wp:featuredmedia"]?.[0]?.source_url,
+    bodyImage,
+  ].filter((src): src is string => Boolean(src)).map(decodeHTML))].filter((src) => {
+    try {
+      const url = new URL(src);
+      return url.protocol === "https:" || url.protocol === "http:";
+    } catch {
+      return src.startsWith("/") && !src.startsWith("//");
+    }
+  });
+}

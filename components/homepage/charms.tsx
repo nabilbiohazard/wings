@@ -152,7 +152,7 @@ export function Charms() {
       aria-labelledby="charms-heading"
       className="scroll-mt-28 bg-[#fbf9f6] py-16 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-[1600px] px-4 sm:px-8">
+      <div className="mx-auto site-container  ">
         <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
           <div>
             <p

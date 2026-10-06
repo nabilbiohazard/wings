@@ -43,7 +43,7 @@ const collections = [
 export function CollectionsGrid() {
   return (
     <section className="w-full py-16 sm:py-20 lg:py-28">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         <Reveal>
           <div className="text-center">
             <p className="text-xs tracking-[5px] text-black/40">ALL COLLECTIONS</p>

@@ -1,14 +1,13 @@
-
-
 "use client";
- 
+
 import Image from "next/image";
 import { useDraggable } from "@dnd-kit/core";
 import { Move, X } from "lucide-react";
+import type { CSSProperties } from "react";
 import type { CharmData } from "./Charm";
+import styles from "./builder-studio.module.css";
 
-// The attachment ring sits at a different point inside each transparent image.
-const ATTACHMENT_POINTS: Record<string, { x: number; y: number }> = {
+export const ATTACHMENT_POINTS: Record<string, { x: number; y: number }> = {
   clover: { x: 57, y: 30 },
   "pink-dress": { x: 51, y: 32 },
   cocktail: { x: 47, y: 33 },
@@ -20,79 +19,106 @@ const ATTACHMENT_POINTS: Record<string, { x: number; y: number }> = {
   shrimp: { x: 49, y: 29 },
   fashion: { x: 52, y: 30 },
 };
- 
+
 interface PlacedCharmItemProps {
   instanceId: string;
   charm: CharmData;
-  /** CSS left/top position, e.g. "42.3%" */
   x: string;
   y: string;
   rotation: number;
   onRemove: (instanceId: string) => void;
   onMove: (instanceId: string) => void;
 }
- 
-export function PlacedCharmItem({ instanceId, charm, x, y, rotation, onRemove, onMove }: PlacedCharmItemProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: `placed-${instanceId}`,
-    data: { type: "placed" as const, instanceId, charm },
-  });
- 
+
+export function PlacedCharmItem({
+  instanceId,
+  charm,
+  x,
+  y,
+  rotation,
+  onRemove,
+  onMove,
+}: PlacedCharmItemProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: `placed-${instanceId}`,
+      data: { type: "placed" as const, instanceId, charm },
+    });
+
   const attachment = ATTACHMENT_POINTS[charm.id] ?? { x: 50, y: 30 };
-  const style: React.CSSProperties = {
+
+  const style: CSSProperties = {
     left: x,
     top: y,
-    transform: `translate3d(calc(-${attachment.x}% + ${transform?.x ?? 0}px), calc(-${attachment.y}% + ${transform?.y ?? 0}px), 0) rotate(${rotation}deg)`,
+    transform: `translate3d(
+      calc(-${attachment.x}% + ${transform?.x ?? 0}px),
+      calc(-${attachment.y}% + ${transform?.y ?? 0}px),
+      0
+    ) rotate(${rotation}deg)`,
     transformOrigin: `${attachment.x}% ${attachment.y}%`,
     zIndex: isDragging ? 60 : 10,
   };
- 
-  return (
-    <div ref={setNodeRef} style={style} onClick={(event) => event.stopPropagation()} className="absolute group touch-none">
-      <div
-        {...listeners}
-        {...attributes}
-        className={`relative h-28 w-28 cursor-grab active:cursor-grabbing sm:h-40 sm:w-40 lg:h-60 lg:w-55 ${
-          isDragging ? "opacity-70" : ""
-        }`}
-      >
-        <Image src={charm.image} alt={charm.name} fill unoptimized className="object-contain" sizes="(max-width: 639px) 112px, (max-width: 1023px) 160px, 220px" />
-      </div>
 
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`${styles.placedCharm} ${
+        isDragging ? styles.placedCharmDragging : ""
+      }`}
+      onClick={(event) => event.stopPropagation()}
+    >
       <button
         type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onMove(instanceId);
-        }}
-        style={{
-          left: `calc(${attachment.x}% - 24px)`,
-          top: `calc(${attachment.y}% - 16px)`,
-          transform: "translate(-50%, -50%)",
-        }}
-        className="absolute flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-700 shadow-sm md:pointer-events-none md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:opacity-100"
-        aria-label={`جابه‌جایی ${charm.name}`}
+        {...attributes}
+        {...listeners}
+        className={styles.placedDragHandle}
+        aria-label={`کشیدن و جابه‌جایی ${charm.name}`}
+        onClick={(event) => { event.stopPropagation(); onMove(instanceId); }}
       >
-        <Move size={15} />
+        <Image
+          src={charm.image}
+          alt={charm.name}
+          fill
+          unoptimized
+          draggable={false}
+          sizes="(max-width: 1023px) 160px, 220px"
+          className="pointer-events-none select-none object-contain"
+        />
       </button>
- 
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onRemove(instanceId);
-        }}
+
+      <div
+        className={styles.placedActions}
+        data-charm-actions
         style={{
-          left: `calc(${attachment.x}% + 24px)`,
-          top: `calc(${attachment.y}% - 16px)`,
-          transform: "translate(-50%, -50%)",
+          left: `${attachment.x}%`,
+          top: `${attachment.y}%`,
+          transform: `translate(-50%, -100%) rotate(${-rotation}deg)`,
         }}
-        className="absolute flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-sm md:pointer-events-none md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:opacity-100"
-        aria-label={`Remove ${charm.name}`}
       >
-        <X size={15} />
-      </button>
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onMove(instanceId);
+          }}
+          aria-label={`انتخاب و جابه‌جایی ${charm.name}`}
+        >
+          <Move size={15} />
+        </button>
+
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onRemove(instanceId);
+          }}
+          aria-label={`حذف ${charm.name}`}
+          className={styles.removePlacedButton}
+        >
+          <X size={16} />
+        </button>
+      </div>
     </div>
   );
 }
- 

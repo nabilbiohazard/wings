@@ -25,7 +25,7 @@ const services: {
 export function ServiceBar() {
   return (
     <section className="w-full py-12 sm:py-16 lg:py-20" aria-label="خدمات وینگز">
-      <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-8 px-8 md:grid-cols-3 md:gap-6">
+      <div className="mx-auto grid w-full site-container grid-cols-1 gap-8  md:grid-cols-3 md:gap-6">
         {services.map((service) => (
           <div key={service.icon} className="flex items-center justify-end gap-5 text-right">
             <div>

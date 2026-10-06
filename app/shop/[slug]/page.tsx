@@ -1,9 +1,11 @@
+import { HeaderBackdrop } from "@/components/header-backdrop";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { getProduct } from "@/lib/get-product";
 import { persianNumber } from "@/lib/products";
+import { customizationHref } from "@/lib/design-products";
 
 function stripHtml(html?: string) {
   if (!html) return "";
@@ -57,16 +59,12 @@ export default async function ProductPage({
 
   return (
     <main className="min-h-screen bg-white">
-      <div className="relative h-[140px] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-gradient-to-b from-white/[0.04] to-transparent" />
-
-        <div className="absolute left-1/2 top-1/2 h-[140px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.03] blur-[90px]" />
-      </div>
+      <HeaderBackdrop />
       {/* =========================
           BREADCRUMB
       ========================= */}
 
-      <div className="mx-auto max-w-[1600px] px-5 pt-[30px] sm:px-8">
+      <div className="mx-auto site-container  pt-[30px] ">
         <div className="flex flex-wrap items-center gap-2 text-xs text-black/35">
           <Link href="/" className="transition hover:text-black">
             وینگز
@@ -105,7 +103,7 @@ export default async function ProductPage({
           PRODUCT
       ========================= */}
 
-      <section className="mx-auto max-w-[1600px] px-5 pb-24 pt-8 sm:px-8 lg:pb-32">
+      <section className="mx-auto site-container  pb-24 pt-8  lg:pb-32">
         <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 xl:gap-24">
           {/* =========================
               GALLERY
@@ -358,6 +356,9 @@ export default async function ProductPage({
                   )}
                 </button>
 
+                <Link href={customizationHref(product.id)} className="mt-4 flex min-h-14 items-center justify-between gap-4 rounded-full border border-[#b68c9c] bg-[#f8eef1] px-7 py-4 text-sm font-medium text-[#79465a] transition-colors hover:bg-[#95677b] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b]">
+                  <span>خودت بساز · چارم‌های دلخواهت را اضافه کن</span><span aria-hidden="true">✦</span>
+                </Link>
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-black/[0.07] px-4 py-4 text-center">
                     <p className="text-[10px] text-black/35">وضعیت</p>
@@ -413,11 +414,11 @@ export default async function ProductPage({
             className="
               mx-auto
               grid
-              max-w-[1600px]
+              site-container
               gap-10
-              px-5 py-20
+               py-20
 
-              sm:px-8
+
               sm:py-24
 
               lg:grid-cols-[0.7fr_1.3fr]
@@ -471,7 +472,7 @@ export default async function ProductPage({
       ========================= */}
 
       <section className="border-t border-black/[0.07]">
-        <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 lg:py-20">
+        <div className="mx-auto site-container  py-16  lg:py-20">
           <div className="grid gap-8 md:grid-cols-3">
             <div className="border-b border-black/[0.08] pb-7 md:border-b-0 md:border-l md:pl-8">
               <span className="text-[10px] text-black/30">01</span>

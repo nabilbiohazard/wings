@@ -3,7 +3,7 @@ import Link from "next/link";
 export function CustomDesignFeature() {
   return (
     <section className="w-full px-5 py-16 sm:px-8 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto site-content">
         <div
           className="
             relative overflow-hidden

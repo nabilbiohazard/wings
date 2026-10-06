@@ -1,7 +1,8 @@
 ﻿"use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
+import { BlogImage } from "./blog-image";
+import { postImageSources } from "@/lib/blog-text";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 
@@ -74,32 +75,14 @@ function PostImage({
   sizes: string;
   priority?: boolean;
 }) {
-  const [failed, setFailed] = useState(false);
-  const media = post._embedded?.["wp:featuredmedia"]?.[0];
-  const src = media?.source_url;
-
-  if (!src || failed) {
-    return (
-      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#eadde1] text-[#805163]">
-        <span aria-hidden="true" className="text-5xl font-light">
-          W
-        </span>
-        <span className="mt-3 text-[10px] tracking-[0.3em]" dir="ltr">
-          WINGS JOURNAL
-        </span>
-      </div>
-    );
-  }
-
+  const sources = postImageSources(post);
   return (
-    <Image
-      src={src}
-      alt={plainText(post.title?.rendered ?? "مقاله وینگز")}
-      fill
-      priority={priority}
+    <BlogImage
+      key={sources.join("|")}
+      sources={sources}
+      alt={plainText(post.title?.rendered ?? "????? ?????")}
       sizes={sizes}
-      onError={() => setFailed(true)}
-      className="object-cover transition-transform duration-500 group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none"
+      preload={priority}
     />
   );
 }
@@ -255,7 +238,7 @@ export function Journal({ posts }: { posts: BlogPost[] }) {
       {featured && (
         <section
           aria-labelledby="featured-title"
-          className="mx-auto max-w-[1320px] px-5 pt-8 sm:px-8 sm:pt-12 lg:px-12"
+          className="mx-auto site-container  pt-8  sm:pt-12 "
         >
           <div className="relative lg:pb-16">
             <Link
@@ -318,7 +301,7 @@ export function Journal({ posts }: { posts: BlogPost[] }) {
       <section
         id="journal-posts"
         aria-labelledby="journal-posts-title"
-        className="mx-auto max-w-[1320px] scroll-mt-36 px-5 py-14 sm:px-8 sm:py-20 lg:px-12"
+        className="mx-auto site-container scroll-mt-36  py-14  sm:py-20 "
       >
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

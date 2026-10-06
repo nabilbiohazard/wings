@@ -9,7 +9,7 @@ export function EditorialSection() {
       className="w-full py-16 sm:py-20 lg:py-24"
       aria-labelledby="story-heading"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-8">
+      <div className="mx-auto w-full site-container ">
         <Reveal>
           <div className="relative min-h-[650px] overflow-hidden rounded-[40px]">
             <Image

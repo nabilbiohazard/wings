@@ -27,7 +27,7 @@ const categories = [
 export function BlogCategories() {
   return (
     <section className="w-full bg-[#faf8f5] py-16 sm:py-20 lg:py-24">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         <Reveal>
           <div className="text-center">
             <p className="text-xs tracking-[5px] text-black/40">

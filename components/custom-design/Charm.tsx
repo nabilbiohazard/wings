@@ -1,10 +1,11 @@
-
-
 "use client";
- 
+
 import Image from "next/image";
 import { useDraggable } from "@dnd-kit/core";
- 
+import { Plus } from "lucide-react";
+import styles from "./builder-studio.module.css";
+import { persianNumber } from "@/lib/products";
+
 export interface CharmData {
   id: string;
   name: string;
@@ -13,55 +14,82 @@ export interface CharmData {
   category?: string;
   keywords?: string[];
 }
- 
-/** A charm sitting in the right-hand palette, ready to be dragged onto the chain. */
+
+interface PaletteCharmProps {
+  charm: CharmData;
+  selected: boolean;
+  count?: number;
+  onSelect: (charm: CharmData) => void;
+  onAdd: (charm: CharmData) => void;
+}
+
 export function PaletteCharm({
   charm,
   selected,
+  count = 0,
   onSelect,
-}: {
-  charm: CharmData;
-  selected: boolean;
-  onSelect: (charm: CharmData) => void;
-}) {
+  onAdd,
+}: PaletteCharmProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${charm.id}`,
     data: { type: "palette" as const, charm },
   });
- 
+
   return (
+    <article className={styles.charmItem}>
     <div
       ref={setNodeRef}
-      className={`flex flex-col items-center gap-1 rounded-xl border bg-white p-3 shadow-sm transition-shadow hover:shadow-md ${
-        selected ? "border-amber-500 ring-2 ring-amber-200" : "border-neutral-200"
-      } ${
-        isDragging ? "opacity-50" : ""
-      }`}
+      className={`${styles.charmCard} ${
+        selected ? styles.charmCardSelected : ""
+      } ${isDragging ? styles.charmCardDragging : ""}`}
     >
-      <div
-        {...listeners}
-        {...attributes}
-        className="flex w-full touch-none cursor-grab flex-col items-center gap-1 active:cursor-grabbing"
-      >
-        <div className="relative h-14 w-14">
-          <Image src={charm.image} alt={charm.name} fill unoptimized className="object-contain" sizes="56px" />
-        </div>
-        <span className="text-center text-xs font-medium text-neutral-700">{charm.name}</span>
-      </div>
-      {charm.price !== undefined && (
-        <span className="text-xs text-neutral-400">${charm.price.toFixed(2)}</span>
+      {count > 0 && (
+        <span className={styles.countBadge}>
+          {count.toLocaleString("fa-IR")} عدد
+        </span>
       )}
+
       <button
         type="button"
+        {...attributes}
+        {...listeners}
+        className={styles.charmDragHandle}
         onClick={() => onSelect(charm)}
+        aria-label={`کشیدن ${charm.name} روی محصول`}
         aria-pressed={selected}
-        className={`mt-auto w-full rounded-lg px-2 py-1.5 text-xs font-medium transition ${
-          selected ? "bg-amber-100 text-amber-900" : "bg-neutral-100 text-neutral-700 hover:bg-amber-100"
-        }`}
       >
-        {selected ? "انتخاب شد" : "انتخاب"}
+        <div className={styles.charmImage}>
+          <Image
+            src={charm.image}
+            alt={charm.name}
+            fill
+            unoptimized
+            draggable={false}
+            sizes="(max-width: 1023px) 90px, 110px"
+            className="pointer-events-none select-none object-contain"
+          />
+        </div>
       </button>
-    </div>
+
+      <h3 title={charm.name}>{charm.name}</h3>
+
+        {charm.price !== undefined && (
+          <p className={styles.charmPrice}>
+            {persianNumber(charm.price)} تومان
+          </p>
+        )}
+      </div>
+      <div className={styles.cardActions}>
+        <button
+          type="button"
+          className={styles.addButton}
+          onClick={() => onAdd(charm)}
+          aria-label={`افزودن ${charm.name}`}
+        >
+          <Plus size={15} />
+          <span>افزودن</span>
+        </button>
+      </div>
+    </article>
   );
 }
- 

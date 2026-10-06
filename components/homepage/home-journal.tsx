@@ -46,7 +46,7 @@ export function HomeJournal({
 
   return (
     <section className="w-full py-20 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         {/* HEADER */}
 
         <div className="flex items-end justify-between gap-6">

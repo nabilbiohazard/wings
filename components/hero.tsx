@@ -19,7 +19,7 @@ export function Hero() {
       <div className="absolute top-1/2 left-[-120px] h-[550px] w-[550px] -translate-y-1/2 rounded-full bg-pink-300/10 blur-[130px]" />
 
       <div className="relative z-10 flex h-full items-center">
-        <Reveal className="mx-auto w-full max-w-[1600px] px-8">
+        <Reveal className="mx-auto w-full site-container ">
           <div className="items-center gap-12">
             {/* RIGHT SIDE */}
 

@@ -30,7 +30,7 @@ const values = [
 export function AboutValues() {
   return (
     <section className="w-full bg-[#faf8f5] py-20 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-[1600px] px-5 sm:px-8">
+      <div className="mx-auto site-container  ">
         <Reveal>
           <div className="text-center">
             <p className="text-xs tracking-[5px] text-black/40">WHY WINGS</p>

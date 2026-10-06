@@ -134,7 +134,7 @@ export function NewArrivals() {
       className="w-full scroll-mt-28 bg-[#fff8fb] py-16 sm:py-20 lg:py-24"
       aria-labelledby="arrivals-heading"
     >
-      <div className="mx-auto w-full max-w-[1800px] px-5 sm:px-8 lg:px-10">
+      <div className="mx-auto w-full site-container   ">
         <Reveal>
           <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
             <div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { RefObject } from "react";
 import { PlacedCharmItem } from "./Placedcharmitem";
 import type { CharmData } from "./Charm";
+import type { DesignProduct } from "@/lib/design-products";
 
 export interface PlacedCharm {
   instanceId: string;
@@ -56,6 +57,7 @@ export const VIEWBOX_WIDTH = 600;
 export const VIEWBOX_HEIGHT = 600;
 
 interface ChainProps {
+  product: DesignProduct;
   placedCharms: PlacedCharm[];
   onRemove: (instanceId: string) => void;
   onMove: (instanceId: string) => void;
@@ -64,16 +66,21 @@ interface ChainProps {
   pathRef: RefObject<SVGPathElement | null>;
 }
 
-export function Chain({ placedCharms, onRemove, onMove, onCanvasTap, placementHint, pathRef }: ChainProps) {
+export function Chain({ product, placedCharms, onRemove, onMove, onCanvasTap, placementHint, pathRef }: ChainProps) {
   const { setNodeRef, isOver } = useDroppable({ id: "chain-drop-zone" });
 
   return (
     <div
       ref={setNodeRef}
       id="chain-container"
+      onClickCapture={(event) => {
+        if (!placementHint || (event.target as HTMLElement).closest("[data-charm-actions]")) return;
+        event.stopPropagation();
+        onCanvasTap(event.clientX, event.clientY);
+      }}
       onClick={(event) => onCanvasTap(event.clientX, event.clientY)}
-      className={`relative mx-auto aspect-square w-full max-w-md touch-manipulation rounded-2xl border-2 border-dashed transition-colors ${
-        isOver || placementHint ? "border-amber-400 bg-amber-50/40" : "border-transparent"
+      className={`relative mx-auto aspect-square w-full max-w-md touch-manipulation rounded-2xl bg-white transition-shadow ${
+        isOver || placementHint ? "ring-2 ring-inset ring-[#dbc48f]" : ""
       }`}
     >
       {placementHint && (
@@ -81,15 +88,16 @@ export function Chain({ placedCharms, onRemove, onMove, onCanvasTap, placementHi
           {placementHint}
         </div>
       )}
-      <Image
-        src="/images/bracelet/photo_4_2026-10-01_15-40-19.jpg - Edited.png"
-        alt="Blue cord bracelet with gold clasps"
+      {product.image ? <Image
+        key={product.id}
+        src={product.image}
+        alt={product.name}
         fill
         unoptimized
         sizes="(max-width: 768px) 100vw, 448px"
         className="pointer-events-none select-none object-contain"
         draggable={false}
-      />
+      /> : <div className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[#806d75]">تصویر این محصول هنوز ثبت نشده است.</div>}
       <svg
         viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
         className="pointer-events-none absolute inset-0 h-full w-full"

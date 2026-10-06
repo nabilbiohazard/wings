@@ -28,7 +28,7 @@ export function ContactFaq() {
       className="contact-faq"
       aria-labelledby="faq-title"
     >
-      <div className="contact-container contact-faq-grid" dir="rtl">
+      <div className="site-container contact-container contact-faq-grid" dir="rtl">
         <div>
           <p className="contact-eyebrow">پیش از ارسال پیام</p>
           <h2

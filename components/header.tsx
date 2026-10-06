@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 import { Icon } from "./icon";
 import { useShop } from "./shop-provider";
 import { Wordmark } from "./wordmark";
+import { getHeaderColor } from "@/lib/header-theme";
+import { useSavedDesigns } from "@/lib/saved-designs";
 
 const links = [
   { name: "وینگز", href: "/" },
@@ -41,11 +43,28 @@ function CountBadge({ children, solid }: { children: number; solid: boolean }) {
 
 export function Header() {
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+    const updateHeight = () => {
+      document.documentElement.style.setProperty(
+        "--site-header-height",
+        `${header.getBoundingClientRect().height}px`,
+      );
+    };
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { openPanel, favorites, cart } = useShop();
+  const savedDesigns = useSavedDesigns();
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -74,7 +93,8 @@ export function Header() {
   }, [mobileOpen]);
 
   useEffect(() => {
-    setMobileOpen(false);
+    const frame = requestAnimationFrame(() => setMobileOpen(false));
+    return () => cancelAnimationFrame(frame);
   }, [pathname]);
 
   const isActive = (href: string) => {
@@ -88,6 +108,7 @@ export function Header() {
   return (
     <>
       <header
+        ref={headerRef}
         className={`
           fixed left-0 top-0 z-100
           w-full
@@ -98,6 +119,7 @@ export function Header() {
         {/* BACKGROUND */}
 
         <div
+          style={{ backgroundColor: solid || pathname === "/" ? undefined : getHeaderColor(pathname) }}
           className={`
             absolute inset-0
             transition-all duration-500
@@ -109,17 +131,13 @@ export function Header() {
                   backdrop-blur-2xl
                 `
                 : `
-                  bg-linear-to-b
-                  from-black/35
-                  via-black/10
-                  to-transparent
-                  backdrop-blur-[2px]
+                  ${pathname === "/" ? "bg-transparent" : "backdrop-blur-[2px]"}
                 `
             }
           `}
         />
 
-        <div className="relative mx-auto max-w-[1600px] px-5 sm:px-8">
+        <div className="relative mx-auto site-container  ">
           {/* ========================
               TOP AREA
           ======================== */}
@@ -336,7 +354,7 @@ export function Header() {
                 >
                   <Icon name="heart" size={18} />
 
-                  <CountBadge solid={solid}>{favorites.length}</CountBadge>
+                  <CountBadge solid={solid}>{favorites.length + savedDesigns.length}</CountBadge>
                 </button>
 
                 {/* ACCOUNT */}

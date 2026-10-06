@@ -57,7 +57,7 @@ export function Collections() {
       className="w-full py-16 sm:py-20 lg:py-24"
       aria-labelledby="collections-heading"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-8">
+      <div className="mx-auto w-full site-container ">
         <div className="mb-10 flex flex-col items-start gap-3 text-right sm:mb-14">
           <h2 id="collections-heading" className="text-3xl font-medium sm:text-4xl lg:text-5xl">
             دنیای کوچکِ دوست‌داشتنی‌ها

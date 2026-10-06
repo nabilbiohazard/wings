@@ -51,7 +51,7 @@ export function Hero() {
 
       {/* HERO CONTENT */}
       <div className="relative z-10 flex h-full items-center justify-center px-5 pt-20 text-center sm:px-8">
-        <Reveal className="mx-auto w-full max-w-[1600px] px-8">
+        <Reveal className="mx-auto w-full site-container ">
           <div className="items-center gap-12">
             <div className="mx-auto max-w-xl text-center">
 

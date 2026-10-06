@@ -1,572 +1,962 @@
-
-
 "use client";
- 
-import { useRef, useState } from "react";
+
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
   TouchSensor,
+  KeyboardSensor,
   pointerWithin,
   rectIntersection,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
+import {
+  Plus,
+  RotateCcw,
+  Undo2,
+  X,
+  SlidersHorizontal,
+  ShoppingBag,
+  ArrowLeftRight,
+  Heart,
+  Check,
+} from "lucide-react";
 import { CharmPalette } from "./CharmPalette";
-import { Chain, VIEWBOX_HEIGHT, VIEWBOX_WIDTH, getCharmRotation, isCharmPositionBlocked, type PlacedCharm } from "./Chain";
+import {
+  Chain,
+  VIEWBOX_WIDTH,
+  VIEWBOX_HEIGHT,
+  getCharmRotation,
+  isCharmPositionBlocked,
+  type PlacedCharm,
+} from "./Chain";
 import type { CharmData } from "./Charm";
+import { ProductPicker } from "./ProductPicker";
+import { customizationHref, type DesignProduct } from "@/lib/design-products";
+import { persianNumber } from "@/lib/products";
 import { getClosestPointOnPath } from "@/lib/snapToPath";
- 
-// Product prices can be added when the catalogue pricing is available.
+import {
+  useSavedDesigns,
+  saveDesign,
+  designSignature,
+} from "@/lib/saved-designs";
+import { useShop } from "../shop-provider";
+import styles from "./builder-studio.module.css";
+
 const CHARMS: CharmData[] = [
-  { id: "clover", name: "Clover", image: "/images/charms/clover.png", price: 13, category: "دریایی", keywords: ["خرچنگ", "crab"] },
+  {
+    id: "clover",
+    name: "Clover",
+    image: "/images/charms/clover.png",
+    price: 250000,
+    category: "دریایی",
+    keywords: ["خرچنگ", "crab"],
+  },
   ...[
-    { photo: 1, id: "pink-dress", name: "Pink Dress", category: "مد و زیبایی", keywords: ["لباس", "پیراهن", "صورتی"] },
-    { photo: 2, id: "cocktail", name: "Cocktail", category: "خوراکی‌ها", keywords: ["نوشیدنی", "لیوان"] },
-    { photo: 3, id: "ice-cream", name: "Ice Cream", category: "خوراکی‌ها", keywords: ["بستنی"] },
-    { photo: 5, id: "travel", name: "Travel", category: "سفر و سرگرمی", keywords: ["سفر", "هواپیما", "پاسپورت"] },
-    { photo: 6, id: "tennis", name: "Tennis Racket", category: "سفر و سرگرمی", keywords: ["تنیس", "راکت", "ورزش"] },
-    { photo: 7, id: "chocolate", name: "Chocolate", category: "خوراکی‌ها", keywords: ["شکلات"] },
-    { photo: 8, id: "gold-dress", name: "Gold Dress", category: "مد و زیبایی", keywords: ["لباس", "پیراهن", "طلایی"] },
-    { photo: 9, id: "shrimp", name: "Shrimp", category: "دریایی", keywords: ["میگو"] },
-    { photo: 10, id: "fashion", name: "Fashion", category: "مد و زیبایی", keywords: ["آرایش", "رژلب", "کیف"] },
+    {
+      photo: 1,
+      id: "pink-dress",
+      name: "Pink Dress",
+      price: 250000,
+      category: "مد و زیبایی",
+      keywords: ["لباس", "پیراهن", "صورتی"],
+    },
+    {
+      photo: 2,
+      id: "cocktail",
+      name: "Cocktail",
+      price: 250000,
+      category: "خوراکی‌ها",
+      keywords: ["نوشیدنی", "لیوان"],
+    },
+    {
+      photo: 3,
+      id: "ice-cream",
+      name: "Ice Cream",
+      price: 250000,
+      category: "خوراکی‌ها",
+      keywords: ["بستنی"],
+    },
+    {
+      photo: 5,
+      id: "travel",
+      name: "Travel",
+      price: 250000,
+      category: "سفر و سرگرمی",
+      keywords: ["سفر", "هواپیما", "پاسپورت"],
+    },
+    {
+      photo: 6,
+      id: "tennis",
+      name: "Tennis Racket",
+      price: 250000,
+      category: "سفر و سرگرمی",
+      keywords: ["تنیس", "راکت", "ورزش"],
+    },
+    {
+      photo: 7,
+      id: "chocolate",
+      name: "Chocolate",
+      price: 250000,
+      category: "خوراکی‌ها",
+      keywords: ["شکلات"],
+    },
+    {
+      photo: 8,
+      id: "gold-dress",
+      name: "Gold Dress",
+      price: 250000,
+      category: "مد و زیبایی",
+      keywords: ["لباس", "پیراهن", "طلایی"],
+    },
+    {
+      photo: 9,
+      id: "shrimp",
+      name: "Shrimp",
+      price: 250000,
+      category: "دریایی",
+      keywords: ["میگو"],
+    },
+    {
+      photo: 10,
+      id: "fashion",
+      name: "Fashion",
+      price: 250000,
+      category: "مد و زیبایی",
+      keywords: ["آرایش", "رژلب", "کیف"],
+    },
   ].map(({ photo, ...charm }) => ({
     ...charm,
     image: `/images/charms/photo_${photo}_2026-10-01_15-40-19.jpg - Edited.png`,
   })),
 ];
- 
-export function CharmBuilder() {
-  const [draggedCharm, setDraggedCharm] = useState<CharmData | null>(null);
-  const [placedCharms, setPlacedCharms] = useState<PlacedCharm[]>([]);
-  const [selection, setSelection] = useState<
-    | { type: "add"; charm: CharmData }
-    | { type: "move"; instanceId: string }
-    | null
-  >(null);
-  const pathRef = useRef<SVGPathElement>(null);
-  const lastDragEnd = useRef(0);
-  const nextInstanceId = useRef(0);
- 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 100, tolerance: 5 } })
+
+type Selection =
+  { type: "add"; charm: CharmData } | { type: "move"; instanceId: string };
+
+type DragData =
+  | { type: "palette"; charm: CharmData }
+  | { type: "placed"; instanceId: string; charm: CharmData };
+
+type Position = { x: number; y: number };
+
+export function CharmBuilder({
+  products,
+  initialProduct,
+  initialCharms = [],
+  catalogueFailed = false,
+  requestedUnavailable = false,
+}: {
+  products: DesignProduct[];
+  initialProduct: DesignProduct | null;
+  initialCharms?: PlacedCharm[];
+  catalogueFailed?: boolean;
+  requestedUnavailable?: boolean;
+}) {
+  const [selectedProduct, setSelectedProduct] = useState(initialProduct);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [placedCharms, setPlacedCharms] =
+    useState<PlacedCharm[]>(initialCharms);
+  const savedDesigns = useSavedDesigns();
+  const { openPanel } = useShop();
+  const designSaved = Boolean(
+    selectedProduct &&
+    savedDesigns.some(
+      (design) =>
+        designSignature(design.product.id, design.charms) ===
+        designSignature(selectedProduct.id, placedCharms),
+    ),
   );
- 
-  function placeAtPoint(
-    clientX: number,
-    clientY: number,
-    action: { type: "add"; charm: CharmData } | { type: "move"; instanceId: string },
-  ) {
+  const [selection, setSelection] = useState<Selection | null>(null);
+  const [draggedCharm, setDraggedCharm] = useState<CharmData | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [canUndo, setCanUndo] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+
+  const pathRef = useRef<SVGPathElement>(null);
+  const placedRef = useRef<PlacedCharm[]>(initialCharms);
+  const history = useRef<PlacedCharm[][]>([]);
+  const lastDragEnd = useRef(0);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dragActive = useRef(false);
+  const dragPointer = useRef<Position | null>(null);
+  const dragGrabOffset = useRef<Position>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    function trackMouse(event: MouseEvent) {
+      if (dragActive.current) {
+        dragPointer.current = { x: event.clientX, y: event.clientY };
+      }
+    }
+    function trackTouch(event: TouchEvent) {
+      const touch = event.changedTouches[0];
+      if (dragActive.current && touch) {
+        dragPointer.current = { x: touch.clientX, y: touch.clientY };
+      }
+    }
+    document.addEventListener("mousemove", trackMouse, true);
+    document.addEventListener("mouseup", trackMouse, true);
+    document.addEventListener("touchmove", trackTouch, true);
+    document.addEventListener("touchend", trackTouch, true);
+    return () => {
+      document.removeEventListener("mousemove", trackMouse, true);
+      document.removeEventListener("mouseup", trackMouse, true);
+      document.removeEventListener("touchmove", trackTouch, true);
+      document.removeEventListener("touchend", trackTouch, true);
+    };
+  }, []);
+
+  // Mouse and touch sensors are separate so mobile scrolling remains usable.
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 300,
+        tolerance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      keyboardCodes: {
+        start: ["Space"],
+        cancel: ["Escape"],
+        end: ["Space", "Enter", "Tab"],
+      },
+    }),
+  );
+
+  function commit(next: PlacedCharm[]) {
+    history.current.push(placedRef.current);
+    // Keep a bounded history.
+    if (history.current.length > 50) history.current.shift();
+
+    placedRef.current = next;
+    setPlacedCharms(next);
+    setCanUndo(true);
+  }
+
+  function undo() {
+    const previous = history.current.pop();
+    if (!previous) return;
+
+    placedRef.current = previous;
+    setPlacedCharms(previous);
+    setSelection(null);
+    setCanUndo(history.current.length > 0);
+    setMessage("آخرین تغییر بازگردانده شد.");
+  }
+
+  function closeSheet() {
+    setSheetOpen(false);
+    requestAnimationFrame(() => openButtonRef.current?.focus());
+  }
+
+  useEffect(() => {
+    if (!sheetOpen) return;
+
+    const media = window.matchMedia("(max-width: 1023px)");
+    const previousOverflow = document.body.style.overflow;
+
+    if (media.matches) document.body.style.overflow = "hidden";
+
+    function updateViewport() {
+      setViewportHeight(window.visualViewport?.height ?? window.innerHeight);
+    }
+
+    function onBreakpointChange() {
+      if (!media.matches) setSheetOpen(false);
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setSheetOpen(false);
+        openButtonRef.current?.focus();
+      }
+    }
+
+    updateViewport();
+    closeButtonRef.current?.focus({ preventScroll: true });
+
+    window.visualViewport?.addEventListener("resize", updateViewport);
+    window.addEventListener("resize", updateViewport);
+    window.addEventListener("keydown", onKeyDown);
+    media.addEventListener("change", onBreakpointChange);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.visualViewport?.removeEventListener("resize", updateViewport);
+      window.removeEventListener("resize", updateViewport);
+      window.removeEventListener("keydown", onKeyDown);
+      media.removeEventListener("change", onBreakpointChange);
+    };
+  }, [sheetOpen]);
+
+  function applyPosition(position: Position, action: Selection) {
+    if (!selectedProduct) return false;
+    if (isCharmPositionBlocked(position.x, position.y)) {
+      setMessage("این قسمت برای اتصال چارم مجاز نیست؛ جای دیگری انتخاب کن.");
+      return false;
+    }
+
+    const nextPosition = {
+      x: position.x,
+      y: position.y,
+      rotation: getCharmRotation(position.x, position.y),
+    };
+
+    if (action.type === "add") {
+      commit([
+        ...placedRef.current,
+        {
+          instanceId: `${action.charm.id}-${crypto.randomUUID()}`,
+          charm: action.charm,
+          ...nextPosition,
+        },
+      ]);
+      setMessage(`${action.charm.name} اضافه شد.`);
+    } else {
+      const current = placedRef.current.find(
+        (item) => item.instanceId === action.instanceId,
+      );
+      if (!current) return false;
+
+      commit(
+        placedRef.current.map((item) =>
+          item.instanceId === action.instanceId
+            ? { ...item, ...nextPosition }
+            : item,
+        ),
+      );
+      setMessage("جای چارم تغییر کرد.");
+    }
+
+    return true;
+  }
+
+  function placeAtPoint(clientX: number, clientY: number, action: Selection) {
     const container = document.getElementById("chain-container");
     const path = pathRef.current;
     if (!container || !path) return false;
 
     const rect = container.getBoundingClientRect();
-    if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) {
+    if (
+      rect.width === 0 ||
+      rect.height === 0 ||
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    ) {
       return false;
     }
 
-    const snapped = getClosestPointOnPath(path, {
-      x: ((clientX - rect.left) / rect.width) * VIEWBOX_WIDTH,
-      y: ((clientY - rect.top) / rect.height) * VIEWBOX_HEIGHT,
-    });
-    if (isCharmPositionBlocked(snapped.x, snapped.y)) return false;
-    const position = {
-      x: snapped.x,
-      y: snapped.y,
-      rotation: getCharmRotation(snapped.x, snapped.y),
-    };
+    const matrix = path.getScreenCTM();
+    if (!matrix) return false;
+    const localPoint = new DOMPoint(clientX, clientY).matrixTransform(
+      matrix.inverse(),
+    );
+    return applyPosition(getClosestPointOnPath(path, localPoint), action);
+  }
 
-    if (action.type === "add") {
-      nextInstanceId.current += 1;
-      const newCharm: PlacedCharm = {
-        instanceId: `${action.charm.id}-${nextInstanceId.current}`,
-        charm: action.charm,
-        ...position,
-      };
-      setPlacedCharms((prev) => [...prev, newCharm]);
-    } else {
-      setPlacedCharms((prev) =>
-        prev.map((pc) => pc.instanceId === action.instanceId ? { ...pc, ...position } : pc),
+  function addAutomatically(charm: CharmData) {
+    if (Date.now() - lastDragEnd.current < 350) return;
+    if (!selectedProduct) {
+      setPickerOpen(true);
+      return;
+    }
+
+    const path = pathRef.current;
+    if (!path) return;
+    const length = path.getTotalLength();
+    if (!Number.isFinite(length) || length <= 0) return;
+    const minimumDistance = 55;
+    let best: Position | null = null;
+    let bestScore = -Infinity;
+    for (let index = 0; index < 240; index += 1) {
+      const point = path.getPointAtLength((index / 240) * length);
+      if (isCharmPositionBlocked(point.x, point.y)) continue;
+      const distance = placedRef.current.length
+        ? Math.min(
+            ...placedRef.current.map((item) =>
+              Math.hypot(item.x - point.x, item.y - point.y),
+            ),
+          )
+        : Infinity;
+      if (distance < minimumDistance) continue;
+      const score = placedRef.current.length ? distance : point.y;
+      if (score > bestScore) {
+        bestScore = score;
+        best = { x: point.x, y: point.y };
+      }
+    }
+
+    if (!best) {
+      setMessage(
+        "فضای خالی کافی پیدا نشد؛ چارم را بکش یا جای چارم‌های قبلی را تنظیم کن.",
       );
-    }
-    return true;
-  }
-
-  function handleDragEnd(event: DragEndEvent) {
-    setDraggedCharm(null);
-    lastDragEnd.current = Date.now();
-    const { active } = event;
-    const data = active.data.current as
-      | { type: "palette"; charm: CharmData }
-      | { type: "placed"; instanceId: string; charm: CharmData }
-      | undefined;
- 
-    if (!data) return;
- 
-    const activator = event.activatorEvent;
-    let dropX: number;
-    let dropY: number;
-    if (activator instanceof MouseEvent || activator instanceof PointerEvent) {
-      dropX = activator.clientX + event.delta.x;
-      dropY = activator.clientY + event.delta.y;
-    } else if (activator instanceof TouchEvent) {
-      const touch = activator.changedTouches[0];
-      if (!touch) return;
-      dropX = touch.clientX + event.delta.x;
-      dropY = touch.clientY + event.delta.y;
-    } else {
-      const activeRect = active.rect.current.translated ?? active.rect.current.initial;
-      if (!activeRect) return;
-      dropX = activeRect.left + activeRect.width / 2;
-      dropY = activeRect.top + activeRect.height / 2;
+      return;
     }
 
-    if (data.type === "palette") {
-      placeAtPoint(dropX, dropY, { type: "add", charm: data.charm });
-    } else {
-      placeAtPoint(dropX, dropY, { type: "move", instanceId: data.instanceId });
+    if (applyPosition(best, { type: "add", charm })) {
+      setSelection(null);
     }
   }
 
-  function handleSelectCharm(charm: CharmData) {
-    const alreadySelected = selection?.type === "add" && selection.charm.id === charm.id;
-    setSelection(alreadySelected ? null : { type: "add", charm });
-    if (!alreadySelected && window.matchMedia("(max-width: 767px)").matches) {
-      document.getElementById("chain-container")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  function selectCharm(charm: CharmData) {
+    if (Date.now() - lastDragEnd.current < 350) return;
+    if (!selectedProduct) {
+      setPickerOpen(true);
+      return;
     }
+    setSheetOpen(false);
+
+    setSelection((current) =>
+      current?.type === "add" && current.charm.id === charm.id
+        ? null
+        : { type: "add", charm },
+    );
+    setMessage("محل دلخواه را روی محصول لمس کن.");
+  }
+
+  function selectMove(instanceId: string) {
+    if (Date.now() - lastDragEnd.current < 350) return;
+    setSelection({ type: "move", instanceId });
+    setSheetOpen(false);
+    setMessage("برای جابه‌جایی، محل جدید را روی محصول لمس کن.");
+  }
+
+  function removeCharm(instanceId: string) {
+    if (!placedRef.current.some((item) => item.instanceId === instanceId))
+      return;
+    commit(placedRef.current.filter((item) => item.instanceId !== instanceId));
+
+    setSelection((current) =>
+      current?.type === "move" && current.instanceId === instanceId
+        ? null
+        : current,
+    );
+    setMessage("چارم حذف شد.");
+  }
+
+  function reset() {
+    if (placedRef.current.length) commit([]);
+    setSelection(null);
+    setMessage("میز طراحی خالی شد؛ می‌توانی با بازگردانی برگردی.");
   }
 
   function handleCanvasTap(clientX: number, clientY: number) {
-    if (!selection || Date.now() - lastDragEnd.current < 300) return;
+    if (!selection || Date.now() - lastDragEnd.current < 350) return;
     if (placeAtPoint(clientX, clientY, selection)) setSelection(null);
   }
- 
-  function handleRemove(instanceId: string) {
-    setPlacedCharms((prev) => prev.filter((pc) => pc.instanceId !== instanceId));
-    setSelection((current) => current?.type === "move" && current.instanceId === instanceId ? null : current);
+
+  function handleDragEnd(event: DragEndEvent) {
+    dragActive.current = false;
+    setDraggedCharm(null);
+    lastDragEnd.current = Date.now();
+
+    const data = event.active.data.current as DragData | undefined;
+    if (!data) return;
+
+    const action: Selection =
+      data.type === "palette"
+        ? { type: "add", charm: data.charm }
+        : { type: "move", instanceId: data.instanceId };
+
+    // Use viewport coordinates from the release event. Drag deltas can include
+    // scroll compensation and no longer match the finger's position.
+    if (dragPointer.current) {
+      const { x, y } = dragPointer.current;
+      dragPointer.current = null;
+      if (
+        placeAtPoint(
+          x + dragGrabOffset.current.x,
+          y + dragGrabOffset.current.y,
+          action,
+        )
+      )
+        setSelection(null);
+      return;
+    }
+
+    // For an existing charm, preserve the grabbed offset and move
+    // its attachment point by the drag delta.
+    if (data.type === "placed") {
+      const item = placedRef.current.find(
+        (entry) => entry.instanceId === data.instanceId,
+      );
+      const container = document.getElementById("chain-container");
+      if (!item || !container) return;
+
+      const rect = container.getBoundingClientRect();
+      const x = rect.left + (item.x / VIEWBOX_WIDTH) * rect.width;
+      const y = rect.top + (item.y / VIEWBOX_HEIGHT) * rect.height;
+
+      if (placeAtPoint(x + event.delta.x, y + event.delta.y, action)) {
+        setSelection(null);
+      }
+      return;
+    }
+
+    const activator = event.activatorEvent;
+    let dropX: number;
+    let dropY: number;
+
+    if (activator instanceof MouseEvent || activator instanceof PointerEvent) {
+      dropX = activator.clientX + event.delta.x;
+      dropY = activator.clientY + event.delta.y;
+    } else if (
+      typeof TouchEvent !== "undefined" &&
+      activator instanceof TouchEvent
+    ) {
+      const touch = activator.changedTouches[0];
+      if (!touch) return;
+
+      dropX = touch.clientX + event.delta.x;
+      dropY = touch.clientY + event.delta.y;
+    } else {
+      const rect =
+        event.active.rect.current.translated ??
+        event.active.rect.current.initial;
+      if (!rect) return;
+
+      dropX = rect.left + rect.width / 2;
+      dropY = rect.top + rect.height / 2;
+    }
+
+    if (placeAtPoint(dropX, dropY, action)) setSelection(null);
   }
- 
-  function handleReset() {
+
+  const counts = placedCharms.reduce<Record<string, number>>((result, item) => {
+    result[item.charm.id] = (result[item.charm.id] ?? 0) + 1;
+    return result;
+  }, {});
+
+  const hasCompletePricing =
+    placedCharms.length > 0 &&
+    placedCharms.every((item) => item.charm.price !== undefined);
+
+  const total = placedCharms.reduce(
+    (sum, item) => sum + (item.charm.price ?? 0),
+    0,
+  );
+
+  const hint =
+    selection?.type === "add"
+      ? `محل اتصال ${selection.charm.name} را لمس کن`
+      : selection?.type === "move"
+        ? "محل جدید چارم را روی محصول لمس کن"
+        : undefined;
+
+  const viewportStyle = {
+    "--studio-height":
+      viewportHeight !== null ? `${viewportHeight}px` : "100dvh",
+  } as CSSProperties;
+
+  function openProductPicker() {
+    setSheetOpen(false);
+    setPickerOpen(true);
+  }
+
+  function chooseProduct(product: DesignProduct) {
+    if (selectedProduct?.id !== product.id) {
+      setSelectedProduct(product);
+      setPlacedCharms([]);
+      placedRef.current = [];
+      history.current = [];
+      setCanUndo(false);
+      setSelection(null);
+      setDraggedCharm(null);
+      setMessage(`${product.name} آمادهٔ طراحی است.`);
+      window.history.replaceState(null, "", customizationHref(product.id));
+    }
+    setPickerOpen(false);
+  }
+
+  function saveCurrentDesign() {
+    if (!selectedProduct || !placedCharms.length) return;
+    setMessage(
+      saveDesign(selectedProduct, placedCharms)
+        ? "طرح تو در علاقه‌مندی‌ها ذخیره شد؛ حالا می‌توانی یک طرح تازه بسازی."
+        : "ذخیرهٔ طرح انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کن و دوباره تلاش کن.",
+    );
+  }
+
+  function startNewDesign() {
+    setSheetOpen(false);
+    setSelectedProduct(null);
     setPlacedCharms([]);
+    placedRef.current = [];
+    history.current = [];
+    setCanUndo(false);
     setSelection(null);
+    setMessage("طرح قبلی در علاقه‌مندی‌هاست؛ محصول بعدی را انتخاب کن.");
+    window.history.replaceState(null, "", "/custom-design");
+    setPickerOpen(true);
   }
- 
-  const hasCompletePricing = placedCharms.every((pc) => pc.charm.price !== undefined);
-  const total = placedCharms.reduce((sum, pc) => sum + (pc.charm.price ?? 0), 0);
- 
-    return (
+
+  return (
     <DndContext
       id="custom-design-dnd"
+      accessibility={{
+        screenReaderInstructions: {
+          draggable:
+            "برای انتخاب چارم Enter را بزن. برای کشیدن با صفحه‌کلید Space را بزن، با کلیدهای جهت حرکت کن و با Enter رها کن. Escape حرکت را لغو می‌کند.",
+        },
+      }}
       sensors={sensors}
       collisionDetection={(args) =>
-        args.pointerCoordinates
-          ? pointerWithin(args)
-          : rectIntersection(args)
+        args.pointerCoordinates ? pointerWithin(args) : rectIntersection(args)
       }
-      onDragEnd={handleDragEnd}
-      onDragStart={({ active }) => {
-        const data = active.data.current;
+      onDragStart={({ active, activatorEvent }) => {
+        dragActive.current = true;
+        dragPointer.current = null;
+        dragGrabOffset.current = { x: 0, y: 0 };
+        const data = active.data.current as DragData | undefined;
+        if (data?.type === "placed") {
+          const item = placedRef.current.find(
+            (entry) => entry.instanceId === data.instanceId,
+          );
+          const matrix = pathRef.current?.getScreenCTM();
+          const pointer =
+            activatorEvent instanceof MouseEvent
+              ? { x: activatorEvent.clientX, y: activatorEvent.clientY }
+              : typeof TouchEvent !== "undefined" &&
+                  activatorEvent instanceof TouchEvent &&
+                  activatorEvent.changedTouches[0]
+                ? {
+                    x: activatorEvent.changedTouches[0].clientX,
+                    y: activatorEvent.changedTouches[0].clientY,
+                  }
+                : null;
+          if (item && matrix && pointer) {
+            const anchor = new DOMPoint(item.x, item.y).matrixTransform(matrix);
+            dragGrabOffset.current = {
+              x: anchor.x - pointer.x,
+              y: anchor.y - pointer.y,
+            };
+          }
+        }
         setDraggedCharm(data?.type === "palette" ? data.charm : null);
       }}
+      onDragEnd={handleDragEnd}
       onDragCancel={() => {
+        dragActive.current = false;
+        dragPointer.current = null;
         setDraggedCharm(null);
         lastDragEnd.current = Date.now();
       }}
     >
-      <div
-        dir="rtl"
-        className="min-h-screen bg-[#f8f5f0] text-[#38292e]"
-      >
-        <div className="mx-auto max-w-[1440px] px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
-          {/* عنوان استودیو */}
-          <header className="mb-8 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-            <div>
-              <p
-                dir="ltr"
-                className="flex items-center gap-3 text-[10px] font-medium tracking-[0.22em] text-[#95677b]"
-              >
-                <span className="h-px w-8 bg-current" />
-                WINGS DESIGN STUDIO
-              </p>
-
-              <h1 className="mt-4 text-3xl font-medium leading-relaxed sm:text-4xl">
-                دستبندی با
-                <span className="text-[#a16c80]"> امضای خودت.</span>
-              </h1>
-
-              <p className="mt-3 max-w-xl text-sm leading-8 text-[#796770]">
-                چارم‌های دلخواهت را انتخاب کن و کنار هم بچین؛
-                هر قطعه، بخشی از داستان تو.
-              </p>
-            </div>
-
-            <div className="flex w-fit items-center gap-3 rounded-full border border-[#e1d3d8] bg-white/70 px-4 py-3">
-              <span
-                aria-hidden="true"
-                className="flex size-8 items-center justify-center rounded-full bg-[#f0e1e7] text-[#95677b]"
-              >
-                ✦
-              </span>
-
-              <span className="text-xs text-[#796770]">
-                انتخاب کن، بچین، شخصی‌اش کن
-              </span>
-            </div>
+      <div dir="rtl" className={styles.studio}>
+        <div className="site-container">
+          <header className={styles.heading}>
+            <p className={styles.eyebrow}>WINGS DESIGN STUDIO</p>
+            <h1>
+              انتخاب تو، <span>داستان تو.</span>
+            </h1>
+            <p className={styles.intro}>
+              یک محصول انتخاب کن، چارم‌های دلخواهت را روی آن بچین و طرح خودت را
+              بساز.
+            </p>
           </header>
+          {requestedUnavailable && !selectedProduct && (
+            <p role="status" className={styles.unavailableProduct}>
+              این محصول دیگر موجود نیست؛ محصول دیگری برای طراحی انتخاب کن.
+            </p>
+          )}
 
-          {/* محیط طراحی */}
-          <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] lg:gap-6">
-            {/* بوم دستبند */}
-            <section
-              aria-labelledby="builder-canvas-title"
-              className="min-w-0 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-[#fffdf9] shadow-[0_12px_40px_rgba(56,41,46,0.04)]"
-            >
-              <div className="flex items-center justify-between gap-3 border-b border-[#eee5e1] px-5 py-5 sm:px-7">
-                <div className="flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#f1e7e3] text-lg text-[#95677b]"
-                  >
-                    ♡
-                  </span>
-
-                  <div>
-                    <h2
-                      id="builder-canvas-title"
-                      className="text-sm font-semibold"
-                    >
-                      میز طراحی تو
-                    </h2>
-                    <p className="mt-1 text-[11px] text-[#796770]">
-                      پیش‌نمایش چیدمان دستبند
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  disabled={placedCharms.length === 0 && !selection}
-                  className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-[#e0cdd4] px-3 py-2 text-xs text-[#87586c] transition-colors hover:bg-[#f4e8ed] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b] disabled:cursor-not-allowed disabled:opacity-40 sm:px-4"
-                >
-                  <svg
-                    width="15"
-                    height="15"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M3 10a9 9 0 1 1 2.6 8.4" />
-                    <path d="M3 4v6h6" />
-                  </svg>
-                  شروع دوباره
-                </button>
-              </div>
-
-              {/* پس‌زمینه بوم */}
-              <div className="relative isolate overflow-hidden bg-[#f6f0e9] px-2 py-8 sm:px-5 sm:py-12">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 -z-10 opacity-40 [background-image:radial-gradient(#c7b5ac_1px,transparent_1px)] [background-size:22px_22px]"
-                />
-
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[75%] w-[85%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#fffdf9] blur-3xl"
-                />
-
-                <div className="mb-5 flex justify-center">
-                  <span
-                    dir="ltr"
-                    className="rounded-full border border-[#d7c8be] bg-[#fffdf9]/90 px-4 py-2 text-[9px] tracking-[0.2em] text-[#917b72]"
-                  >
-                    YOUR LITTLE MASTERPIECE
+          <div
+            className={`${styles.workspace} ${
+              sheetOpen ? styles.workspaceOpen : ""
+            }`}
+            style={viewportStyle}
+          >
+            <section className={styles.canvasSection} aria-label="میز طراحی">
+              <div className={styles.canvasToolbar}>
+                <div>
+                  <strong>
+                    {selectedProduct?.name ?? "محصولت را انتخاب کن"}
+                  </strong>
+                  <span>
+                    {selectedProduct
+                      ? `${persianNumber(selectedProduct.price)} تومان · ${placedCharms.length.toLocaleString("fa-IR")} چارم`
+                      : "۰۱ / انتخاب محصول"}
                   </span>
                 </div>
 
-                <div className="mx-auto w-full max-w-[760px]">
-                  <Chain
-                    placedCharms={placedCharms}
-                    onRemove={handleRemove}
-                    onMove={(instanceId) =>
-                      setSelection({ type: "move", instanceId })
-                    }
-                    onCanvasTap={handleCanvasTap}
-                    placementHint={
-                      selection?.type === "add"
-                        ? `برای افزودن ${selection.charm.name} روی دستبند بزنید`
-                        : selection?.type === "move"
-                          ? "جای جدید چارم را روی دستبند لمس کنید"
-                          : undefined
-                    }
-                    pathRef={pathRef}
-                  />
-                </div>
-
-                <p className="mt-5 text-center text-xs leading-6 text-[#88766d]">
-                  {placedCharms.length === 0
-                    ? "اولین چارم را انتخاب کن؛ داستان از همین‌جا شروع می‌شود."
-                    : "می‌توانی جای چارم‌ها را تغییر بدهی و ترکیب تازه‌ای بسازی."}
-                </p>
-              </div>
-
-              {/* وضعیت انتخاب */}
-              <div
-                role="status"
-                aria-live="polite"
-                className={`flex min-h-[84px] items-center justify-between gap-3 border-t px-5 py-4 sm:px-7 ${
-                  selection
-                    ? "border-[#e3c7d2] bg-[#f5e7ed]"
-                    : "border-[#eee5e1] bg-[#fffdf9]"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <span
-                    aria-hidden="true"
-                    className={`flex size-8 shrink-0 items-center justify-center rounded-full text-sm ${
-                      selection
-                        ? "bg-[#95677b] text-white"
-                        : "bg-[#f1e7e3] text-[#95677b]"
-                    }`}
-                  >
-                    {selection ? "↙" : "✦"}
-                  </span>
-
-                  <div>
-                    <p className="text-xs font-medium sm:text-sm">
-                      {selection?.type === "add"
-                        ? `${selection.charm.name} انتخاب شده`
-                        : selection?.type === "move"
-                          ? "یک جای تازه انتخاب کن"
-                          : "آماده طراحی هستی؟"}
-                    </p>
-
-                    <p className="mt-1 text-[11px] leading-6 text-[#796770]">
-                      {selection
-                        ? "روی محل دلخواه دستبند بزن."
-                        : "چارم را انتخاب کن یا روی دستبند بکش."}
-                    </p>
-                  </div>
-                </div>
-
-                {selection && (
+                <div className={styles.toolbarButtons}>
                   <button
                     type="button"
-                    onClick={() => setSelection(null)}
-                    className="min-h-10 shrink-0 rounded-full border border-[#cfa8b8] px-4 py-2 text-xs text-[#87586c] transition-colors hover:bg-white/70 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b]"
+                    className={styles.chooseProductButton}
+                    onClick={openProductPicker}
                   >
+                    <ArrowLeftRight size={16} />
+                    <span>
+                      {selectedProduct ? "تغییر محصول" : "انتخاب محصول"}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={saveCurrentDesign}
+                    disabled={
+                      !selectedProduct || !placedCharms.length || designSaved
+                    }
+                    className={`${styles.chooseProductButton} ${styles.saveDesignButton}`}
+                  >
+                    {designSaved ? <Check size={17} /> : <Heart size={17} />}
+                    {designSaved
+                      ? "در علاقه‌مندی‌ها ذخیره شد"
+                      : "ذخیرهٔ طرح در علاقه‌مندی‌ها"}
+                  </button>
+                  {designSaved && (
+                    <button
+                      type="button"
+                      onClick={startNewDesign}
+                      className={styles.chooseProductButton}
+                    >
+                      <Plus size={16} /> طراحی محصول جدید
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSheetOpen(false);
+                      openPanel("wishlist");
+                    }}
+                    className={styles.chooseProductButton}
+                  >
+                    دیدن علاقه‌مندی‌ها
+                  </button>
+                  <button
+                    type="button"
+                    onClick={undo}
+                    disabled={!canUndo}
+                    aria-label="بازگردانی آخرین تغییر"
+                    title="بازگردانی"
+                  >
+                    <Undo2 size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={reset}
+                    disabled={!placedCharms.length && !selection}
+                    aria-label="شروع دوباره"
+                    title="شروع دوباره"
+                  >
+                    <RotateCcw size={17} />
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.canvasArea}>
+                <div className={styles.chainFrame}>
+                  {selectedProduct ? (
+                    <Chain
+                      product={selectedProduct}
+                      placedCharms={placedCharms}
+                      onRemove={removeCharm}
+                      onMove={selectMove}
+                      onCanvasTap={handleCanvasTap}
+                      placementHint={hint}
+                      pathRef={pathRef}
+                    />
+                  ) : (
+                    <div className={styles.emptyCanvas}>
+                      <span className={styles.emptyCanvasIcon}>
+                        <ShoppingBag size={42} strokeWidth={1.25} />
+                      </span>
+                      <h2>جای انتخاب تو خالی است</h2>
+                      <p>
+                        اول محصولت را انتخاب کن؛ بعد با چارم‌ها به آن حال‌وهوای
+                        خودت را بده.
+                      </p>
+                      <button type="button" onClick={openProductPicker}>
+                        <Plus size={18} /> انتخاب محصول
+                      </button>
+                      <span className={styles.emptyCanvasHint}>
+                        انتخاب محصول ← افزودن چارم ← تنظیم جای چارم‌ها
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.canvasStatus}>
+                <p role="status" aria-live="polite">
+                  {hint ||
+                    message ||
+                    (selectedProduct
+                      ? "چارم را انتخاب کن یا روی محصول بکش."
+                      : "برای شروع، یک محصول انتخاب کن.")}
+                </p>
+                {selection ? (
+                  <button type="button" onClick={() => setSelection(null)}>
                     لغو انتخاب
                   </button>
-                )}
+                ) : canUndo ? (
+                  <button type="button" onClick={undo}>
+                    بازگردانی
+                  </button>
+                ) : null}
               </div>
             </section>
 
-            {/* پنل چارم‌ها */}
             <aside
-              aria-labelledby="charm-palette-title"
-              className="min-w-0 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-white shadow-[0_12px_40px_rgba(56,41,46,0.04)]"
+              id="mobile-charm-panel"
+              className={styles.paletteSection}
+              aria-label="انتخاب چارم"
             >
-              <div className="bg-[#38292e] px-5 py-6 text-[#fff8f3] sm:px-6">
-                <div className="flex items-center justify-between gap-4">
-                  <p
-                    dir="ltr"
-                    className="text-[9px] tracking-[0.2em] text-[#dfb2c3]"
+              <div className={styles.sheetHeader}>
+                <span className={styles.sheetHandle} aria-hidden="true" />
+                <div>
+                  <strong>چارم بعدی‌ات را انتخاب کن</strong>
+                  <button
+                    ref={closeButtonRef}
+                    type="button"
+                    onClick={closeSheet}
+                    aria-label="بستن پنل انتخاب چارم"
                   >
-                    THE CHARM COLLECTION
-                  </p>
-
-                  <span aria-hidden="true" className="text-[#dfb2c3]">
-                    ✳
-                  </span>
+                    <X size={21} />
+                  </button>
                 </div>
-
-                <h2
-                  id="charm-palette-title"
-                  className="mt-4 text-xl font-medium"
-                >
-                  جزئیات را تو انتخاب کن
-                </h2>
-
-                <p className="mt-2 text-xs leading-7 text-[#e0cdd5]">
-                  از بین چارم‌ها، آن‌هایی را پیدا کن که شبیه تو هستند.
-                </p>
               </div>
 
-              <div className="p-4 sm:p-5">
-                <div className="mb-5 flex items-start gap-3 rounded-xl border border-[#eadde2] bg-[#faf5f7] p-3">
-                  <span
-                    aria-hidden="true"
-                    className="flex size-6 shrink-0 items-center justify-center rounded-full border border-[#cba8b7] text-xs text-[#95677b]"
-                  >
-                    i
-                  </span>
+              <CharmPalette
+                charms={CHARMS}
+                counts={counts}
+                selectedCharmId={
+                  selection?.type === "add" ? selection.charm.id : undefined
+                }
+                onSelect={selectCharm}
+                onAdd={addAutomatically}
+              />
 
-                  <p className="text-[11px] leading-6 text-[#796770]">
-                    برای افزودن، چارم را انتخاب کن و روی دستبند بزن.
-                    برای جابه‌جایی، از دکمه کنار چارم یا کشیدن آن
-                    استفاده کن.
-                  </p>
-                </div>
-
-                <CharmPalette
-                  charms={CHARMS}
-                  selectedCharmId={
-                    selection?.type === "add"
-                      ? selection.charm.id
-                      : undefined
-                  }
-                  onSelect={handleSelectCharm}
-                />
+              <div className={styles.sheetFooter}>
+                <button type="button" onClick={closeSheet}>
+                  <SlidersHorizontal size={17} />
+                  تنظیم جای چارم‌ها
+                </button>
+                <span>
+                  {placedCharms.length.toLocaleString("fa-IR")} چارم اضافه شده
+                </span>
               </div>
             </aside>
           </div>
 
-          {/* خلاصه طرح */}
-          <section
-            aria-labelledby="design-summary-title"
-            className="mt-6 overflow-hidden rounded-[24px] border border-[#e4d9d7] bg-[#fffdf9]"
-          >
-            <div className="flex flex-col justify-between gap-5 p-5 sm:flex-row sm:items-center sm:p-7">
-              <div className="flex items-center gap-4">
-                <span
-                  aria-hidden="true"
-                  className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-[#efe0e6] text-2xl text-[#95677b]"
-                >
-                  ✦
-                </span>
-
-                <div>
-                  <h2
-                    id="design-summary-title"
-                    className="text-base font-medium"
-                  >
-                    ترکیب مخصوص تو
-                  </h2>
-
-                  <p className="mt-1 text-xs leading-6 text-[#796770]">
-                    {placedCharms.length > 0
-                      ? `${placedCharms.length.toLocaleString("fa-IR")} چارم در طرح فعلی`
-                      : "هنوز چارمی به دستبند اضافه نکرده‌ای."}
-                  </p>
-                </div>
+          <section className={styles.summary} aria-label="چارم‌های انتخاب‌شده">
+            <div className={styles.saveDesignBar}>
+              <div>
+                <h2>طرح تو، برای روزهای بعد</h2>
+                <p>
+                  محصول و جای همهٔ چارم‌ها در علاقه‌مندی‌های همین مرورگر ذخیره
+                  می‌شود.
+                </p>
               </div>
-
-              {placedCharms.length > 0 && (
-                <div className="rounded-xl border border-[#e4d9d7] bg-[#f8f3ee] px-5 py-3 sm:text-left">
-                  <p className="text-[10px] text-[#796770]">
-                    {hasCompletePricing
-                      ? "مجموع قیمت چارم‌ها"
-                      : "وضعیت قیمت‌گذاری"}
-                  </p>
-
-                  {hasCompletePricing ? (
-                    <p
-                      dir="ltr"
-                      className="mt-1 text-xl font-semibold text-[#87586c]"
-                    >
-                      ${total.toFixed(2)}
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-xs leading-6 text-[#87586c]">
-                      قیمت همه چارم‌ها هنوز ثبت نشده است.
-                    </p>
-                  )}
-                </div>
-              )}
+            </div>
+            <div className={styles.summaryHeading}>
+              <div>
+                <h2>ترکیب شخصی تو</h2>
+                <p>برای تغییر جای هر چارم، نام آن را انتخاب کن.</p>
+              </div>
+              {hasCompletePricing && <span>{persianNumber(total)} تومان</span>}
             </div>
 
-            {placedCharms.length > 0 && (
-              <div className="border-t border-[#eee5e1] px-5 py-5 sm:px-7">
-                <ul className="flex flex-wrap gap-2">
-                  {placedCharms.map((placedCharm, index) => (
-                    <li
-                      key={placedCharm.instanceId}
-                      className="flex items-center gap-3 rounded-full border border-[#e1cfd7] bg-[#f9f0f4] py-1.5 pr-2 pl-1.5"
+            {placedCharms.length ? (
+              <ul className={styles.selectedList}>
+                {placedCharms.map((item, index) => (
+                  <li key={item.instanceId}>
+                    <button
+                      type="button"
+                      onClick={() => selectMove(item.instanceId)}
+                      aria-label={`جابه‌جایی ${item.charm.name}`}
                     >
-                      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white text-[10px] text-[#95677b]">
-                        {(index + 1).toLocaleString("fa-IR")}
-                      </span>
+                      <span>{(index + 1).toLocaleString("fa-IR")}</span>
+                      {item.charm.name}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeCharm(item.instanceId)}
+                      aria-label={`حذف ${item.charm.name}`}
+                    >
+                      <X size={15} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.emptySummary}>
+                {selectedProduct
+                  ? "هنوز چارمی اضافه نکرده‌ای؛ اولین انتخاب را شروع کن."
+                  : "بعد از انتخاب محصول، چارم‌های طرح تو اینجا نمایش داده می‌شوند."}
+              </p>
+            )}
 
-                      <span className="text-xs text-[#68515b]">
-                        {placedCharm.charm.name}
-                      </span>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleRemove(placedCharm.instanceId)
-                        }
-                        aria-label={`حذف ${placedCharm.charm.name} شماره ${index + 1}`}
-                        className="flex size-9 shrink-0 items-center justify-center rounded-full text-lg text-[#95677b] transition-colors hover:bg-[#ecd5df] hover:text-[#38292e] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#95677b]"
-                      >
-                        <span aria-hidden="true">×</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {!hasCompletePricing && placedCharms.length > 0 && (
+              <p className={styles.pricingNote}>
+                قیمت همهٔ چارم‌ها هنوز ثبت نشده است.
+              </p>
             )}
           </section>
 
-          {/* راهنمای کوتاه */}
-          <div className="mt-8 grid gap-5 px-1 sm:grid-cols-3 sm:gap-8">
-            {[
-              {
-                number: "۰۱",
-                title: "چارم‌ها را کشف کن",
-                description: "از رنگ‌ها و نشانه‌های موردعلاقه‌ات شروع کن.",
-              },
-              {
-                number: "۰۲",
-                title: "ترکیبت را بچین",
-                description: "هر چارم را در جای دلخواه دستبند قرار بده.",
-              },
-              {
-                number: "۰۳",
-                title: "به سلیقه خودت تغییر بده",
-                description: "جابه‌جا کن، حذف کن و ترکیب تازه‌ای بساز.",
-              },
-            ].map((step) => (
-              <div key={step.number} className="flex items-start gap-3">
-                <span className="pt-0.5 text-xs text-[#a16c80]">
-                  {step.number}
-                </span>
-
-                <div>
-                  <h3 className="text-xs font-medium">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-[11px] leading-6 text-[#796770]">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className={styles.mobileBar}>
+            <div>
+              <strong>طراحی خودت</strong>
+              <span>
+                {placedCharms.length.toLocaleString("fa-IR")} چارم انتخاب شده
+              </span>
+            </div>
+            <button
+              ref={openButtonRef}
+              type="button"
+              onClick={() =>
+                selectedProduct ? setSheetOpen(true) : openProductPicker()
+              }
+              aria-expanded={sheetOpen}
+              aria-controls="mobile-charm-panel"
+            >
+              <Plus size={19} />
+              {selectedProduct ? "انتخاب چارم" : "انتخاب محصول"}
+            </button>
           </div>
         </div>
       </div>
-      {draggedCharm && createPortal(
-        <DragOverlay dropAnimation={null} zIndex={1000}>
-          <div className="pointer-events-none flex h-full w-full items-center justify-center rounded-xl border border-amber-200 bg-white/90 shadow-xl" aria-hidden="true">
-            <div className="relative h-14 w-14">
-              <Image src={draggedCharm.image} alt="" fill unoptimized className="object-contain" sizes="56px" />
-            </div>
-          </div>
-        </DragOverlay>,
-        document.body,
+
+      {pickerOpen && (
+        <ProductPicker
+          products={products}
+          selectedId={selectedProduct?.id}
+          hasDesign={placedCharms.length > 0}
+          failed={catalogueFailed}
+          onSelect={chooseProduct}
+          onClose={() => setPickerOpen(false)}
+        />
       )}
+
+      {typeof document !== "undefined" &&
+        createPortal(
+          <DragOverlay dropAnimation={null} zIndex={10000}>
+            {draggedCharm ? (
+              <div className={styles.dragPreview} aria-hidden="true">
+                <Image
+                  src={draggedCharm.image}
+                  alt=""
+                  fill
+                  unoptimized
+                  sizes="88px"
+                  className="object-contain"
+                />
+              </div>
+            ) : null}
+          </DragOverlay>,
+          document.body,
+        )}
     </DndContext>
   );
-
 }
- 
