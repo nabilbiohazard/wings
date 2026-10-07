@@ -66,7 +66,7 @@ function MiniProduct({
           alt={product.name}
           fill
           sizes="86px"
-          className="object-cover"
+          className="object-contain object-center"
         />
       </button>
 
@@ -267,7 +267,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         ref={dialogRef}
         className={`fixed inset-0 m-auto w-[90%] max-h-[90dvh] overflow-y-auto rounded-3xl bg-white p-4 sm:p-6 text-black shadow-2xl backdrop:bg-black/40 ${
           panel === "wishlist"
-            ? "max-w-[900px]"
+            ? "max-w-[640px]"
             : panel === "product"
               ? "max-w-4xl"
               : "max-w-xl"
@@ -452,7 +452,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
                 src={selected.image}
                 alt={selected.name}
                 fill
-                className="object-cover"
+                className="object-contain object-center"
               />
             </div>
 

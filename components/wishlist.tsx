@@ -162,7 +162,7 @@ export function Wishlist({
                         alt={product.name}
                         fill
                         unoptimized
-                        sizes="(max-width: 600px) 80vw, 400px"
+                        sizes="(max-width: 599px) 72px, 100px"
                         className="object-contain"
                       />
                     ) : (

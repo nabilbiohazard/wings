@@ -37,6 +37,7 @@ import {
 } from "./Chain";
 import type { CharmData } from "./Charm";
 import { ProductPicker } from "./ProductPicker";
+import { SavedDesignConfirmation } from "./SavedDesignConfirmation";
 import { customizationHref, type DesignProduct } from "@/lib/design-products";
 import { persianNumber } from "@/lib/products";
 import { getClosestPointOnPath } from "@/lib/snapToPath";
@@ -145,6 +146,23 @@ type DragData =
 
 type Position = { x: number; y: number };
 
+// Catalogue items wait for a hold so the list can scroll. On the bracelet,
+// touch-action is disabled and a short movement should start repositioning.
+class StudioTouchSensor extends TouchSensor {
+  constructor(props: ConstructorParameters<typeof TouchSensor>[0]) {
+    super({
+      ...props,
+      options: {
+        ...props.options,
+        activationConstraint:
+          props.activeNode.data.current?.type === "placed"
+            ? { distance: 4 }
+            : props.options.activationConstraint,
+      },
+    });
+  }
+}
+
 export function CharmBuilder({
   products,
   initialProduct,
@@ -160,6 +178,7 @@ export function CharmBuilder({
 }) {
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [saveConfirmationOpen, setSaveConfirmationOpen] = useState(false);
   const [placedCharms, setPlacedCharms] =
     useState<PlacedCharm[]>(initialCharms);
   const savedDesigns = useSavedDesigns();
@@ -178,6 +197,7 @@ export function CharmBuilder({
   const [message, setMessage] = useState("");
   const [canUndo, setCanUndo] = useState(false);
   const [viewportHeight, setViewportHeight] = useState<number | null>(null);
+  const [viewportTop, setViewportTop] = useState(0);
 
   const pathRef = useRef<SVGPathElement>(null);
   const placedRef = useRef<PlacedCharm[]>(initialCharms);
@@ -185,6 +205,7 @@ export function CharmBuilder({
   const lastDragEnd = useRef(0);
   const openButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
   const dragActive = useRef(false);
   const dragPointer = useRef<Position | null>(null);
   const dragGrabOffset = useRef<Position>({ x: 0, y: 0 });
@@ -218,7 +239,7 @@ export function CharmBuilder({
     useSensor(MouseSensor, {
       activationConstraint: { distance: 5 },
     }),
-    useSensor(TouchSensor, {
+    useSensor(StudioTouchSensor, {
       activationConstraint: {
         delay: 300,
         tolerance: 8,
@@ -269,6 +290,7 @@ export function CharmBuilder({
 
     function updateViewport() {
       setViewportHeight(window.visualViewport?.height ?? window.innerHeight);
+      setViewportTop(window.visualViewport?.offsetTop ?? 0);
     }
 
     function onBreakpointChange() {
@@ -280,12 +302,32 @@ export function CharmBuilder({
         setSheetOpen(false);
         openButtonRef.current?.focus();
       }
+      if (event.key === "Tab" && media.matches) {
+        const buttons = workspaceRef.current?.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), input, select, a[href], [tabindex="0"]',
+        );
+        const focusable = Array.from(buttons ?? []).filter(
+          (element) => element.getClientRects().length > 0,
+        );
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
+        const active = document.activeElement;
+        if (
+          !workspaceRef.current?.contains(active) ||
+          (event.shiftKey ? active === first : active === last)
+        ) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        }
+      }
     }
 
     updateViewport();
     closeButtonRef.current?.focus({ preventScroll: true });
 
     window.visualViewport?.addEventListener("resize", updateViewport);
+    window.visualViewport?.addEventListener("scroll", updateViewport);
     window.addEventListener("resize", updateViewport);
     window.addEventListener("keydown", onKeyDown);
     media.addEventListener("change", onBreakpointChange);
@@ -293,6 +335,7 @@ export function CharmBuilder({
     return () => {
       document.body.style.overflow = previousOverflow;
       window.visualViewport?.removeEventListener("resize", updateViewport);
+      window.visualViewport?.removeEventListener("scroll", updateViewport);
       window.removeEventListener("resize", updateViewport);
       window.removeEventListener("keydown", onKeyDown);
       media.removeEventListener("change", onBreakpointChange);
@@ -416,8 +459,6 @@ export function CharmBuilder({
       setPickerOpen(true);
       return;
     }
-    setSheetOpen(false);
-
     setSelection((current) =>
       current?.type === "add" && current.charm.id === charm.id
         ? null
@@ -429,7 +470,6 @@ export function CharmBuilder({
   function selectMove(instanceId: string) {
     if (Date.now() - lastDragEnd.current < 350) return;
     setSelection({ type: "move", instanceId });
-    setSheetOpen(false);
     setMessage("برای جابه‌جایی، محل جدید را روی محصول لمس کن.");
   }
 
@@ -556,6 +596,7 @@ export function CharmBuilder({
         : undefined;
 
   const viewportStyle = {
+    "--studio-top": `${viewportTop}px`,
     "--studio-height":
       viewportHeight !== null ? `${viewportHeight}px` : "100dvh",
   } as CSSProperties;
@@ -582,11 +623,14 @@ export function CharmBuilder({
 
   function saveCurrentDesign() {
     if (!selectedProduct || !placedCharms.length) return;
-    setMessage(
-      saveDesign(selectedProduct, placedCharms)
-        ? "طرح تو در علاقه‌مندی‌ها ذخیره شد؛ حالا می‌توانی یک طرح تازه بسازی."
-        : "ذخیرهٔ طرح انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کن و دوباره تلاش کن.",
-    );
+    if (saveDesign(selectedProduct, placedCharms)) {
+      setMessage("طرح تو در علاقه‌مندی‌ها ذخیره شد.");
+      setSaveConfirmationOpen(true);
+    } else {
+      setMessage(
+        "ذخیرهٔ طرح انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کن و دوباره تلاش کن.",
+      );
+    }
   }
 
   function startNewDesign() {
@@ -654,7 +698,10 @@ export function CharmBuilder({
         lastDragEnd.current = Date.now();
       }}
     >
-      <div dir="rtl" className={styles.studio}>
+      <div
+        dir="rtl"
+        className={`${styles.studio} ${sheetOpen ? styles.studioSheetOpen : ""}`}
+      >
         <div className="site-container">
           <header className={styles.heading}>
             <p className={styles.eyebrow}>WINGS DESIGN STUDIO</p>
@@ -673,6 +720,10 @@ export function CharmBuilder({
           )}
 
           <div
+            ref={workspaceRef}
+            role={sheetOpen ? "dialog" : undefined}
+            aria-modal={sheetOpen ? true : undefined}
+            aria-label={sheetOpen ? "انتخاب چارم و طراحی دستبند" : undefined}
             className={`${styles.workspace} ${
               sheetOpen ? styles.workspaceOpen : ""
             }`}
@@ -680,78 +731,94 @@ export function CharmBuilder({
           >
             <section className={styles.canvasSection} aria-label="میز طراحی">
               <div className={styles.canvasToolbar}>
-                <div>
-                  <strong>
-                    {selectedProduct?.name ?? "محصولت را انتخاب کن"}
-                  </strong>
-                  <span>
-                    {selectedProduct
-                      ? `${persianNumber(selectedProduct.price)} تومان · ${placedCharms.length.toLocaleString("fa-IR")} چارم`
-                      : "۰۱ / انتخاب محصول"}
-                  </span>
-                </div>
-
-                <div className={styles.toolbarButtons}>
+                <div className={styles.productIdentity}>
+                  <div className={styles.productInfo}>
+                    <span className={styles.productEyebrow}>میز طراحی تو</span>
+                    <strong title={selectedProduct?.name}>
+                      {selectedProduct?.name ?? "محصولت را انتخاب کن"}
+                    </strong>
+                    <span className={styles.productMeta}>
+                      {selectedProduct
+                        ? `${persianNumber(selectedProduct.price)} تومان · ${placedCharms.length.toLocaleString("fa-IR")} چارم`
+                        : "قدم اول؛ انتخاب محصول"}
+                    </span>
+                  </div>
                   <button
                     type="button"
-                    className={styles.chooseProductButton}
+                    className={styles.changeProductButton}
                     onClick={openProductPicker}
+                    aria-label={
+                      selectedProduct ? "تغییر محصول" : "انتخاب محصول"
+                    }
+                    title={selectedProduct ? "تغییر محصول" : "انتخاب محصول"}
                   >
                     <ArrowLeftRight size={16} />
                     <span>
                       {selectedProduct ? "تغییر محصول" : "انتخاب محصول"}
                     </span>
                   </button>
-                  <button
-                    type="button"
-                    onClick={saveCurrentDesign}
-                    disabled={
-                      !selectedProduct || !placedCharms.length || designSaved
-                    }
-                    className={`${styles.chooseProductButton} ${styles.saveDesignButton}`}
+                </div>
+                <div className={styles.toolbarButtons}>
+                  <div
+                    className={styles.editTools}
+                    role="group"
+                    aria-label="ابزارهای ویرایش طرح"
                   >
-                    {designSaved ? <Check size={17} /> : <Heart size={17} />}
-                    {designSaved
-                      ? "در علاقه‌مندی‌ها ذخیره شد"
-                      : "ذخیرهٔ طرح در علاقه‌مندی‌ها"}
-                  </button>
-                  {designSaved && (
                     <button
                       type="button"
-                      onClick={startNewDesign}
-                      className={styles.chooseProductButton}
+                      onClick={undo}
+                      disabled={!canUndo}
+                      aria-label="بازگردانی آخرین تغییر"
+                      title="بازگردانی آخرین تغییر"
                     >
-                      <Plus size={16} /> طراحی محصول جدید
+                      <Undo2 size={18} />
                     </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSheetOpen(false);
-                      openPanel("wishlist");
-                    }}
-                    className={styles.chooseProductButton}
-                  >
-                    دیدن علاقه‌مندی‌ها
-                  </button>
-                  <button
-                    type="button"
-                    onClick={undo}
-                    disabled={!canUndo}
-                    aria-label="بازگردانی آخرین تغییر"
-                    title="بازگردانی"
-                  >
-                    <Undo2 size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={reset}
-                    disabled={!placedCharms.length && !selection}
-                    aria-label="شروع دوباره"
-                    title="شروع دوباره"
-                  >
-                    <RotateCcw size={17} />
-                  </button>
+                    <span className={styles.toolDivider} aria-hidden="true" />
+                    <button
+                      type="button"
+                      onClick={reset}
+                      disabled={!placedCharms.length && !selection}
+                      aria-label="شروع دوباره"
+                      title="شروع دوباره"
+                    >
+                      <RotateCcw size={17} />
+                    </button>
+                  </div>
+                  <div className={styles.designActions}>
+                    <button
+                      type="button"
+                      onClick={saveCurrentDesign}
+                      disabled={
+                        !selectedProduct || !placedCharms.length || designSaved
+                      }
+                      className={`${styles.toolbarSaveButton} ${designSaved ? styles.toolbarSaved : ""}`}
+                      aria-label={
+                        designSaved
+                          ? "طرح در علاقه‌مندی‌ها ذخیره شده"
+                          : "ذخیرهٔ طرح در علاقه‌مندی‌ها"
+                      }
+                      title={
+                        designSaved
+                          ? "طرح ذخیره شده"
+                          : "ذخیرهٔ طرح در علاقه‌مندی‌ها"
+                      }
+                    >
+                      {designSaved ? <Check size={17} /> : <Heart size={17} />}
+                      <span>
+                        {designSaved ? "ذخیره شد" : "افزودن به علاقه‌مندی‌ها"}
+                      </span>
+                    </button>
+                    {designSaved && (
+                      <button
+                        type="button"
+                        onClick={startNewDesign}
+                        className={styles.toolbarNewButton}
+                      >
+                        <Plus size={16} />
+                        <span>طراحی محصول جدید</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -936,6 +1003,17 @@ export function CharmBuilder({
           failed={catalogueFailed}
           onSelect={chooseProduct}
           onClose={() => setPickerOpen(false)}
+        />
+      )}
+
+      {saveConfirmationOpen && (
+        <SavedDesignConfirmation
+          onClose={() => setSaveConfirmationOpen(false)}
+          onViewWishlist={() => {
+            setSaveConfirmationOpen(false);
+            setSheetOpen(false);
+            openPanel("wishlist");
+          }}
         />
       )}
 

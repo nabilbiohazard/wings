@@ -120,7 +120,7 @@ export function ProductCard({
               alt={product.name}
               fill
               sizes={sizes}
-              className={`object-cover transition-[transform,opacity] duration-700 motion-reduce:transition-none group-hover:scale-[1.04] ${secondImage ? "group-hover:opacity-0" : ""}`}
+              className={`object-contain object-center transition-[transform,opacity] duration-700 motion-reduce:transition-none ${secondImage ? "group-hover:opacity-0" : ""}`}
             />
           ) : (
             <ImagePlaceholder />
@@ -131,7 +131,7 @@ export function ProductCard({
               alt=""
               fill
               sizes={sizes}
-              className="object-cover opacity-0 transition-[transform,opacity] duration-700 group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none"
+              className="object-contain object-center opacity-0 transition-[transform,opacity] duration-700 group-hover:opacity-100 motion-reduce:transition-none"
             />
           )}
         </Link>

@@ -144,7 +144,7 @@ export function ProductGallery({
               fill
               priority={activeIndex === 0}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-              className="object-cover transition-transform duration-700 ease-out group-hover/gallery:scale-[1.025]"
+              className="object-contain object-center transition-transform duration-700 ease-out"
             />
           </button>
 
@@ -234,7 +234,7 @@ export function ProductGallery({
                     alt={`${productName} - تصویر ${index + 1}`}
                     fill
                     sizes="70px"
-                    className="object-cover"
+                    className="object-contain object-center"
                   />
                 </button>
               );
@@ -332,7 +332,7 @@ export function ProductGallery({
                     alt=""
                     fill
                     sizes="50px"
-                    className="object-cover"
+                    className="object-contain object-center"
                   />
                 </button>
               ))}

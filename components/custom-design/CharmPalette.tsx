@@ -47,10 +47,7 @@ export function CharmPalette({
   const filtered = useMemo(() => {
     const terms = normalize(search).split(" ").filter(Boolean);
     const result = charms.filter((charm) => {
-      if (
-        category !== "همه" &&
-        (charm.category ?? "سایر") !== category
-      ) {
+      if (category !== "همه" && (charm.category ?? "سایر") !== category) {
         return false;
       }
 
@@ -91,12 +88,10 @@ export function CharmPalette({
     setCategory("همه");
     setSort("default");
     setPage(1);
-
   }
 
   function changePage(next: number) {
     setPage(Math.max(1, Math.min(next, pageCount)));
-
   }
 
   return (
@@ -104,7 +99,7 @@ export function CharmPalette({
       <div className={styles.paletteFilters}>
         <div className={styles.paletteTitle}>
           <h2>کدام چارم شبیه توست؟</h2>
-          <p>برای کشیدن در موبایل، تصویر را کمی نگه دار و حرکت بده.</p>
+          <p>«افزودن» برای چیدمان خودکار؛ تصویر چارم برای انتخاب جای دلخواه.</p>
         </div>
 
         <label className={styles.searchBox} htmlFor={searchId}>
@@ -116,7 +111,6 @@ export function CharmPalette({
             onChange={(event) => {
               setSearch(event.target.value);
               setPage(1);
-
             }}
             placeholder="جست‌وجوی نام یا موضوع..."
             aria-label="جست‌وجوی چارم"
@@ -127,7 +121,6 @@ export function CharmPalette({
               onClick={() => {
                 setSearch("");
                 setPage(1);
-
               }}
               aria-label="پاک کردن جست‌وجو"
             >
@@ -150,7 +143,6 @@ export function CharmPalette({
               onClick={() => {
                 setCategory(name);
                 setPage(1);
-
               }}
             >
               {name}
@@ -166,7 +158,6 @@ export function CharmPalette({
             onChange={(event) => {
               setSort(event.target.value);
               setPage(1);
-
             }}
           >
             <option value="default">ترتیب پیش‌فرض</option>

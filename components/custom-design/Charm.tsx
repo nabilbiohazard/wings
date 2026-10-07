@@ -37,41 +37,41 @@ export function PaletteCharm({
 
   return (
     <article className={styles.charmItem}>
-    <div
-      ref={setNodeRef}
-      className={`${styles.charmCard} ${
-        selected ? styles.charmCardSelected : ""
-      } ${isDragging ? styles.charmCardDragging : ""}`}
-    >
-      {count > 0 && (
-        <span className={styles.countBadge}>
-          {count.toLocaleString("fa-IR")} عدد
-        </span>
-      )}
-
-      <button
-        type="button"
-        {...attributes}
-        {...listeners}
-        className={styles.charmDragHandle}
-        onClick={() => onSelect(charm)}
-        aria-label={`کشیدن ${charm.name} روی محصول`}
-        aria-pressed={selected}
+      <div
+        ref={setNodeRef}
+        className={`${styles.charmCard} ${
+          selected ? styles.charmCardSelected : ""
+        } ${isDragging ? styles.charmCardDragging : ""}`}
       >
-        <div className={styles.charmImage}>
-          <Image
-            src={charm.image}
-            alt={charm.name}
-            fill
-            unoptimized
-            draggable={false}
-            sizes="(max-width: 1023px) 90px, 110px"
-            className="pointer-events-none select-none object-contain"
-          />
-        </div>
-      </button>
+        {count > 0 && (
+          <span className={styles.countBadge}>
+            {count.toLocaleString("fa-IR")} عدد
+          </span>
+        )}
 
-      <h3 title={charm.name}>{charm.name}</h3>
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          className={styles.charmDragHandle}
+          onClick={() => onSelect(charm)}
+          aria-label={`انتخاب جای ${charm.name} روی محصول؛ برای کشیدن تصویر را نگه دار`}
+          aria-pressed={selected}
+        >
+          <div className={styles.charmImage}>
+            <Image
+              src={charm.image}
+              alt={charm.name}
+              fill
+              unoptimized
+              draggable={false}
+              sizes="(max-width: 1023px) 90px, 110px"
+              className="pointer-events-none select-none object-contain"
+            />
+          </div>
+        </button>
+
+        <h3 title={charm.name}>{charm.name}</h3>
 
         {charm.price !== undefined && (
           <p className={styles.charmPrice}>
