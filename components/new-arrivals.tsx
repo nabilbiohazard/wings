@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-import { categories, products } from "@/lib/products";
+import { categories } from "@/lib/products";
 
 import { ProductCard } from "./product-card";
 import { Icon } from "./icon";
@@ -24,7 +24,7 @@ const filters = [
 ];
 
 export function NewArrivals() {
-  const { category, setCategory } = useShop();
+  const { category, setCategory, products } = useShop();
 
   const prevRef = useRef<HTMLButtonElement>(null);
 
@@ -104,8 +104,8 @@ export function NewArrivals() {
             }}
 
             navigation={{
-              prevEl: prevRef.current,
-              nextEl: nextRef.current,
+              prevEl: null,
+              nextEl: null,
             }}
 
             onBeforeInit={(swiper) => {

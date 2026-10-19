@@ -12,6 +12,11 @@
 
 # testing
 /coverage
+/.npm-cache/
+/test-results/
+/playwright-report/
+/.tools/
+/wordpress/*.local.txt
 
 # next.js
 /.next/

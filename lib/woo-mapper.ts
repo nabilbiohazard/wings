@@ -89,6 +89,7 @@ export function mapWooProduct(product: any): Product {
 
   return {
     id: Number(product.id),
+    type: product.type,
 
     name: product.name ?? "",
 

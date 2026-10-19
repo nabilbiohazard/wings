@@ -24,6 +24,8 @@ interface CharmPaletteProps {
   counts: Record<string, number>;
   onSelect: (charm: CharmData) => void;
   onAdd: (charm: CharmData) => void;
+  loading?: boolean;
+  error?: string;
 }
 
 export function CharmPalette({
@@ -32,6 +34,8 @@ export function CharmPalette({
   counts,
   onSelect,
   onAdd,
+  loading = false,
+  error = "",
 }: CharmPaletteProps) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("همه");
@@ -168,6 +172,16 @@ export function CharmPalette({
       </div>
 
       <div className={styles.paletteResults}>
+        {loading && (
+          <p role="status" className="p-4 text-sm text-[#8b777d]">
+            در حال دریافت چارم‌های فروشگاه…
+          </p>
+        )}
+        {error && (
+          <p role="alert" className="commerce-error">
+            {error}
+          </p>
+        )}
         <div className={styles.charmGrid}>
           {visible.map((charm) => (
             <PaletteCharm
@@ -181,9 +195,13 @@ export function CharmPalette({
           ))}
         </div>
 
-        {!visible.length && (
+        {!loading && !error && !visible.length && (
           <div className={styles.noResults}>
-            <p>چارمی با این مشخصات پیدا نشد.</p>
+            <p>
+              {charms.length
+                ? "چارمی با این مشخصات پیدا نشد."
+                : "هنوز محصول منتشرشده‌ای در دستهٔ چارم وجود ندارد."}
+            </p>
             <button type="button" onClick={resetFilters}>
               نمایش همهٔ چارم‌ها
             </button>

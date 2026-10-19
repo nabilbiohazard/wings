@@ -48,94 +48,7 @@ import {
 } from "@/lib/saved-designs";
 import { useShop } from "../shop-provider";
 import styles from "./builder-studio.module.css";
-
-const CHARMS: CharmData[] = [
-  {
-    id: "clover",
-    name: "Clover",
-    image: "/images/charms/clover.png",
-    price: 250000,
-    category: "دریایی",
-    keywords: ["خرچنگ", "crab"],
-  },
-  ...[
-    {
-      photo: 1,
-      id: "pink-dress",
-      name: "Pink Dress",
-      price: 250000,
-      category: "مد و زیبایی",
-      keywords: ["لباس", "پیراهن", "صورتی"],
-    },
-    {
-      photo: 2,
-      id: "cocktail",
-      name: "Cocktail",
-      price: 250000,
-      category: "خوراکی‌ها",
-      keywords: ["نوشیدنی", "لیوان"],
-    },
-    {
-      photo: 3,
-      id: "ice-cream",
-      name: "Ice Cream",
-      price: 250000,
-      category: "خوراکی‌ها",
-      keywords: ["بستنی"],
-    },
-    {
-      photo: 5,
-      id: "travel",
-      name: "Travel",
-      price: 250000,
-      category: "سفر و سرگرمی",
-      keywords: ["سفر", "هواپیما", "پاسپورت"],
-    },
-    {
-      photo: 6,
-      id: "tennis",
-      name: "Tennis Racket",
-      price: 250000,
-      category: "سفر و سرگرمی",
-      keywords: ["تنیس", "راکت", "ورزش"],
-    },
-    {
-      photo: 7,
-      id: "chocolate",
-      name: "Chocolate",
-      price: 250000,
-      category: "خوراکی‌ها",
-      keywords: ["شکلات"],
-    },
-    {
-      photo: 8,
-      id: "gold-dress",
-      name: "Gold Dress",
-      price: 250000,
-      category: "مد و زیبایی",
-      keywords: ["لباس", "پیراهن", "طلایی"],
-    },
-    {
-      photo: 9,
-      id: "shrimp",
-      name: "Shrimp",
-      price: 250000,
-      category: "دریایی",
-      keywords: ["میگو"],
-    },
-    {
-      photo: 10,
-      id: "fashion",
-      name: "Fashion",
-      price: 250000,
-      category: "مد و زیبایی",
-      keywords: ["آرایش", "رژلب", "کیف"],
-    },
-  ].map(({ photo, ...charm }) => ({
-    ...charm,
-    image: `/images/charms/photo_${photo}_2026-10-01_15-40-19.jpg - Edited.png`,
-  })),
-];
+import { ProductPurchase } from "../commerce/product-purchase";
 
 type Selection =
   { type: "add"; charm: CharmData } | { type: "move"; instanceId: string };
@@ -177,6 +90,32 @@ export function CharmBuilder({
   requestedUnavailable?: boolean;
 }) {
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
+  const [paletteCharms, setPaletteCharms] = useState<CharmData[]>([]);
+  const [charmsLoading, setCharmsLoading] = useState(true);
+  const [charmsError, setCharmsError] = useState("");
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch("/api/woo/charms", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok || !Array.isArray(data.charms))
+          throw new Error(data.message || "?????? ???????? ??????? ????? ???.");
+        return data.charms as CharmData[];
+      })
+      .then((charms) => {
+        if (!controller.signal.aborted) setPaletteCharms(charms);
+      })
+      .catch((error) => {
+        if (!controller.signal.aborted) setCharmsError(error.message);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCharmsLoading(false);
+      });
+    return () => controller.abort();
+  }, []);
+  const charmPrices = Object.fromEntries(
+    paletteCharms.map((charm) => [charm.id, charm.price]),
+  );
   const [pickerOpen, setPickerOpen] = useState(false);
   const [saveConfirmationOpen, setSaveConfirmationOpen] = useState(false);
   const [placedCharms, setPlacedCharms] =
@@ -581,10 +520,10 @@ export function CharmBuilder({
 
   const hasCompletePricing =
     placedCharms.length > 0 &&
-    placedCharms.every((item) => item.charm.price !== undefined);
+    placedCharms.every((item) => charmPrices[item.charm.id] != null);
 
   const total = placedCharms.reduce(
-    (sum, item) => sum + (item.charm.price ?? 0),
+    (sum, item) => sum + (charmPrices[item.charm.id] ?? 0),
     0,
   );
 
@@ -896,7 +835,9 @@ export function CharmBuilder({
               </div>
 
               <CharmPalette
-                charms={CHARMS}
+                charms={paletteCharms}
+                loading={charmsLoading}
+                error={charmsError}
                 counts={counts}
                 selectedCharmId={
                   selection?.type === "add" ? selection.charm.id : undefined
@@ -918,6 +859,22 @@ export function CharmBuilder({
           </div>
 
           <section className={styles.summary} aria-label="چارم‌های انتخاب‌شده">
+            {selectedProduct && placedCharms.length > 0 && (
+              <div className="mb-6 rounded-2xl border border-[#e7dadd] bg-[#fffafb] p-4">
+                <h2 className="mb-4">همین طرح را سفارش بده</h2>
+                <ProductPurchase
+                  key={selectedProduct.id}
+                  product={selectedProduct}
+                  design={{
+                    id: "current",
+                    product: selectedProduct,
+                    charms: placedCharms,
+                    savedAt: "",
+                  }}
+                  onAdded={() => setSheetOpen(false)}
+                />
+              </div>
+            )}
             <div className={styles.saveDesignBar}>
               <div>
                 <h2>طرح تو، برای روزهای بعد</h2>

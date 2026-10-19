@@ -10,6 +10,7 @@ import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { ShopProvider } from "@/components/shop-provider";
+import { CommerceProvider } from "@/components/commerce/provider";
 
 export const metadata: Metadata = {
   icons: { icon: "/icon.svg" },
@@ -18,15 +19,19 @@ export const metadata: Metadata = {
     "دنیای رنگی وینگز گالری؛ گردنبند، دستبند، گوشواره و چارم‌های دوست‌داشتنی برای داستان منحصربه‌فرد شما.",
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fa" dir="rtl">
       <body>
-        <ShopProvider>
-          <Header />
-          {children}
-          <Footer />
-        </ShopProvider>
+        <CommerceProvider>
+          <ShopProvider>
+            <Header />
+            {children}
+            <Footer />
+          </ShopProvider>
+        </CommerceProvider>
       </body>
     </html>
   );

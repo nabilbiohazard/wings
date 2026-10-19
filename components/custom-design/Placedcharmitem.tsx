@@ -69,7 +69,8 @@ export function PlacedCharmItem({
     data: { type: "placed" as const, instanceId, charm },
   });
 
-  const attachment = ATTACHMENT_POINTS[charm.id] ?? { x: 50, y: 30 };
+  const attachment = charm.attachment ??
+    ATTACHMENT_POINTS[charm.id] ?? { x: 50, y: 30 };
   const hitArea = CHARM_HIT_AREAS[charm.id] ?? {
     left: 0,
     top: 0,

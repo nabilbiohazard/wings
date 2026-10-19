@@ -8,6 +8,8 @@ import type { SavedDesign } from "@/lib/saved-designs";
 import { persianNumber } from "@/lib/products";
 import { SavedDesignPreview } from "./custom-design/SavedDesignPreview";
 import styles from "./wishlist.module.css";
+import { ProductPurchase } from "./commerce/product-purchase";
+import { isCustomizable } from "@/lib/design-products";
 
 export function Wishlist({
   products,
@@ -106,7 +108,7 @@ export function Wishlist({
                       </Link>
                     </h5>
                     <div className={styles.price}>
-                      <span>{complete ? "قیمت طرح" : "قیمت محصول پایه"}</span>
+                      <span>{complete ? "برآورد قیمت طرح" : "قیمت محصول پایه"}</span>
                       <strong>
                         {persianNumber(price)} <small>تومان</small>
                       </strong>
@@ -121,6 +123,14 @@ export function Wishlist({
                       </span>
                       <ArrowLeft size={16} />
                     </Link>
+                    {isCustomizable(design.product) && (
+                      <div className="mt-3">
+                        <ProductPurchase
+                          product={design.product}
+                          design={design}
+                        />
+                      </div>
+                    )}
                   </div>
                 </article>
               );

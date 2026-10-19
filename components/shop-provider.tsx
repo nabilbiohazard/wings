@@ -7,13 +7,15 @@ import { Wishlist } from "./wishlist";
 import { categories, persianNumber } from "@/lib/products";
 import type { Category, Product } from "@/lib/types";
 import { Icon } from "./icon";
+import { useCommerce } from "./commerce/provider";
+import { LoginForm } from "./commerce/login-form";
+import { CartView } from "./commerce/cart-view";
+import { ProductPurchase } from "./commerce/product-purchase";
+import type { CartItem } from "@/lib/commerce-types";
 
 type Panel = "search" | "wishlist" | "cart" | "account" | "product" | null;
 
-type CartLine = {
-  id: number;
-  quantity: number;
-};
+type CartLine = CartItem;
 
 type ShopContextValue = {
   category: Category;
@@ -95,7 +97,7 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
   const [favorites, setFavorites] = useState<number[]>([]);
 
-  const [cart, setCart] = useState<CartLine[]>([]);
+  const { cart } = useCommerce();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
@@ -121,48 +123,6 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     setSelected(product);
 
     setPanel("product");
-  };
-
-  const changeQuantity = (id: number, amount: number) => {
-    setCart((current) =>
-      current
-        .map((line) =>
-          line.id === id
-            ? {
-                ...line,
-                quantity: line.quantity + amount,
-              }
-            : line,
-        )
-        .filter((line) => line.quantity > 0),
-    );
-  };
-
-  const addToCart = (id: number) => {
-    setCart((current) => {
-      const exists = current.some((line) => line.id === id);
-
-      if (exists) {
-        return current.map((line) =>
-          line.id === id
-            ? {
-                ...line,
-                quantity: line.quantity + 1,
-              }
-            : line,
-        );
-      }
-
-      return [
-        ...current,
-        {
-          id,
-          quantity: 1,
-        },
-      ];
-    });
-
-    setPanel("cart");
   };
 
   useEffect(() => {
@@ -359,91 +319,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
           />
         )}
 
-        {panel === "cart" &&
-          (cart.length ? (
-            <div>
-              {cart.map((line) => {
-                const product = products.find((item) => item.id === line.id)!;
+        {panel === "cart" && <CartView onClose={() => setPanel(null)} />}
 
-                return (
-                  <MiniProduct key={line.id} product={product}>
-                    <div className="mt-3 flex items-center gap-4">
-                      <button
-                        onClick={() => changeQuantity(line.id, 1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border"
-                      >
-                        <Icon name="plus" size={14} />
-                      </button>
-
-                      <span>{persianNumber(line.quantity)}</span>
-
-                      <button
-                        onClick={() => changeQuantity(line.id, -1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border"
-                      >
-                        <Icon name="minus" size={14} />
-                      </button>
-                    </div>
-                  </MiniProduct>
-                );
-              })}
-
-              <div className="mt-6 flex items-center justify-between border-t border-black/10 pt-5">
-                <span>جمع سبد خرید</span>
-
-                <strong>
-                  {persianNumber(
-                    cart.reduce((sum, line) => {
-                      const product = products.find(
-                        (item) => item.id === line.id,
-                      );
-
-                      return sum + (product?.price ?? 0) * line.quantity;
-                    }, 0),
-                  )}{" "}
-                  تومان
-                </strong>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-5 py-12 text-center">
-              <Icon name="bag" size={42} />
-
-              <h3>هنوز چیزی به سبدت اضافه نکردی</h3>
-
-              <button
-                className="rounded-full bg-black px-7 py-3 text-white"
-                onClick={() => {
-                  setPanel(null);
-
-                  document.getElementById("new-arrivals")?.scrollIntoView({
-                    behavior: "smooth",
-                  });
-                }}
-              >
-                کشف تازه‌رسیده‌ها
-              </button>
-            </div>
-          ))}
-
-        {panel === "account" && (
-          <div className="flex flex-col items-center gap-5 py-12 text-center">
-            <Icon name="user" size={42} />
-
-            <h3 className="text-lg font-medium">جایی برای داستان تو</h3>
-
-            <p className="text-sm leading-7 text-black/60">
-              ورود و پیگیری سفارش‌ها با راه‌اندازی فروشگاه فعال می‌شود.
-            </p>
-
-            <button
-              onClick={() => setPanel("wishlist")}
-              className="rounded-full bg-black px-7 py-3 text-white"
-            >
-              دیدن علاقه‌مندی‌ها
-            </button>
-          </div>
-        )}
+        {panel === "account" && <LoginForm onSuccess={() => setPanel(null)} />}
 
         {panel === "product" && selected && (
           <div className="grid gap-8 lg:grid-cols-2">
@@ -469,13 +347,9 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
                 {persianNumber(selected.price)} <small>تومان</small>
               </p>
 
-              <button
-                onClick={() => addToCart(selected.id)}
-                className="mt-6 flex w-full items-center justify-center gap-3 rounded-full bg-black py-4 text-white"
-              >
-                افزودن به سبد خرید
-                <Icon name="bag" size={18} />
-              </button>
+              <div className="mt-6">
+                <ProductPurchase key={selected.id} product={selected} />
+              </div>
 
               <button
                 onClick={() => toggleFavorite(selected.id)}

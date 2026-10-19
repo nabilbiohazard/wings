@@ -1,13 +1,44 @@
+.card[data-mobile-horizontal] .image {
+  aspect-ratio: 1;
+}
+
+.card[data-mobile-horizontal] .image img {
+  object-fit: cover;
+}
+
+.card[data-mobile-horizontal] .actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.card[data-mobile-horizontal] .actions > a {
+  min-width: 0;
+  margin-top: 0;
+  padding-inline: 8px;
+  white-space: nowrap;
+}
+
+.card[data-mobile-horizontal] .actions svg {
+  flex-shrink: 0;
+}
+
+.card[data-mobile-horizontal] .actions > a:only-child {
+  grid-column: 1 / -1;
+}
+
 @media (width < 640px) {
   .card[data-mobile-horizontal] {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 40% minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
   }
 
   .card[data-mobile-horizontal] .image {
-    width: 40%;
-    flex-shrink: 0;
+    width: 100%;
     aspect-ratio: auto;
-    min-height: 240px;
+    align-self: stretch;
   }
 
   .card[data-mobile-horizontal] .details {
@@ -17,5 +48,9 @@
   .card[data-mobile-horizontal] .price {
     min-height: 60px;
     padding-top: 8px;
+  }
+
+  .card[data-mobile-horizontal] .actions {
+    grid-column: 1 / -1;
   }
 }

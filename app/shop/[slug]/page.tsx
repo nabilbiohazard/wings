@@ -1,11 +1,11 @@
 import { HeaderBackdrop } from "@/components/header-backdrop";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { getProduct } from "@/lib/get-product";
 import { persianNumber } from "@/lib/products";
-import { customizationHref } from "@/lib/design-products";
+import { ProductPurchase } from "@/components/commerce/product-purchase";
+import { customizationHref, isCustomizable } from "@/lib/design-products";
 
 function stripHtml(html?: string) {
   if (!html) return "";
@@ -30,8 +30,6 @@ export default async function ProductPage({
   if (!product) {
     notFound();
   }
-
-  const images = product.images?.length > 0 ? product.images : [product.image];
 
   const category = product.categories?.[0]?.name;
 
@@ -302,63 +300,17 @@ export default async function ProductPage({
               ========================= */}
 
               <div className="mt-8">
-                <button
-                  type="button"
-                  disabled={!inStock}
-                  className={`
-                    group
-                    flex w-full
-                    items-center
-                    justify-between
+                <ProductPurchase product={product} />
 
-                    rounded-full
-                    px-7 py-5
-                    text-sm
-
-                    transition-all
-                    duration-300
-
-                    ${
-                      inStock
-                        ? `
-                          bg-black
-                          text-white
-                          hover:scale-[1.01]
-                          hover:bg-black/85
-                        `
-                        : `
-                          cursor-not-allowed
-                          bg-black/[0.06]
-                          text-black/30
-                        `
-                    }
-                  `}
-                >
-                  <span>
-                    {inStock ? "افزودن به سبد خرید" : "در حال حاضر ناموجود"}
-                  </span>
-
-                  {inStock && (
-                    <span
-                      className="
-                        flex h-9 w-9
-                        items-center justify-center
-                        rounded-full
-                        bg-white
-                        text-black
-                        transition-transform
-                        duration-300
-                        group-hover:-translate-x-1
-                      "
-                    >
-                      ←
-                    </span>
-                  )}
-                </button>
-
-                <Link href={customizationHref(product.id)} className="mt-4 flex min-h-14 items-center justify-between gap-4 rounded-full border border-[#b68c9c] bg-[#f8eef1] px-7 py-4 text-sm font-medium text-[#79465a] transition-colors hover:bg-[#95677b] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b]">
-                  <span>خودت بساز · چارم‌های دلخواهت را اضافه کن</span><span aria-hidden="true">✦</span>
-                </Link>
+                {isCustomizable(product) && (
+                  <Link
+                    href={customizationHref(product.id)}
+                    className="mt-4 flex min-h-14 items-center justify-between gap-4 rounded-full border border-[#b68c9c] bg-[#f8eef1] px-7 py-4 text-sm font-medium text-[#79465a] transition-colors hover:bg-[#95677b] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#95677b]"
+                  >
+                    <span>خودت بساز · چارم‌های دلخواهت را اضافه کن</span>
+                    <span aria-hidden="true">✦</span>
+                  </Link>
+                )}
                 <div className="mt-5 grid grid-cols-2 gap-3">
                   <div className="rounded-2xl border border-black/[0.07] px-4 py-4 text-center">
                     <p className="text-[10px] text-black/35">وضعیت</p>

@@ -13,6 +13,9 @@ export interface CharmData {
   price?: number;
   category?: string;
   keywords?: string[];
+  attachment?: { x: number; y: number };
+  product_id?: number;
+  available?: boolean;
 }
 
 interface PaletteCharmProps {
@@ -33,6 +36,7 @@ export function PaletteCharm({
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${charm.id}`,
     data: { type: "palette" as const, charm },
+    disabled: charm.available === false,
   });
 
   return (
@@ -52,6 +56,7 @@ export function PaletteCharm({
         <button
           type="button"
           {...attributes}
+          disabled={charm.available === false}
           {...listeners}
           className={styles.charmDragHandle}
           onClick={() => onSelect(charm)}
@@ -59,15 +64,19 @@ export function PaletteCharm({
           aria-pressed={selected}
         >
           <div className={styles.charmImage}>
-            <Image
-              src={charm.image}
-              alt={charm.name}
-              fill
-              unoptimized
-              draggable={false}
-              sizes="(max-width: 1023px) 90px, 110px"
-              className="pointer-events-none select-none object-contain"
-            />
+            {charm.image ? (
+              <Image
+                src={charm.image}
+                alt={charm.name}
+                fill
+                unoptimized
+                draggable={false}
+                sizes="(max-width: 1023px) 90px, 110px"
+                className="pointer-events-none select-none object-contain"
+              />
+            ) : (
+              <span className="text-xs text-[#8b777d]">تصویر ثبت نشده</span>
+            )}
           </div>
         </button>
 
@@ -83,11 +92,12 @@ export function PaletteCharm({
         <button
           type="button"
           className={styles.addButton}
+          disabled={charm.available === false}
           onClick={() => onAdd(charm)}
           aria-label={`افزودن ${charm.name}`}
         >
           <Plus size={15} />
-          <span>افزودن</span>
+          <span>{charm.available === false ? "غیرقابل سفارش" : "افزودن"}</span>
         </button>
       </div>
     </article>

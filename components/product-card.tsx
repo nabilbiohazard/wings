@@ -7,7 +7,7 @@ import { persianNumber } from "@/lib/products";
 import { Icon } from "./icon";
 import { useShop } from "./shop-provider";
 import styles from "./product-card.module.css";
-import { customizationHref } from "@/lib/design-products";
+import { customizationHref, isCustomizable } from "@/lib/design-products";
 
 type ProductCardProps = {
   product: Product;
@@ -96,8 +96,8 @@ export function ProductCard({
     ? Math.round(((regularPrice - salePrice) / regularPrice) * 100)
     : 0;
   const inStock = product.isInStock !== false;
-  const material = product.attributes?.find(
-    (attribute) => /جنس|material/i.test(attribute.name),
+  const material = product.attributes?.find((attribute) =>
+    /جنس|material/i.test(attribute.name),
   )?.options[0];
   const category = product.categories?.[0]?.name;
   const rating = product.averageRating ?? 0;
@@ -108,7 +108,9 @@ export function ProductCard({
       data-mobile-horizontal={mobileHorizontal || undefined}
       className={`${styles.card} group flex h-full min-w-0 flex-col overflow-hidden rounded-[24px] border border-[#ede3e2] bg-white p-1.5 shadow-[0_8px_28px_rgba(74,43,52,0.035)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[#d8bac3] hover:shadow-[0_20px_48px_rgba(74,43,52,0.11)] focus-within:border-[#b4778c] motion-reduce:transform-none`}
     >
-      <div className={`${styles.image} relative isolate aspect-[4/5] overflow-hidden rounded-[19px] bg-[#f7f1ef]`}>
+      <div
+        className={`${styles.image} relative isolate aspect-[4/5] overflow-hidden rounded-[19px] bg-[#f7f1ef]`}
+      >
         <Link
           href={href}
           aria-label={`مشاهده ${product.name}`}
@@ -158,11 +160,16 @@ export function ProductCard({
         </button>
       </div>
 
-      <div className={`${styles.details} flex min-w-0 flex-1 flex-col px-2.5 pt-4 pb-2.5 sm:px-3.5`}>
+      <div
+        className={`${styles.details} flex min-w-0 flex-1 flex-col px-2.5 pt-4 sm:px-3.5`}
+      >
         <div className="mb-2 flex min-w-0 items-center justify-between gap-2 text-[10px] text-[#9b7883] sm:text-[11px]">
           <span className="truncate">{category || "وینگز گالری"}</span>
           {rating > 0 && (
-            <span className="shrink-0 text-[#9d7041]" aria-label={`امتیاز ${persianNumber(rating)} از ۵`}>
+            <span
+              className="shrink-0 text-[#9d7041]"
+              aria-label={`امتیاز ${persianNumber(rating)} از ۵`}
+            >
               <span aria-hidden="true">★</span> {persianNumber(rating)}
             </span>
           )}
@@ -181,7 +188,9 @@ export function ProductCard({
         <p className="mt-1 min-h-4 truncate text-[10px] text-[#ad9ca0] sm:text-[11px]">
           {material || "انتخابی برای لحظه‌های تو"}
         </p>
-        <div className={`${styles.price} mt-auto flex min-h-20 flex-col justify-end border-t border-[#f1e8e8] pt-3`}>
+        <div
+          className={`${styles.price} mt-auto flex min-h-20 flex-col justify-end border-t border-[#f1e8e8] pt-3`}
+        >
           {hasDiscount && (
             <del className="mb-0.5 block text-[11px] text-[#aa9b9e]">
               <span className="sr-only">قیمت قبلی: </span>
@@ -196,21 +205,28 @@ export function ProductCard({
             </span>
           </p>
         </div>
+      </div>
+      <div className={`${styles.actions} px-2.5 pb-2.5 sm:px-3.5`}>
         <Link
           href={href}
           aria-label={`مشاهده ${product.name}`}
           className="mt-2 flex min-h-10 items-center justify-between gap-1 rounded-xl bg-[#f8eef1] px-3 py-2.5 text-[11px] font-medium text-[#79465a] transition-[background-color,color] hover:bg-[#8f425f] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870] sm:px-4 sm:text-xs"
         >
-          <span className="truncate">{product.hasOptions ? "انتخاب مدل" : "مشاهده محصول"}</span>
+          <span className="truncate">
+            {product.hasOptions ? "انتخاب مدل" : "مشاهده محصول"}
+          </span>
           <Icon name="arrow" size={15} />
         </Link>
-        <Link
-          href={customizationHref(product.id)}
-          aria-label={`خودت بساز: ${product.name}`}
-          className="mt-2 flex min-h-10 items-center justify-between gap-2 rounded-xl border border-[#d8c4cc] px-3 py-2 text-[11px] font-medium text-[#79465a] transition-colors hover:border-[#95677b] hover:bg-[#f8eef1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870] sm:px-4 sm:text-xs"
-        >
-          <span>خودت بساز</span><Icon name="sparkle" size={15} />
-        </Link>
+        {isCustomizable(product) && (
+          <Link
+            href={customizationHref(product.id)}
+            aria-label={`خودت بساز: ${product.name}`}
+            className="mt-2 flex min-h-10 items-center justify-between gap-2 rounded-xl border border-[#d8c4cc] px-3 py-2 text-[11px] font-medium text-[#79465a] transition-colors hover:border-[#95677b] hover:bg-[#f8eef1] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#9b5870] sm:px-4 sm:text-xs"
+          >
+            <span>خودت بساز</span>
+            <Icon name="sparkle" size={15} />
+          </Link>
+        )}
       </div>
     </article>
   );
