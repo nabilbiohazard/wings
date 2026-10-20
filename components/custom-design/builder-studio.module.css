@@ -628,11 +628,17 @@
 
 .paletteResults {
   grid-area: results;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
   min-height: 0;
   padding: 16px;
   padding-top: 16px;
+}
+
+.paletteResults::-webkit-scrollbar,
+.palette::-webkit-scrollbar {
+  display: none;
 }
 
 .charmGrid {
@@ -707,7 +713,7 @@
 .charmImage {
   position: relative;
   width: 100%;
-  height: 64px;
+  height: 120px;
 }
 
 .charmCard h3 {
@@ -932,6 +938,7 @@
 /* A percentage size scales with the bracelet canvas. */
 .placedCharm {
   position: absolute;
+  z-index: 10;
   width: 49%;
   aspect-ratio: 1;
   touch-action: none;
@@ -1017,7 +1024,69 @@
   }
 }
 
+/* Shared desktop rows align both headers and both content panels.
+   Keep all mobile and sheet layouts outside this breakpoint unchanged. */
+@media (min-width: 1024px) {
+  .workspace {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "toolbar filters" "canvas results" "status .";
+    grid-template-rows: auto auto auto;
+  }
+
+  .canvasSection {
+    grid-area: auto;
+    grid-column: 1;
+    grid-row: 1 / 4;
+    display: grid;
+    grid-template-rows: subgrid;
+    border-radius: 0 28px 28px 0;
+  }
+
+  .canvasToolbar {
+    justify-content: center;
+  }
+
+  .canvasArea:has(.emptyCanvas) {
+    padding: 16px;
+    align-items: stretch;
+  }
+
+  .chainFrame:has(> .emptyCanvas) {
+    max-width: none;
+  }
+
+  .emptyCanvas {
+    height: 100%;
+  }
+
+  .paletteFilters {
+    border-radius: 28px 0 0 0;
+  }
+
+  .paletteResults {
+    /* The product determines this row's height; extra charms scroll inside it. */
+    contain: size;
+    overflow-y: auto;
+  }
+}
+
 @media (max-width: 1023px) {
+  .placedCharm[data-selected="true"] {
+    z-index: 20;
+  }
+
+  .placedCharm .placedActions {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .placedCharm[data-selected="true"] .placedActions {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .studio {
     padding: 28px 0 calc(110px + env(safe-area-inset-bottom));
   }
@@ -1280,7 +1349,7 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior-y: contain;
-    scrollbar-width: thin;
+    scrollbar-width: none;
     scroll-padding-block: 12px;
   }
   .workspaceOpen .paletteFilters {

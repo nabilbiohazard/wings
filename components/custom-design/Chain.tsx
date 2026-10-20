@@ -2,7 +2,7 @@
 
 import { useDroppable } from "@dnd-kit/core";
 import Image from "next/image";
-import type { RefObject } from "react";
+import { useState, type RefObject } from "react";
 import { PlacedCharmItem } from "./Placedcharmitem";
 import type { CharmData } from "./Charm";
 import type { DesignProduct } from "@/lib/design-products";
@@ -27,7 +27,17 @@ const RADIUS_Y = 211;
 export const BLOCKED_ARC_START_DEG = 310;
 export const BLOCKED_ARC_END_DEG = 50;
 
-export function isCharmPositionBlocked(x: number, y: number): boolean {
+export function isNecklace(product: DesignProduct): boolean {
+  return /گردنبند|necklace/i.test(`${product.name} ${product.category} ${product.slug}`);
+}
+
+// Two separate branches, traced in the same square as the product image.
+// Do not join across the pendant: that would allow charms to float in the gap.
+export const NECKLACE_PATH_D =
+  "M 103 0 C 100 155 133 294 224 386 M 496 0 C 499 155 466 294 376 386";
+
+export function isCharmPositionBlocked(x: number, y: number, product?: DesignProduct): boolean {
+  if (product && isNecklace(product)) return false;
   const normalize = (angle: number) => ((angle % 360) + 360) % 360;
   const angle = normalize(
     (Math.atan2((x - CHAIN_CENTER_X) / RADIUS_X, -(y - CHAIN_CENTER_Y) / RADIUS_Y) * 180) / Math.PI,
@@ -45,7 +55,27 @@ export const CHAIN_PATH_D = `M ${CHAIN_CENTER_X} ${CHAIN_CENTER_Y - RADIUS_Y} A 
   CHAIN_CENTER_X - 0.01
 } ${CHAIN_CENTER_Y - RADIUS_Y} Z`;
 
-export function getCharmRotation(x: number, y: number): number {
+export function getCharmRotation(x: number, y: number, product?: DesignProduct): number {
+  if (product && isNecklace(product)) {
+    // Find the parameter on the monotonic cubic branch from its height.
+    // Its outward normal points left/down on the left and right/down on the right.
+    let low = 0;
+    let high = 1;
+    for (let step = 0; step < 30; step += 1) {
+      const t = (low + high) / 2;
+      const height = 3 * (1 - t) ** 2 * t * 155 +
+        3 * (1 - t) * t ** 2 * 294 + t ** 3 * 386;
+      if (height < y) low = t;
+      else high = t;
+    }
+    const t = (low + high) / 2;
+    const dx = 3 * (1 - t) ** 2 * -3 +
+      6 * (1 - t) * t * 33 + 3 * t ** 2 * (x < 300 ? 91 : 90);
+    const dy = 3 * (1 - t) ** 2 * 155 +
+      6 * (1 - t) * t * 139 + 3 * t ** 2 * 92;
+    const outwardX = x < 300 ? -dy : dy;
+    return Math.atan2(dx, outwardX) * 180 / Math.PI - 90;
+  }
   const outwardAngle = Math.atan2(
     (y - CHAIN_CENTER_Y) / (RADIUS_Y * RADIUS_Y),
     (x - CHAIN_CENTER_X) / (RADIUS_X * RADIUS_X),
@@ -61,13 +91,15 @@ interface ChainProps {
   placedCharms: PlacedCharm[];
   onRemove: (instanceId: string) => void;
   onMove: (instanceId: string) => void;
+  onCancelPlacement: () => void;
   onCanvasTap: (clientX: number, clientY: number) => void;
   placementHint?: string;
   pathRef: RefObject<SVGPathElement | null>;
 }
 
-export function Chain({ product, placedCharms, onRemove, onMove, onCanvasTap, placementHint, pathRef }: ChainProps) {
+export function Chain({ product, placedCharms, onRemove, onMove, onCancelPlacement, onCanvasTap, placementHint, pathRef }: ChainProps) {
   const { setNodeRef, isOver } = useDroppable({ id: "chain-drop-zone" });
+  const [selectedCharmId, setSelectedCharmId] = useState<string | null>(null);
 
   return (
     <div
@@ -75,10 +107,16 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCanvasTap, pl
       id="chain-container"
       onClickCapture={(event) => {
         if (!placementHint || (event.target as HTMLElement).closest("[data-charm-actions]")) return;
+        if (window.matchMedia("(max-width: 1023px)").matches &&
+          (event.target as HTMLElement).closest("[data-placed-charm]")) return;
         event.stopPropagation();
+        setSelectedCharmId(null);
         onCanvasTap(event.clientX, event.clientY);
       }}
-      onClick={(event) => onCanvasTap(event.clientX, event.clientY)}
+      onClick={(event) => {
+        setSelectedCharmId(null);
+        onCanvasTap(event.clientX, event.clientY);
+      }}
       className={`relative mx-auto aspect-square w-full max-w-md touch-manipulation rounded-2xl bg-white transition-shadow ${
         isOver || placementHint ? "ring-2 ring-inset ring-[#dbc48f]" : ""
       }`}
@@ -105,7 +143,7 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCanvasTap, pl
       >
         <path
           ref={pathRef}
-          d={CHAIN_PATH_D}
+          d={isNecklace(product) ? NECKLACE_PATH_D : CHAIN_PATH_D}
           fill="none"
           stroke="none"
         />
@@ -120,6 +158,11 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCanvasTap, pl
             x={`${(pc.x / VIEWBOX_WIDTH) * 100}%`}
             y={`${(pc.y / VIEWBOX_HEIGHT) * 100}%`}
             rotation={pc.rotation}
+            selected={selectedCharmId === pc.instanceId}
+            onSelect={(instanceId) => {
+              setSelectedCharmId(instanceId);
+              onCancelPlacement();
+            }}
             onRemove={onRemove}
             onMove={onMove}
           />

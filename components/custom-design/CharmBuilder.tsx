@@ -283,7 +283,7 @@ export function CharmBuilder({
 
   function applyPosition(position: Position, action: Selection) {
     if (!selectedProduct) return false;
-    if (isCharmPositionBlocked(position.x, position.y)) {
+    if (isCharmPositionBlocked(position.x, position.y, selectedProduct)) {
       setMessage("این قسمت برای اتصال چارم مجاز نیست؛ جای دیگری انتخاب کن.");
       return false;
     }
@@ -291,7 +291,7 @@ export function CharmBuilder({
     const nextPosition = {
       x: position.x,
       y: position.y,
-      rotation: getCharmRotation(position.x, position.y),
+      rotation: getCharmRotation(position.x, position.y, selectedProduct),
     };
 
     if (action.type === "add") {
@@ -364,7 +364,7 @@ export function CharmBuilder({
     let bestScore = -Infinity;
     for (let index = 0; index < 240; index += 1) {
       const point = path.getPointAtLength((index / 240) * length);
-      if (isCharmPositionBlocked(point.x, point.y)) continue;
+      if (isCharmPositionBlocked(point.x, point.y, selectedProduct)) continue;
       const distance = placedRef.current.length
         ? Math.min(
             ...placedRef.current.map((item) =>
@@ -769,6 +769,7 @@ export function CharmBuilder({
                       placedCharms={placedCharms}
                       onRemove={removeCharm}
                       onMove={selectMove}
+                      onCancelPlacement={() => setSelection(null)}
                       onCanvasTap={handleCanvasTap}
                       placementHint={hint}
                       pathRef={pathRef}

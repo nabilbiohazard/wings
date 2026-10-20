@@ -28,6 +28,43 @@ html {
   scrollbar-gutter: stable;
 }
 
+@media (forced-colors: none) {
+  html::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: #fdf9f7;
+  }
+
+  html::-webkit-scrollbar-thumb {
+    min-height: 48px;
+    border: 3px solid #fdf9f7;
+    border-radius: 999px;
+    background: #ba92a3;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: #95677b;
+  }
+
+  html::-webkit-scrollbar-thumb:active {
+    background: #79465a;
+  }
+
+  html::-webkit-scrollbar-corner {
+    background: #fdf9f7;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #ba92a3 #fdf9f7;
+    }
+  }
+}
+
 .commerce-panel {
   border: 1px solid #eee3e5;
   border-radius: 28px;

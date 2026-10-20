@@ -44,6 +44,8 @@ interface PlacedCharmItemProps {
   x: string;
   y: string;
   rotation: number;
+  selected: boolean;
+  onSelect: (instanceId: string) => void;
   onRemove: (instanceId: string) => void;
   onMove: (instanceId: string) => void;
 }
@@ -54,6 +56,8 @@ export function PlacedCharmItem({
   x,
   y,
   rotation,
+  selected,
+  onSelect,
   onRemove,
   onMove,
 }: PlacedCharmItemProps) {
@@ -87,12 +91,14 @@ export function PlacedCharmItem({
       0
     ) rotate(${rotation}deg)`,
     transformOrigin: `${attachment.x}% ${attachment.y}%`,
-    zIndex: isDragging ? 60 : 10,
+    zIndex: isDragging ? 60 : undefined,
   };
 
   return (
     <div
       ref={setNodeRef}
+      data-placed-charm
+      data-selected={selected}
       style={style}
       className={`${styles.placedCharm} ${
         isDragging ? styles.placedCharmDragging : ""
@@ -123,7 +129,11 @@ export function PlacedCharmItem({
         aria-label={`کشیدن و جابه‌جایی ${charm.name}`}
         onClick={(event) => {
           event.stopPropagation();
-          onMove(instanceId);
+          if (window.matchMedia("(max-width: 1023px)").matches) {
+            onSelect(instanceId);
+          } else {
+            onMove(instanceId);
+          }
         }}
       />
 
