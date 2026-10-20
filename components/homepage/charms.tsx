@@ -134,8 +134,8 @@ export function Charms() {
     index: number,
   ) {
     let next = index;
-    if (event.key === "ArrowDown") next = (index + 1) % campaigns.length;
-    else if (event.key === "ArrowUp")
+    if (event.key === "ArrowDown" || event.key === "ArrowLeft") next = (index + 1) % campaigns.length;
+    else if (event.key === "ArrowUp" || event.key === "ArrowRight")
       next = (index - 1 + campaigns.length) % campaigns.length;
     else if (event.key === "Home") next = 0;
     else if (event.key === "End") next = campaigns.length - 1;
@@ -153,10 +153,10 @@ export function Charms() {
       className="scroll-mt-28 bg-[#fbf9f6] py-16 sm:py-20 lg:py-24"
     >
       <div className="mx-auto site-container  ">
-        <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
+        <div className={`${styles.sectionHeader} mb-8 flex items-end justify-between gap-6 sm:mb-10`}>
           <div>
             <p
-              className="mb-3 text-[10px] tracking-[3px] text-black/45"
+              className="mb-3 hidden text-[10px] tracking-[3px] text-black/45 sm:block"
               lang="en"
               dir="ltr"
             >
@@ -164,11 +164,11 @@ export function Charms() {
             </p>
             <h2
               id="charms-heading"
-              className="text-3xl font-medium text-[#201d1e] sm:text-4xl lg:text-5xl"
+              className={`${styles.sectionTitle} text-3xl font-medium text-[#201d1e] sm:text-4xl lg:text-5xl`}
             >
               چارم‌ها؛ تکه‌های دنیای تو
             </h2>
-            <p className="mt-4 text-sm leading-7 text-black/55">
+            <p className="mt-3 text-xs leading-7 text-black/55 sm:mt-4 sm:text-sm">
               پنج حال‌وهوا، کلی داستان کوچک. دنیای خودت را پیدا کن.
             </p>
           </div>

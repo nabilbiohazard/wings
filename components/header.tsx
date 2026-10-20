@@ -20,6 +20,16 @@ const links = [
   { name: "تماس با ما", href: "/contact" },
 ];
 
+const shopCategories = [
+  { name: "چارم", slug: "charms" },
+  { name: "گردنبند", slug: "necklace" },
+  { name: "دستبند", slug: "bracelet" },
+  { name: "گوشواره", slug: "earrings" },
+  { name: "انگشتر", slug: "rings" },
+  { name: "پیرسینگ", slug: "piercing" },
+  { name: "پوشاک", slug: "clothing" },
+];
+
 function CountBadge({ children, solid }: { children: number; solid: boolean }) {
   if (!children) return null;
 
@@ -62,8 +72,9 @@ export function Header() {
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(false);
 
-  const { openPanel, favorites, cart } = useShop();
+  const { openPanel, favorites, cart, products, setCategory } = useShop();
   const savedDesigns = useSavedDesigns();
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -109,6 +120,7 @@ export function Header() {
     <>
       <header
         ref={headerRef}
+        style={{ WebkitTapHighlightColor: "rgba(247, 201, 220, 0.3)" }}
         className={`
           fixed left-0 top-0 z-100
           w-full
@@ -119,7 +131,7 @@ export function Header() {
         {/* BACKGROUND */}
 
         <div
-          style={{ backgroundColor: solid || pathname === "/" ? undefined : getHeaderColor(pathname) }}
+          style={{ backgroundColor: solid || pathname === "/" ? undefined : `var(--route-header-background, ${getHeaderColor(pathname)})` }}
           className={`
             absolute inset-0
             transition-all duration-500
@@ -404,9 +416,27 @@ export function Header() {
                 const active = isActive(link.href);
 
                 return (
-                  <Link
+                  <div
                     key={link.href}
+                    className="relative h-full"
+                    onMouseEnter={() => link.href === "/shop" && setShopOpen(true)}
+                    onMouseLeave={() => link.href === "/shop" && setShopOpen(false)}
+                    onFocus={() => link.href === "/shop" && setShopOpen(true)}
+                    onBlur={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget)) setShopOpen(false);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Escape") setShopOpen(false);
+                    }}
+                  >
+                  <Link
                     href={link.href}
+                    aria-expanded={link.href === "/shop" ? shopOpen : undefined}
+                    aria-controls={link.href === "/shop" ? "header-shop-categories" : undefined}
+                    onClick={() => {
+                      setShopOpen(false);
+                      if (link.href === "/shop") setCategory("all");
+                    }}
                     className={`
                       group
                       relative
@@ -467,6 +497,38 @@ export function Header() {
                       />
                     )}
                   </Link>
+                  {link.href === "/shop" && (
+                    <div
+                      id="header-shop-categories"
+                      className={`absolute right-0 top-full w-52 pt-2 transition-all duration-200 motion-reduce:transition-none ${
+                        shopOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0 pointer-events-none"
+                      }`}
+                    >
+                      <ul className="rounded-2xl border border-white/35 bg-white/90 p-2 text-right text-[#35232c] shadow-[0_16px_45px_rgba(0,0,0,0.15)] backdrop-blur-xl">
+                        {shopCategories.map((category) => {
+                          const matched = products.flatMap((product) => product.categories ?? []).find(
+                            (item) => item.slug === category.slug || item.name.replace(/[\u200c\s]/g, "").replace(/ها$/, "") === category.name,
+                          );
+                          const slug = matched?.slug ?? category.slug;
+                          return (
+                            <li key={category.slug}>
+                              <Link
+                                href={`/shop?category=${encodeURIComponent(slug)}`}
+                                onClick={() => {
+                                  setCategory(slug);
+                                  setShopOpen(false);
+                                }}
+                                className="block rounded-xl px-4 py-2.5 text-sm transition-colors hover:bg-[#f7c9dc]/45 focus-visible:bg-[#f7c9dc]/45 focus-visible:outline-2 focus-visible:outline-[#813e59]"
+                              >
+                                {category.name}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
+                  </div>
                 );
               })}
             </div>
@@ -479,11 +541,15 @@ export function Header() {
       ======================== */}
 
       <div
+        inert={!mobileOpen}
+        aria-hidden={!mobileOpen}
+        style={{ WebkitTapHighlightColor: "rgba(247, 201, 220, 0.3)" }}
         className={`
           fixed inset-0 z-90
-          bg-white
-          text-black
+          overflow-y-auto overscroll-contain bg-white
+          text-[#35232c]
           transition-all duration-500
+          motion-reduce:transition-none
           md:hidden
           ${
             mobileOpen
@@ -500,61 +566,63 @@ export function Header() {
           }
         `}
       >
-        <div className="flex min-h-screen flex-col px-6 pb-8 pt-36.25">
+        <div className="relative flex min-h-dvh flex-col px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[calc(var(--site-header-height,9rem)+1.25rem)]">
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -left-24 top-40 h-64 w-64 rounded-full bg-[#f7c9dc]/30 blur-3xl" />
+            <div className="absolute -right-24 bottom-12 h-56 w-56 rounded-full bg-[#f7c9dc]/20 blur-3xl" />
+          </div>
           {/* TOP LABEL */}
 
-          <div className="flex items-center justify-between border-b border-black/8 pb-4">
-            <span className="text-[10px] tracking-[4px] text-black/30">
-              WINGS GALLERY
-            </span>
-
-            <span className="text-[10px] tracking-[2px] text-black/30">
-              MENU
-            </span>
+          <div className="relative mb-5 px-3">
+            <p dir="ltr" className="text-center text-[9px] tracking-[0.3em] text-[#9a7b89]">
+              THE LITTLE JOYS COLLECTION
+            </p>
+            <p dir="ltr" className="mt-3 text-center font-['Cormorant_Garamond'] text-5xl leading-none">
+              Your <span className="italic text-[#be708f]">style.</span>
+            </p>
+            <p className="mt-3 text-center text-xs leading-6 text-[#8b7480]">
+              هر انتخاب، یک داستان تازه.
+            </p>
           </div>
 
           {/* LINKS */}
 
-          <nav className="flex flex-1 flex-col justify-center">
-            {links.map((link, index) => {
+          <nav aria-label="منوی اصلی موبایل" className="relative flex flex-1 flex-col gap-1">
+            {links.map((link) => {
               const active = isActive(link.href);
 
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="
-                    group
-                    flex items-center
-                    justify-between
-                    border-b border-black/[0.07]
-                    py-4
-                  "
+                  aria-current={active ? "page" : undefined}
+                  onClick={() => {
+                    setMobileOpen(false);
+                    if (link.href === "/shop") setCategory("all");
+                  }}
+                  className={`group flex min-h-12 items-center justify-between rounded-2xl border px-4 py-3 transition-colors focus-visible:outline-2 focus-visible:outline-[#be708f] ${
+                    active
+                      ? "border-[#efd5df] bg-[#fbedf3]"
+                      : "border-transparent hover:border-[#f2e5eb] hover:bg-[#fdf6f9]"
+                  }`}
                 >
                   <span
                     className={`
-                      text-2xl
+                      text-base
                       transition-all duration-300
                       group-hover:-translate-x-1
                       ${
                         active
-                          ? "font-medium text-black"
-                          : "text-black/55 group-hover:text-black"
+                          ? "font-semibold text-[#813e59]"
+                          : "text-[#59444e] group-hover:text-[#813e59]"
                       }
                     `}
                   >
                     {link.name}
                   </span>
 
-                  <div className="flex items-center gap-4">
-                    <span className="text-[10px] text-black/20">
-                      0{index + 1}
-                    </span>
-
-                    {active && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-black" />
-                    )}
+                  <div aria-hidden="true" className={`flex h-7 w-7 items-center justify-center rounded-full ${active ? "bg-white text-[#be708f]" : "bg-[#fbedf3] text-[#a36580]"}`}>
+                    {active ? <span className="h-1.5 w-1.5 rounded-full bg-[#be708f]" /> : <Icon name="arrow" size={14} className="rotate-45" />}
                   </div>
                 </Link>
               );
@@ -563,14 +631,14 @@ export function Header() {
 
           {/* MOBILE FOOTER */}
 
-          <div className="border-t border-black/8 pt-5">
+          <div className="relative mt-5 border-t border-[#f0e4e9] pt-4">
             <p
               dir="ltr"
               className="
                 text-center
                 font-serif
                 text-lg italic
-                text-black/50
+                text-[#a88b98]
               "
             >
               Your style, your story.

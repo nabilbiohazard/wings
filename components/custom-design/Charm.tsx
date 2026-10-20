@@ -60,8 +60,7 @@ export function PaletteCharm({
           {...listeners}
           className={styles.charmDragHandle}
           onClick={() => onSelect(charm)}
-          aria-label={`انتخاب جای ${charm.name} روی محصول؛ برای کشیدن تصویر را نگه دار`}
-          aria-pressed={selected}
+          aria-label={`افزودن ${charm.name}؛ برای کشیدن و جای‌گذاری تصویر را نگه دار`}
         >
           <div className={styles.charmImage}>
             {charm.image ? (

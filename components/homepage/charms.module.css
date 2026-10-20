@@ -272,21 +272,55 @@
 }
 
 @media (max-width: 639px) {
+  .sectionHeader {
+    justify-content: center;
+    margin-bottom: 22px;
+    text-align: center;
+  }
+  .sectionTitle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border: 1px solid #ecd9e1;
+    border-radius: 999px;
+    background: #fff;
+    color: #813e59;
+    font-size: 13px;
+    line-height: 1.8;
+    box-shadow: 0 4px 16px rgb(113 51 78 / 4%);
+  }
+  .sectionTitle::before {
+    content: "✦";
+    color: #be708f;
+    font-size: 16px;
+  }
   .explorer {
-    grid-template-columns: 74px minmax(0, 1fr);
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
     align-items: start;
   }
   .tabs {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
   }
   .tab {
-    min-height: 100px;
-    padding: 12px 6px;
-    border-radius: 13px;
-    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 44px;
+    padding: 9px 15px;
+    border-radius: 999px;
+    flex-direction: row;
     justify-content: center;
     text-align: center;
+    border-width: 1px;
+  }
+  .tab:hover {
+    transform: translateY(-2px);
+  }
+  .tab[aria-selected="true"] {
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--tab-ink) 15%, transparent);
   }
   .tabLabel {
     flex: none;
@@ -297,14 +331,16 @@
     display: none;
   }
   .tabNumber {
-    display: block;
+    display: none;
   }
   .tabArrow {
     display: none;
   }
   .panel {
-    padding: 20px 12px 16px;
-    border-radius: 18px;
+    padding: 22px 18px 18px;
+    border: 1px solid rgb(255 255 255 / 60%);
+    border-radius: 24px;
+    box-shadow: 0 12px 32px rgb(53 35 44 / 6%);
   }
   .panelTop {
     font-size: 8px;
@@ -315,16 +351,16 @@
     margin-top: 20px;
   }
   .intro h3 {
-    font-size: 22px;
+    font-size: 23px;
   }
   .intro p {
-    font-size: 11px;
+    font-size: 12px;
   }
   .content {
     margin-top: 22px;
   }
   .charmsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 9px;
   }
   .charmCard {
@@ -354,8 +390,9 @@
   }
   .designLink {
     width: 100%;
+    min-height: 44px;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 12px;
   }
 }
 

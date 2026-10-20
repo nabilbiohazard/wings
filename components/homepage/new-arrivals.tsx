@@ -10,43 +10,15 @@ import "swiper/css/pagination";
 import styles from "./new-arrivals.module.css";
 
 import { persianNumber } from "@/lib/products";
-import type { Product } from "@/lib/types";
+import { productCategories as filters, matchesProductCategory, categoryId } from "@/lib/product-categories";
 import { ProductCard, ProductPreviewCard } from "../product-card";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
 import { useShop } from "../shop-provider";
 
-const filters = [
-  { id: "all", name: "همه", matches: [] },
-  {
-    id: "necklace",
-    name: "گردنبند",
-    matches: ["necklace", "necklaces", "گردنبند"],
-  },
-  {
-    id: "bracelet",
-    name: "دستبند",
-    matches: ["bracelet", "bracelets", "دستبند"],
-  },
-  {
-    id: "charms",
-    name: "انگشتر و چارم",
-    matches: [
-      "charms",
-      "charm",
-      "rings",
-      "ring",
-      "چارم",
-      "چارم‌ها",
-      "انگشتر",
-      "انگشتر و چارم",
-    ],
-  },
-] as const;
-
 // Layout previews fill empty slots until the catalog has seven real products.
 // They have no prices, product links, or shopping actions.
-const previewNames = {
+const previewNames: Record<string, string[]> = {
   all: [
     "گردنبند پروانه",
     "دستبند مروارید",
@@ -85,40 +57,17 @@ const previewNames = {
   ],
 };
 
-function normalizeCategory(value: string) {
-  try {
-    value = decodeURIComponent(value);
-  } catch {
-    // Preserve catalog slugs containing literal percent signs.
-  }
-  return value
-    .toLowerCase()
-    .replace(/ي/g, "ی")
-    .replace(/ك/g, "ک")
-    .replace(/[\s\u200c_-]+/g, "")
-    .trim();
-}
-
-function matchesCategory(product: Product, filter: (typeof filters)[number]) {
-  if (filter.id === "all") return true;
-  const names = [
-    product.category,
-    ...(product.categories ?? []).flatMap(({ slug, name }) => [slug, name]),
-  ].map(normalizeCategory);
-  return filter.matches.some((name) => names.includes(normalizeCategory(name)));
-}
-
 export function NewArrivals() {
   const { category, setCategory, products, productsLoading, productsError } =
     useShop();
   const slider = useRef<SwiperInstance | null>(null);
   const [edges, setEdges] = useState({ beginning: true, end: true });
   const activeFilter =
-    filters.find((filter) => filter.id === category) ?? filters[0];
+    filters.find((filter) => filter.id === categoryId(category)) ?? filters[0];
   const selectedProducts = products
-    .filter((product) => matchesCategory(product, activeFilter))
+    .filter((product) => matchesProductCategory(product, activeFilter.id))
     .slice(0, 7);
-  const previews = previewNames[activeFilter.id].slice(selectedProducts.length);
+  const previews = (previewNames[activeFilter.id] ?? Array.from({ length: 7 }, (_, index) => `${activeFilter.name} ? ${persianNumber(index + 1)}`)).slice(selectedProducts.length);
 
   function updateNavigation(instance: SwiperInstance) {
     setEdges({
@@ -165,7 +114,7 @@ export function NewArrivals() {
 
           <div className="mb-7 flex flex-wrap items-center justify-between gap-5 border-b border-pink-200/70 pb-6">
             <div
-              className="grid w-full grid-cols-4 gap-1.5 rounded-2xl border border-pink-200/60 bg-pink-100/70 p-1.5 sm:w-auto sm:gap-2"
+              className="flex w-full flex-wrap gap-2"
               role="group"
               aria-label="دسته‌بندی محصولات"
             >
@@ -176,7 +125,7 @@ export function NewArrivals() {
                   onClick={() => setCategory(filter.id)}
                   aria-pressed={activeFilter.id === filter.id}
                   aria-controls="arrivals-products"
-                  className={`min-h-11 rounded-xl px-2 py-3 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600 sm:min-w-28 sm:px-5 sm:text-sm ${activeFilter.id === filter.id ? "bg-pink-300 text-pink-950 shadow-sm" : "text-pink-950/60 hover:bg-white hover:text-pink-950"}`}
+                  className={`min-h-11 rounded-full border border-pink-200/70 px-4 py-2 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600 sm:px-5 ${activeFilter.id === filter.id ? "bg-pink-300 text-pink-950 shadow-sm" : "text-pink-950/60 hover:bg-white hover:text-pink-950"}`}
                 >
                   {filter.name}
                 </button>

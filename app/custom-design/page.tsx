@@ -31,9 +31,11 @@ export default async function CharmBuilderPage({
       return { products: [], failed: true };
     });
   const initialProduct =
-    products.find((product) => product.id === requestedId) ?? null;
+    (requestedId === undefined
+      ? products[0]
+      : products.find((product) => product.id === requestedId)) ?? null;
   return (
-    <main className="min-h-screen bg-white">
+    <main className="custom-design-page min-h-screen bg-white">
       <HeaderBackdrop />
       <DesignStudio
         products={products}

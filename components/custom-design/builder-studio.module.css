@@ -9,6 +9,17 @@
   padding: 40px 0 56px;
 }
 
+.mobileSteps {
+  display: none;
+}
+
+.productControlBox {
+  flex-shrink: 0;
+}
+.mobileEditTools {
+  display: none;
+}
+
 .studio *,
 .studio *::before,
 .studio *::after {
@@ -936,6 +947,7 @@
   aspect-ratio: 1;
   touch-action: none;
   pointer-events: none;
+  mix-blend-mode: multiply;
 }
 
 .placedDragHandle {
@@ -1019,7 +1031,7 @@
 
 @media (max-width: 1023px) {
   .studio {
-    padding: 28px 0 calc(110px + env(safe-area-inset-bottom));
+    padding: 28px 0 40px;
   }
 
   .heading {
@@ -1077,7 +1089,7 @@
   }
 
   .paletteSection {
-    display: none;
+    display: block;
     border: 0;
   }
 
@@ -1228,13 +1240,15 @@
     padding: 4px 10px;
     font-size: 10px;
   }
-  .workspaceOpen .paletteSection {
+  .workspace .paletteSection {
     grid-area: panel;
     display: flex;
     flex-direction: column;
     min-height: 0;
     min-width: 0;
-    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
     background: var(--surface);
     border-radius: 22px 22px 0 0;
     box-shadow: 0 -6px 24px #38292e0a;
@@ -1273,79 +1287,87 @@
     background: #f5eef1;
     color: var(--ink);
   }
-  .workspaceOpen .palette {
+  .workspace .palette {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    scrollbar-width: thin;
-    scroll-padding-block: 12px;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow: visible;
   }
-  .workspaceOpen .paletteFilters {
+  .workspace .paletteFilters {
     flex-shrink: 0;
+    min-width: 0;
+    width: 100%;
     padding: 12px;
     border-radius: 0;
   }
-  .workspaceOpen .paletteTitle h2 {
-    display: none;
+  .workspace .paletteTitle h2 {
+    display: block;
+    font-size: 17px;
+    margin-bottom: 8px;
   }
-  .workspaceOpen .paletteTitle p {
+  .workspace .paletteTitle p {
     margin: 0 0 8px;
     font-size: 10px;
   }
-  .workspaceOpen .searchBox {
+  .workspace .searchBox {
     min-height: 44px;
     border-radius: 12px;
   }
-  .workspaceOpen .searchBox input {
+  .workspace .searchBox input {
     padding-block: 8px;
     font-size: 16px;
   }
-  .workspaceOpen .categories {
+  .workspace .categories {
+    flex-wrap: wrap;
+    overflow: visible;
     padding-block: 10px 4px;
   }
-  .workspaceOpen .categories button {
+  .workspace .categories button {
     min-height: 40px;
     padding: 7px 12px;
     font-size: 10px;
   }
-  .workspaceOpen .filterMeta {
+  .workspace .filterMeta {
     margin-top: 4px;
   }
-  .workspaceOpen .filterMeta select {
+  .workspace .filterMeta select {
     min-height: 36px;
     max-width: 65%;
   }
-  .workspaceOpen .paletteResults {
+  .workspace .paletteResults {
     flex: 0 0 auto;
+    min-width: 0;
+    width: 100%;
     padding: 12px;
   }
-  .workspaceOpen .charmGrid {
+  .workspace .charmGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: none;
     grid-auto-rows: auto;
     gap: 12px 8px;
   }
-  .workspaceOpen .charmItem {
+  .workspace .charmItem {
     gap: 6px;
   }
-  .workspaceOpen .charmCard {
+  .workspace .charmCard {
     padding: 6px;
     border-radius: 14px;
   }
-  .workspaceOpen .charmImage {
+  .workspace .charmImage {
     height: auto;
     aspect-ratio: 1.25;
   }
-  .workspaceOpen .charmCard h3 {
+  .workspace .charmCard h3 {
     height: auto;
     min-height: 32px;
     font-size: 10px;
     margin: 4px 0;
   }
-  .workspaceOpen .charmPrice {
+  .workspace .charmPrice {
     font-size: 9px;
     padding-block: 3px;
   }
@@ -1358,7 +1380,7 @@
     font-size: 11px !important;
     border-radius: 10px;
   }
-  .workspaceOpen .pagination {
+  .workspace .pagination {
     margin-top: 12px;
     padding-top: 8px;
   }
@@ -1391,7 +1413,7 @@
   }
 }
 @media (max-width: 359px) {
-  .workspaceOpen .charmGrid {
+  .workspace .charmGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .mobileBar {
@@ -1409,7 +1431,7 @@
     grid-template-rows: minmax(0, 1fr);
     grid-template-areas: "canvas panel";
   }
-  .workspaceOpen .paletteSection {
+  .workspace .paletteSection {
     border-radius: 0;
   }
   .sheetHandle {
@@ -1418,7 +1440,363 @@
 }
 
 @media (min-width: 640px) and (max-width: 1023px) and (min-height: 501px) {
-  .workspaceOpen .charmGrid {
+  .workspace .charmGrid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* The phone studio shares the homepage's plum, blush, and glass palette. */
+@media (max-width: 767px) {
+  .studio {
+    --ink: #35232c;
+    --muted: #79616e;
+    --accent: #813e59;
+    --border: #efdee6;
+    --surface: #ffffff;
+    padding-top: 26px;
+    background:
+      radial-gradient(ellipse at 0 0, #f7c9dc55, transparent 40%),
+      linear-gradient(180deg, #fff9fc, #fbf8fa 65%, #ffffff);
+  }
+  .heading {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .eyebrow {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 9px 16px;
+    border: 1px solid #ecd9e1;
+    border-radius: 999px;
+    background: #ffffffb3;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    box-shadow: inset 0 1px 0 white;
+  }
+  .heading h1 {
+    font-size: clamp(26px, 7.5vw, 36px);
+    line-height: 1.7;
+  }
+  .heading h1 span {
+    color: #a65376;
+  }
+  .intro {
+    max-width: 320px;
+    margin: 10px auto 0;
+    font-size: 12px;
+    line-height: 2.1;
+  }
+  .mobileSteps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 0;
+    margin: 22px 0 0;
+    list-style: none;
+  }
+  .mobileSteps li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--muted);
+    min-height: 44px;
+    border: 1px solid transparent;
+    border-radius: 14px;
+  }
+  .mobileSteps li span {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: white;
+  }
+  .mobileSteps li[data-active="true"] {
+    background: #f7e5ed;
+    border-color: #ebcfdb;
+    color: var(--accent);
+  }
+  .workspace {
+    border-radius: 26px;
+    box-shadow: 0 12px 40px #35232c08;
+  }
+  .workspace:not(.workspaceOpen) {
+    width: calc(100% + 2 * var(--site-gutter));
+    margin-inline: calc(-1 * var(--site-gutter));
+    border-inline: 0;
+    border-radius: 0;
+  }
+  .canvasSection {
+    border-radius: 0;
+  }
+  .canvasToolbar {
+    padding: 18px 14px 14px;
+    background: linear-gradient(135deg, #ffffff, #fceef4);
+  }
+  .productEyebrow {
+    font-size: 10px;
+    color: #9b5674;
+  }
+  .productInfo strong {
+    font-size: 14px;
+  }
+  .productMeta {
+    font-size: 11px;
+  }
+  .changeProductButton {
+    border-radius: 999px;
+    background: #ffffffb3;
+    border-color: #e8ccd8;
+    color: var(--ink);
+  }
+  .productControlBox {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 4px;
+    border: 1px solid #e8ccd8;
+    border-radius: 20px;
+    background: #ffffffb3;
+  }
+  .productControlBox .changeProductButton {
+    border: 0;
+    background: transparent;
+    border-radius: 16px 16px 0 0;
+  }
+  .mobileEditTools {
+    display: flex;
+    justify-content: center;
+    border-top: 1px solid var(--border);
+  }
+  .mobileEditTools .editTools {
+    border: 0;
+    background: transparent;
+  }
+  .desktopEditTools {
+    display: none;
+  }
+  .workspaceOpen .productControlBox {
+    flex-direction: row;
+    align-items: center;
+    border-radius: 999px;
+    padding: 0;
+  }
+  .workspaceOpen .mobileEditTools {
+    border-top: 0;
+    border-inline-start: 1px solid var(--border);
+  }
+  .workspaceOpen .toolbarButtons {
+    display: none;
+  }
+  .toolbarButtons {
+    display: none;
+  }
+  .editTools {
+    border-radius: 999px;
+    background: #ffffffb3;
+  }
+  .editTools button {
+    border-radius: 50%;
+  }
+  .designActions button {
+    min-height: 48px;
+    border-radius: 999px;
+    font-size: 11px;
+  }
+  .designActions .toolbarSaveButton {
+    background: #f7c9dc;
+    border-color: #efb7ce;
+    color: #35232c;
+    box-shadow: inset 0 1px 0 #ffffff80;
+  }
+  .designActions .toolbarSaveButton:not(:disabled):hover {
+    background: #f3b6d0;
+    border-color: #e9a7c2;
+  }
+  .canvasArea {
+    padding: 0;
+    background: #fff;
+  }
+  .chainFrame {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 1;
+  }
+  .chainFrame :global(#chain-container) {
+    /* Keep space for charms that hang outside the product's attachment path. */
+    width: 76%;
+  }
+  .workspaceOpen .canvasArea {
+    padding: 0;
+  }
+  .canvasStatus {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  .canvasStatus button {
+    display: none;
+  }
+  .canvasStatus p {
+    font-size: 11px;
+  }
+  .canvasStatus button {
+    min-height: 44px;
+    border-radius: 999px;
+    background: #f7e5ed;
+  }
+  .summary {
+    padding: 20px 16px;
+    border-radius: 24px;
+    background: #ffffffc9;
+    box-shadow: 0 8px 28px #35232c05;
+  }
+  .saveDesignBar {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+  }
+  .saveDesignBar h2 {
+    font-size: 16px;
+  }
+  .selectedList {
+    gap: 10px;
+  }
+  .selectedList li {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .selectedList button:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .selectedList button:last-child {
+    flex-shrink: 0;
+  }
+  .selectedList button {
+    min-height: 44px;
+  }
+  .mobileBar {
+    gap: 10px;
+    border-color: #f7c9dc38;
+    background: #24151feb;
+    color: white;
+    box-shadow: 0 -8px 30px #24151f12;
+    backdrop-filter: blur(20px);
+  }
+  .mobileBar span {
+    color: #e4d9df;
+  }
+  .mobileBar > button {
+    min-height: 50px;
+    border-radius: 999px;
+    padding-inline: 20px;
+    background: #f7c9dc;
+    color: #35232c;
+    box-shadow: inset 0 1px 0 #ffffff80;
+  }
+  .workspaceOpen {
+    border-radius: 0;
+    background: #fcf3f7;
+  }
+  .workspaceOpen .toolbarButtons {
+    flex-wrap: nowrap;
+  }
+  .workspace .paletteSection {
+    border: 1px solid #efdee6;
+    border-bottom: 0;
+    background: white;
+    box-shadow: 0 -8px 30px #35232c08;
+  }
+  .sheetHeader {
+    padding: 8px 14px;
+    background: linear-gradient(135deg, white, #fff3f8);
+  }
+  .sheetHandle {
+    background: #dfb4c7;
+  }
+  .sheetHeader button {
+    width: 44px;
+    height: 44px;
+    background: white;
+    border: 1px solid var(--border);
+  }
+  .workspace .searchBox {
+    border-radius: 999px;
+    background: #fcf5f8;
+    min-height: 46px;
+  }
+  .workspace .categories button {
+    min-height: 44px;
+    font-size: 11px;
+  }
+  .categories .categoryActive {
+    background: #f7c9dc;
+    border-color: #e8b2c9;
+    color: #35232c;
+  }
+  .workspace .filterMeta select {
+    min-height: 44px;
+  }
+  .workspace .paletteResults {
+    background: #fffafd;
+    padding: 14px 12px;
+  }
+  .workspace .charmGrid {
+    gap: 14px 10px;
+  }
+  .workspace .charmCard {
+    border-radius: 18px;
+    padding: 7px;
+    box-shadow: 0 3px 12px #35232c04;
+  }
+  .charmCardSelected {
+    border-color: #a65376;
+    background: #fff2f8;
+  }
+  .workspace .charmImage {
+    border-radius: 12px;
+    background: #fcf6f9;
+    aspect-ratio: 1;
+  }
+  .workspace .charmCard h3 {
+    font-size: 11px;
+    min-height: 36px;
+  }
+  .workspace .charmPrice {
+    font-size: 10px;
+  }
+  .workspaceOpen .addButton {
+    border: 1px solid #ebc8d8;
+    border-radius: 999px;
+    color: #35232c;
+    background: #f7d9e6;
+    box-shadow: none;
+  }
+  .workspaceOpen .addButton:hover {
+    background: #f7c9dc;
+  }
+  .sheetFooter {
+    background: #ffffffed;
+    backdrop-filter: blur(16px);
+  }
+  .sheetFooter button {
+    border-radius: 999px;
+    background: #35232c;
+    min-height: 46px;
+  }
+  .pagination button {
+    border-radius: 50%;
   }
 }

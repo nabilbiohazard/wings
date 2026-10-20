@@ -102,8 +102,7 @@ export function CharmPalette({
     <div className={styles.palette}>
       <div className={styles.paletteFilters}>
         <div className={styles.paletteTitle}>
-          <h2>کدام چارم شبیه توست؟</h2>
-          <p>«افزودن» برای چیدمان خودکار؛ تصویر چارم برای انتخاب جای دلخواه.</p>
+          <p>برای افزودن، تصویر چارم را لمس کن؛ برای جای‌گذاری دلخواه، آن را نگه دار و روی محصول بکش.</p>
         </div>
 
         <label className={styles.searchBox} htmlFor={searchId}>

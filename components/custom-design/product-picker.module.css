@@ -37,3 +37,119 @@
 .footer button:disabled { opacity: .4; cursor: default; }
 .footer a { color: #95677b; }
 @media (max-width: 639px) { .grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; } .header { padding: 18px; } .header h2 { font-size: 18px; } .filters { padding: 0 18px 16px; flex-direction: column; } .filters select { max-width: none; } .results { padding: 18px; } .footer { padding: 14px 18px; } .notice { margin-inline: 18px; } .details > div { flex-wrap: wrap; } }
+
+@media (max-width: 767px) {
+  .dialog {
+    width: calc(100% - 20px);
+    border-color: #efdee6;
+    border-radius: 28px;
+    background: #fffbfd;
+    color: #35232c;
+  }
+  .dialog::backdrop {
+    background: #24151fa6;
+    backdrop-filter: blur(12px);
+  }
+  .header {
+    padding: 22px 18px 16px;
+    background: linear-gradient(135deg, white, #fceaf2);
+  }
+  .header p {
+    color: #813e59;
+    font-size: 10px;
+  }
+  .header h2 {
+    font-size: 19px;
+    line-height: 1.9;
+  }
+  .header button {
+    width: 44px;
+    height: 44px;
+    background: #ffffffb3;
+    border: 1px solid #efdee6;
+    color: #35232c;
+  }
+  .filters {
+    padding: 12px 16px 16px;
+    gap: 10px;
+    border-color: #efdee6;
+  }
+  .search {
+    min-height: 48px;
+    border-radius: 999px;
+    background: white;
+    border-color: #efdee6;
+    color: #813e59;
+  }
+  .filters select {
+    min-height: 44px;
+    border-radius: 16px;
+    color: #79616e;
+    background: #fcf5f8;
+    border-color: #efdee6;
+  }
+  .results {
+    padding: 16px;
+    overscroll-behavior: contain;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 10px;
+  }
+  .product {
+    border-color: #efdee6;
+    border-radius: 22px;
+    padding: 6px;
+    box-shadow: 0 4px 16px #35232c05;
+  }
+  .image {
+    border-radius: 16px;
+    background: #fcf3f7;
+  }
+  .selected {
+    right: 5px;
+    bottom: 5px;
+    padding: 5px 8px;
+    font-size: 9px;
+    background: #f7c9dc;
+    color: #35232c;
+  }
+  .details {
+    padding: 10px 6px 6px;
+  }
+  .details h3 {
+    font-size: 12px;
+    height: 46px;
+    overflow-wrap: anywhere;
+  }
+  .details > div {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .details p {
+    font-size: 12px;
+  }
+  .choose {
+    min-height: 36px;
+    justify-content: center;
+    border-radius: 999px;
+    background: #f7e5ed;
+    color: #813e59;
+  }
+  .footer {
+    padding: 12px 16px max(12px, env(safe-area-inset-bottom));
+    background: #ffffffed;
+    border-color: #efdee6;
+    gap: 10px;
+  }
+  .footer button,
+  .footer a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    border-radius: 999px;
+    color: #813e59;
+  }
+}

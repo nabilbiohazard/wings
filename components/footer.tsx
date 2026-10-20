@@ -20,7 +20,7 @@ const legalLinks = [
 ];
 
 const focusClasses =
-  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#92576b] focus-visible:ring-offset-4 focus-visible:ring-offset-[#ebe2d9]";
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f7c9dc] md:focus-visible:ring-[#92576b] focus-visible:ring-offset-4 focus-visible:ring-offset-[#24151f] md:focus-visible:ring-offset-[#ebe2d9]";
 
 function ArrowIcon({ className = "" }: { className?: string }) {
   return (
@@ -82,19 +82,19 @@ export function Footer() {
     <footer
       id="contact"
       dir="rtl"
-      className="w-full border-t border-[#443039]/10 bg-[#ebe2d9] text-[#443039]"
+      className="w-full border-t border-[#ffffff]/10 md:border-[#443039]/10 bg-[#24151f] md:bg-[#ebe2d9] text-[#ffffff] md:text-[#443039]"
     >
       <div className="mx-auto site-container   ">
         {/* BUILD YOUR OWN */}
-        <div className="border-b border-[#443039]/15 py-8 sm:py-10">
+        <div className="border-b border-[#ffffff]/15 md:border-[#443039]/15 py-8 sm:py-10">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
             <div className="flex items-start gap-4 sm:items-center sm:gap-5">
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-[#92576b]/20 bg-[#f7f0eb] text-[#92576b] sm:h-[72px] sm:w-[72px]">
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-[#f7c9dc]/20 md:border-[#92576b]/20 bg-[#35232c] md:bg-[#f7f0eb] text-[#f7c9dc] md:text-[#92576b] sm:h-[72px] sm:w-[72px]">
                 <BraceletIcon />
               </span>
 
               <div>
-                <p className="mb-2 text-xs font-medium text-[#805b68]">
+                <p className="mb-2 text-xs font-medium text-[#f7c9dc] md:text-[#805b68]">
                   یک انتخاب شخصی‌تر
                 </p>
 
@@ -102,7 +102,7 @@ export function Footer() {
                   دستبندی که داستان تو را می‌گوید.
                 </h2>
 
-                <p className="mt-2 max-w-lg text-sm leading-7 text-[#69585e]">
+                <p className="mt-2 max-w-lg text-sm leading-7 text-[#e4d9df] md:text-[#69585e]">
                   چارم‌های دلخواهت را کنار هم بچین و ترکیب خودت را بساز.
                 </p>
               </div>
@@ -110,7 +110,7 @@ export function Footer() {
 
             <Link
               href="/#build-your-own"
-              className={`group inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-6 rounded-full bg-[#443039] px-7 py-3 text-sm font-medium text-[#fffaf7] transition-colors hover:bg-[#654451] md:w-auto ${focusClasses}`}
+              className={`group inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-6 rounded-full bg-[#f7c9dc] md:bg-[#443039] px-7 py-3 text-sm font-medium text-[#35232c] md:text-[#fffaf7] transition-colors hover:bg-[#ffe2ed] md:hover:bg-[#654451] md:w-auto ${focusClasses}`}
             >
               خودت بساز
               <ArrowIcon className="transition-transform motion-safe:group-hover:-translate-x-1" />
@@ -126,7 +126,7 @@ export function Footer() {
               <Wordmark />
             </div>
 
-            <p className="mt-5 max-w-sm text-sm leading-8 text-[#69585e]">
+            <p className="mt-5 max-w-sm text-sm leading-8 text-[#e4d9df] md:text-[#69585e]">
               تکه‌های کوچک، حس‌های بزرگ.
               <br />
               جزئیاتی برای کامل‌تر کردن استایل تو.
@@ -135,7 +135,7 @@ export function Footer() {
             <p
               lang="en"
               dir="ltr"
-              className="mt-6 w-fit font-serif text-2xl italic tracking-tight text-[#92576b] sm:text-3xl"
+              className="mt-6 w-fit font-serif text-2xl italic tracking-tight text-[#f7c9dc] md:text-[#92576b] sm:text-3xl"
             >
               A little more sparkle.
             </p>
@@ -151,11 +151,11 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className={`group inline-flex min-h-11 items-center gap-2 rounded-sm py-2 text-sm text-[#69585e] transition-colors hover:text-[#92576b] ${focusClasses}`}
+                      className={`group inline-flex min-h-11 items-center gap-2 rounded-sm py-2 text-sm text-[#e4d9df] md:text-[#69585e] transition-colors hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
                     >
                       <span
                         aria-hidden="true"
-                        className="h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                        className="h-1 w-1 shrink-0 rounded-full bg-[#f7c9dc] md:bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                       />
                       {link.label}
                     </Link>
@@ -175,11 +175,11 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className={`group inline-flex min-h-11 items-center gap-2 rounded-sm py-2 text-sm text-[#69585e] transition-colors hover:text-[#92576b] ${focusClasses}`}
+                      className={`group inline-flex min-h-11 items-center gap-2 rounded-sm py-2 text-sm text-[#e4d9df] md:text-[#69585e] transition-colors hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
                     >
                       <span
                         aria-hidden="true"
-                        className="h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                        className="h-1 w-1 shrink-0 rounded-full bg-[#f7c9dc] md:bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                       />
                       {link.label}
                     </Link>
@@ -190,16 +190,16 @@ export function Footer() {
           </div>
 
           {/* CONTACT */}
-          <div className="col-span-2 rounded-2xl border border-[#443039]/10 bg-[#f7f0eb]/70 p-5 sm:p-6 lg:col-span-4">
+          <div className="col-span-2 rounded-2xl border border-[#ffffff]/10 md:border-[#443039]/10 bg-[#35232c]/70 md:bg-[#f7f0eb]/70 p-5 sm:p-6 lg:col-span-4">
             <h3 className="text-sm font-semibold">در ارتباط باشیم</h3>
 
-            <p className="mt-3 text-sm leading-7 text-[#69585e]">
+            <p className="mt-3 text-sm leading-7 text-[#e4d9df] md:text-[#69585e]">
               برای انتخاب، همکاری یا پیگیری سفارش، خوشحال می‌شویم از تو بشنویم.
             </p>
 
             <Link
               href="/contact"
-              className={`group mt-5 flex min-h-12 items-center justify-between gap-4 rounded-xl border border-[#443039]/20 px-4 py-3 text-sm font-medium transition-colors hover:border-[#92576b]/50 hover:bg-[#ebe2d9]/60 hover:text-[#92576b] ${focusClasses}`}
+              className={`group mt-5 flex min-h-12 items-center justify-between gap-4 rounded-xl border border-[#ffffff]/20 md:border-[#443039]/20 px-4 py-3 text-sm font-medium transition-colors hover:border-[#f7c9dc]/50 md:hover:border-[#92576b]/50 hover:bg-white/10 md:hover:bg-[#ebe2d9]/60 hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
             >
               تماس و پیگیری سفارش
               <ArrowIcon className="transition-transform motion-safe:group-hover:-translate-x-1" />
@@ -208,7 +208,7 @@ export function Footer() {
             <a
               href="mailto:hello@wingsgallery.ir"
               dir="ltr"
-              className={`mt-3 inline-flex min-h-11 max-w-full items-center rounded-sm py-2 text-sm text-[#69585e] underline decoration-[#69585e]/30 underline-offset-4 transition-colors hover:text-[#92576b] ${focusClasses}`}
+              className={`mt-3 inline-flex min-h-11 max-w-full items-center rounded-sm py-2 text-sm text-[#e4d9df] md:text-[#69585e] underline decoration-[#e4d9df]/30 md:decoration-[#69585e]/30 underline-offset-4 transition-colors hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
             >
               <span className="break-all">hello@wingsgallery.ir</span>
             </a>
@@ -220,13 +220,13 @@ export function Footer() {
           aria-hidden="true"
           lang="en"
           dir="ltr"
-          className="pointer-events-none select-none overflow-hidden pb-5 pt-2 text-center font-serif text-[clamp(2.25rem,9.5vw,8rem)] leading-none tracking-[-0.055em] text-[#443039]/10 sm:pb-8"
+          className="pointer-events-none select-none overflow-hidden pb-5 pt-2 text-center font-serif text-[clamp(2.25rem,9.5vw,8rem)] leading-none tracking-[-0.055em] text-[#ffffff]/10 md:text-[#443039]/10 sm:pb-8"
         >
           WINGS GALLERY
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="flex flex-col items-center gap-3 border-t border-[#443039]/15 py-5 text-xs text-[#69585e] lg:flex-row lg:justify-between lg:gap-6">
+        <div className="flex flex-col items-center gap-3 border-t border-[#ffffff]/15 md:border-[#443039]/15 py-5 text-xs text-[#e4d9df] md:text-[#69585e] lg:flex-row lg:justify-between lg:gap-6">
           <p className="text-center leading-6 lg:text-start">
             © ۱۴۰۵ وینگز گالری. با عشق، برای تو.
           </p>
@@ -237,7 +237,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className={`inline-flex min-h-11 items-center rounded-sm py-2 transition-colors hover:text-[#92576b] ${focusClasses}`}
+                    className={`inline-flex min-h-11 items-center rounded-sm py-2 transition-colors hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
                   >
                     {link.label}
                   </Link>
@@ -248,10 +248,10 @@ export function Footer() {
 
           <a
             href="#"
-            className={`group inline-flex min-h-11 shrink-0 items-center gap-3 rounded-sm py-2 font-medium transition-colors hover:text-[#92576b] ${focusClasses}`}
+            className={`group inline-flex min-h-11 shrink-0 items-center gap-3 rounded-sm py-2 font-medium transition-colors hover:text-[#f7c9dc] md:hover:text-[#92576b] ${focusClasses}`}
           >
             بازگشت به بالا
-            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#443039]/20 transition-colors group-hover:border-[#92576b]/50">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#ffffff]/20 md:border-[#443039]/20 transition-colors group-hover:border-[#f7c9dc]/50 md:group-hover:border-[#92576b]/50">
               <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"

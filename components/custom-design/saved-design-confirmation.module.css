@@ -83,3 +83,24 @@
   outline: 2px solid #95677b;
   outline-offset: 3px;
 }
+
+@media (max-width: 767px) {
+  .dialog {
+    background: linear-gradient(145deg, white, #fff3f8);
+    color: #35232c;
+    border-color: #efdee6;
+    border-radius: 28px;
+  }
+  .dialog::backdrop {
+    background: #24151f99;
+    backdrop-filter: blur(12px);
+  }
+  .dialog .action {
+    border-radius: 999px;
+    background: #f7c9dc;
+    color: #35232c;
+  }
+  .dialog .action:hover {
+    background: #f3b6d0;
+  }
+}

@@ -4,22 +4,9 @@ import { Collections } from "@/components/homepage/collections";
 import { NewArrivals } from "@/components/homepage/new-arrivals";
 import { Charms } from "@/components/homepage/charms";
 import { AboutJournal } from "@/components/homepage/about-journal";
-import { EditorialSection } from "@/components/homepage/editorial-section";
-import { ServiceBar } from "@/components/homepage/service-bar";
-
-import { CustomDesignFeature } from "@/components/homepage/custom-design-feature";
-import { WingsManifesto } from "@/components/homepage/wings-manifesto";
-import { HomeJournal } from "@/components/homepage/home-journal";
 import { HoverVideoSection } from "@/components/homepage/hover-video-section";
 
-import { getPosts } from "@/lib/get-posts";
-
-export default async function Home() {
-  const posts = await getPosts().catch((error: unknown) => {
-    console.error("Homepage journal could not be loaded:", error);
-    return [];
-  });
-
+export default function Home() {
   return (
     <>
       <a
@@ -42,9 +29,12 @@ export default async function Home() {
         <Charms />
 
         <div className="bg-[#24151f]">
-          <AboutJournal />
+          <div className="hidden md:block">
+            <AboutJournal />
+          </div>
 
           <HoverVideoSection
+            playNearOnMobile
             src="/videos/handcraft.mp4"
             aria-labelledby="handmade-heading"
             className="relative isolate w-full overflow-hidden bg-[#756058] text-white"
@@ -83,15 +73,6 @@ export default async function Home() {
           </HoverVideoSection>
         </div>
 
-        <CustomDesignFeature />
-
-        <EditorialSection />
-
-        <WingsManifesto />
-
-        <HomeJournal posts={posts.slice(0, 3)} />
-
-        <ServiceBar />
       </main>
     </>
   );

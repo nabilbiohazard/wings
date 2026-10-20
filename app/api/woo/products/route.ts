@@ -1,35 +1,12 @@
-import woo from "@/lib/woocommerce";
-import { mapWooProduct } from "@/lib/woo-mapper";
-
+import { getProducts } from "@/lib/get-products";
 
 export async function GET() {
-
   try {
-
-    const response = await woo.get("products", {
-      per_page: 12,
-      status: "publish",
-    });
-
-
-    return Response.json({
-      success:true,
-      products:response.data.map(mapWooProduct)
-    });
-
-
-  } catch(error:any){
-
+    return Response.json({ success: true, products: await getProducts() });
+  } catch {
     return Response.json(
-      {
-        success:false,
-        message:error.message
-      },
-      {
-        status:500
-      }
+      { success: false, message: "?????? ??????? ?? ??????? ????? ???." },
+      { status: 503 },
     );
-
   }
-
 }

@@ -9,7 +9,7 @@ export function HeaderBackdrop() {
     <div
       aria-hidden="true"
       className="header-backdrop"
-      style={{ backgroundColor: getHeaderColor(pathname) }}
+      style={{ backgroundColor: `var(--route-header-background, ${getHeaderColor(pathname)})` }}
     />
   );
 }

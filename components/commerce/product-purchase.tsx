@@ -14,6 +14,7 @@ export function ProductPurchase({
   product,
   design,
   onAdded,
+  stickyOnMobile = false,
 }: {
   product: Pick<
     Product,
@@ -27,6 +28,7 @@ export function ProductPurchase({
   >;
   design?: SavedDesign;
   onAdded?: () => void;
+  stickyOnMobile?: boolean;
 }) {
   const { addItem, loading } = useCommerce();
   const { openPanel } = useShop();
@@ -129,6 +131,14 @@ export function ProductPurchase({
           }
         />
       </label>
+      <div className={stickyOnMobile ? "design-purchase-bar" : undefined}>
+      {stickyOnMobile && (
+        <p className="mb-2 text-xs text-[#e4d9df] md:hidden">
+          {design?.charms.length
+            ? `${design.charms.length.toLocaleString("fa-IR")} چارم در طرح تو`
+            : product.name}
+        </p>
+      )}
       <button
         type="button"
         className="commerce-button w-full"
@@ -204,7 +214,9 @@ export function ProductPurchase({
             ? "در حال آماده‌سازی…"
             : product.isInStock === false
               ? "در حال حاضر ناموجود"
-              : design
+              : stickyOnMobile
+                ? "افزودن به سبد خرید"
+                : design
                 ? "افزودن طرح به سبد خرید"
                 : "افزودن به سبد خرید"}
       </button>
@@ -213,6 +225,7 @@ export function ProductPurchase({
           {error}
         </p>
       )}
+      </div>
     </div>
   );
 }

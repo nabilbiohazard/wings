@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import {
@@ -20,7 +20,6 @@ import {
   RotateCcw,
   Undo2,
   X,
-  SlidersHorizontal,
   ShoppingBag,
   ArrowLeftRight,
   Heart,
@@ -40,6 +39,7 @@ import { ProductPicker } from "./ProductPicker";
 import { SavedDesignConfirmation } from "./SavedDesignConfirmation";
 import { customizationHref, type DesignProduct } from "@/lib/design-products";
 import { persianNumber } from "@/lib/products";
+import { studioCharms } from "@/lib/studio-charms";
 import { getClosestPointOnPath } from "@/lib/snapToPath";
 import {
   useSavedDesigns,
@@ -90,9 +90,7 @@ export function CharmBuilder({
   requestedUnavailable?: boolean;
 }) {
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
-  const [paletteCharms, setPaletteCharms] = useState<CharmData[]>([]);
-  const [charmsLoading, setCharmsLoading] = useState(true);
-  const [charmsError, setCharmsError] = useState("");
+  const [paletteCharms, setPaletteCharms] = useState<CharmData[]>(studioCharms);
   useEffect(() => {
     const controller = new AbortController();
     fetch("/api/woo/charms", { cache: "no-store", signal: controller.signal })
@@ -103,13 +101,10 @@ export function CharmBuilder({
         return data.charms as CharmData[];
       })
       .then((charms) => {
-        if (!controller.signal.aborted) setPaletteCharms(charms);
+        if (!controller.signal.aborted) setPaletteCharms(studioCharms(charms));
       })
-      .catch((error) => {
-        if (!controller.signal.aborted) setCharmsError(error.message);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setCharmsLoading(false);
+      .catch(() => {
+        // Supplied local artwork remains available if the store cannot load.
       });
     return () => controller.abort();
   }, []);
@@ -132,19 +127,13 @@ export function CharmBuilder({
   );
   const [selection, setSelection] = useState<Selection | null>(null);
   const [draggedCharm, setDraggedCharm] = useState<CharmData | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [canUndo, setCanUndo] = useState(false);
-  const [viewportHeight, setViewportHeight] = useState<number | null>(null);
-  const [viewportTop, setViewportTop] = useState(0);
 
   const pathRef = useRef<SVGPathElement>(null);
   const placedRef = useRef<PlacedCharm[]>(initialCharms);
   const history = useRef<PlacedCharm[][]>([]);
   const lastDragEnd = useRef(0);
-  const openButtonRef = useRef<HTMLButtonElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const workspaceRef = useRef<HTMLDivElement>(null);
   const dragActive = useRef(false);
   const dragPointer = useRef<Position | null>(null);
   const dragGrabOffset = useRef<Position>({ x: 0, y: 0 });
@@ -213,73 +202,6 @@ export function CharmBuilder({
     setCanUndo(history.current.length > 0);
     setMessage("آخرین تغییر بازگردانده شد.");
   }
-
-  function closeSheet() {
-    setSheetOpen(false);
-    requestAnimationFrame(() => openButtonRef.current?.focus());
-  }
-
-  useEffect(() => {
-    if (!sheetOpen) return;
-
-    const media = window.matchMedia("(max-width: 1023px)");
-    const previousOverflow = document.body.style.overflow;
-
-    if (media.matches) document.body.style.overflow = "hidden";
-
-    function updateViewport() {
-      setViewportHeight(window.visualViewport?.height ?? window.innerHeight);
-      setViewportTop(window.visualViewport?.offsetTop ?? 0);
-    }
-
-    function onBreakpointChange() {
-      if (!media.matches) setSheetOpen(false);
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setSheetOpen(false);
-        openButtonRef.current?.focus();
-      }
-      if (event.key === "Tab" && media.matches) {
-        const buttons = workspaceRef.current?.querySelectorAll<HTMLElement>(
-          'button:not(:disabled), input, select, a[href], [tabindex="0"]',
-        );
-        const focusable = Array.from(buttons ?? []).filter(
-          (element) => element.getClientRects().length > 0,
-        );
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (!first || !last) return;
-        const active = document.activeElement;
-        if (
-          !workspaceRef.current?.contains(active) ||
-          (event.shiftKey ? active === first : active === last)
-        ) {
-          event.preventDefault();
-          (event.shiftKey ? last : first).focus();
-        }
-      }
-    }
-
-    updateViewport();
-    closeButtonRef.current?.focus({ preventScroll: true });
-
-    window.visualViewport?.addEventListener("resize", updateViewport);
-    window.visualViewport?.addEventListener("scroll", updateViewport);
-    window.addEventListener("resize", updateViewport);
-    window.addEventListener("keydown", onKeyDown);
-    media.addEventListener("change", onBreakpointChange);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.visualViewport?.removeEventListener("resize", updateViewport);
-      window.visualViewport?.removeEventListener("scroll", updateViewport);
-      window.removeEventListener("resize", updateViewport);
-      window.removeEventListener("keydown", onKeyDown);
-      media.removeEventListener("change", onBreakpointChange);
-    };
-  }, [sheetOpen]);
 
   function applyPosition(position: Position, action: Selection) {
     if (!selectedProduct) return false;
@@ -390,20 +312,6 @@ export function CharmBuilder({
     if (applyPosition(best, { type: "add", charm })) {
       setSelection(null);
     }
-  }
-
-  function selectCharm(charm: CharmData) {
-    if (Date.now() - lastDragEnd.current < 350) return;
-    if (!selectedProduct) {
-      setPickerOpen(true);
-      return;
-    }
-    setSelection((current) =>
-      current?.type === "add" && current.charm.id === charm.id
-        ? null
-        : { type: "add", charm },
-    );
-    setMessage("محل دلخواه را روی محصول لمس کن.");
   }
 
   function selectMove(instanceId: string) {
@@ -534,14 +442,8 @@ export function CharmBuilder({
         ? "محل جدید چارم را روی محصول لمس کن"
         : undefined;
 
-  const viewportStyle = {
-    "--studio-top": `${viewportTop}px`,
-    "--studio-height":
-      viewportHeight !== null ? `${viewportHeight}px` : "100dvh",
-  } as CSSProperties;
-
   function openProductPicker() {
-    setSheetOpen(false);
+
     setPickerOpen(true);
   }
 
@@ -573,7 +475,7 @@ export function CharmBuilder({
   }
 
   function startNewDesign() {
-    setSheetOpen(false);
+
     setSelectedProduct(null);
     setPlacedCharms([]);
     placedRef.current = [];
@@ -584,6 +486,34 @@ export function CharmBuilder({
     window.history.replaceState(null, "", "/custom-design");
     setPickerOpen(true);
   }
+
+  const editControls = (
+<div
+                    className={styles.editTools}
+                    role="group"
+                    aria-label="ابزارهای ویرایش طرح"
+                  >
+                    <button
+                      type="button"
+                      onClick={undo}
+                      disabled={!canUndo}
+                      aria-label="بازگردانی آخرین تغییر"
+                      title="بازگردانی آخرین تغییر"
+                    >
+                      <Undo2 size={18} />
+                    </button>
+                    <span className={styles.toolDivider} aria-hidden="true" />
+                    <button
+                      type="button"
+                      onClick={reset}
+                      disabled={!placedCharms.length && !selection}
+                      aria-label="شروع دوباره"
+                      title="شروع دوباره"
+                    >
+                      <RotateCcw size={17} />
+                    </button>
+                  </div>
+  );
 
   return (
     <DndContext
@@ -639,7 +569,7 @@ export function CharmBuilder({
     >
       <div
         dir="rtl"
-        className={`${styles.studio} ${sheetOpen ? styles.studioSheetOpen : ""}`}
+        className={styles.studio}
       >
         <div className="site-container">
           <header className={styles.heading}>
@@ -651,6 +581,17 @@ export function CharmBuilder({
               یک محصول انتخاب کن، چارم‌های دلخواهت را روی آن بچین و طرح خودت را
               بساز.
             </p>
+            <ol className={styles.mobileSteps} aria-label="مراحل طراحی">
+              <li data-active={!selectedProduct}>
+                <span>۱</span> انتخاب محصول
+              </li>
+              <li data-active={Boolean(selectedProduct) && !placedCharms.length}>
+                <span>۲</span> چیدن چارم‌ها
+              </li>
+              <li data-active={placedCharms.length > 0}>
+                <span>۳</span> طرح خودت
+              </li>
+            </ol>
           </header>
           {requestedUnavailable && !selectedProduct && (
             <p role="status" className={styles.unavailableProduct}>
@@ -658,16 +599,7 @@ export function CharmBuilder({
             </p>
           )}
 
-          <div
-            ref={workspaceRef}
-            role={sheetOpen ? "dialog" : undefined}
-            aria-modal={sheetOpen ? true : undefined}
-            aria-label={sheetOpen ? "انتخاب چارم و طراحی دستبند" : undefined}
-            className={`${styles.workspace} ${
-              sheetOpen ? styles.workspaceOpen : ""
-            }`}
-            style={viewportStyle}
-          >
+          <div className={styles.workspace}>
             <section className={styles.canvasSection} aria-label="میز طراحی">
               <div className={styles.canvasToolbar}>
                 <div className={styles.productIdentity}>
@@ -682,6 +614,7 @@ export function CharmBuilder({
                         : "قدم اول؛ انتخاب محصول"}
                     </span>
                   </div>
+                  <div className={styles.productControlBox}>
                   <button
                     type="button"
                     className={styles.changeProductButton}
@@ -696,33 +629,11 @@ export function CharmBuilder({
                       {selectedProduct ? "تغییر محصول" : "انتخاب محصول"}
                     </span>
                   </button>
+                    <div className={styles.mobileEditTools}>{editControls}</div>
+                  </div>
                 </div>
                 <div className={styles.toolbarButtons}>
-                  <div
-                    className={styles.editTools}
-                    role="group"
-                    aria-label="ابزارهای ویرایش طرح"
-                  >
-                    <button
-                      type="button"
-                      onClick={undo}
-                      disabled={!canUndo}
-                      aria-label="بازگردانی آخرین تغییر"
-                      title="بازگردانی آخرین تغییر"
-                    >
-                      <Undo2 size={18} />
-                    </button>
-                    <span className={styles.toolDivider} aria-hidden="true" />
-                    <button
-                      type="button"
-                      onClick={reset}
-                      disabled={!placedCharms.length && !selection}
-                      aria-label="شروع دوباره"
-                      title="شروع دوباره"
-                    >
-                      <RotateCcw size={17} />
-                    </button>
-                  </div>
+                  <div className={styles.desktopEditTools}>{editControls}</div>
                   <div className={styles.designActions}>
                     <button
                       type="button"
@@ -819,59 +730,36 @@ export function CharmBuilder({
               className={styles.paletteSection}
               aria-label="انتخاب چارم"
             >
-              <div className={styles.sheetHeader}>
-                <span className={styles.sheetHandle} aria-hidden="true" />
-                <div>
-                  <strong>چارم بعدی‌ات را انتخاب کن</strong>
-                  <button
-                    ref={closeButtonRef}
-                    type="button"
-                    onClick={closeSheet}
-                    aria-label="بستن پنل انتخاب چارم"
-                  >
-                    <X size={21} />
-                  </button>
-                </div>
-              </div>
-
               <CharmPalette
                 charms={paletteCharms}
-                loading={charmsLoading}
-                error={charmsError}
+                loading={false}
+                error=""
                 counts={counts}
                 selectedCharmId={
                   selection?.type === "add" ? selection.charm.id : undefined
                 }
-                onSelect={selectCharm}
+                onSelect={addAutomatically}
                 onAdd={addAutomatically}
               />
 
-              <div className={styles.sheetFooter}>
-                <button type="button" onClick={closeSheet}>
-                  <SlidersHorizontal size={17} />
-                  تنظیم جای چارم‌ها
-                </button>
-                <span>
-                  {placedCharms.length.toLocaleString("fa-IR")} چارم اضافه شده
-                </span>
-              </div>
             </aside>
           </div>
 
           <section className={styles.summary} aria-label="چارم‌های انتخاب‌شده">
-            {selectedProduct && placedCharms.length > 0 && (
+            {selectedProduct && (
               <div className="mb-6 rounded-2xl border border-[#e7dadd] bg-[#fffafb] p-4">
                 <h2 className="mb-4">همین طرح را سفارش بده</h2>
                 <ProductPurchase
                   key={selectedProduct.id}
                   product={selectedProduct}
-                  design={{
+                  stickyOnMobile
+                  design={placedCharms.length ? {
                     id: "current",
                     product: selectedProduct,
                     charms: placedCharms,
                     savedAt: "",
-                  }}
-                  onAdded={() => setSheetOpen(false)}
+                  } : undefined}
+
                 />
               </div>
             )}
@@ -929,26 +817,16 @@ export function CharmBuilder({
             )}
           </section>
 
-          <div className={styles.mobileBar}>
-            <div>
-              <strong>طراحی خودت</strong>
-              <span>
-                {placedCharms.length.toLocaleString("fa-IR")} چارم انتخاب شده
-              </span>
+          {!selectedProduct && (
+            <div className={styles.mobileBar}>
+              <span>ابتدا محصولت را انتخاب کن</span>
+              <button type="button" onClick={openProductPicker}>
+                انتخاب محصول
+              </button>
             </div>
-            <button
-              ref={openButtonRef}
-              type="button"
-              onClick={() =>
-                selectedProduct ? setSheetOpen(true) : openProductPicker()
-              }
-              aria-expanded={sheetOpen}
-              aria-controls="mobile-charm-panel"
-            >
-              <Plus size={19} />
-              {selectedProduct ? "انتخاب چارم" : "انتخاب محصول"}
-            </button>
-          </div>
+          )}
+
+
         </div>
       </div>
 
@@ -968,7 +846,7 @@ export function CharmBuilder({
           onClose={() => setSaveConfirmationOpen(false)}
           onViewWishlist={() => {
             setSaveConfirmationOpen(false);
-            setSheetOpen(false);
+
             openPanel("wishlist");
           }}
         />

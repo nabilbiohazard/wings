@@ -28,6 +28,45 @@ html {
   scrollbar-gutter: stable;
 }
 
+@media (max-width: 767px) {
+  .design-purchase-bar {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 80;
+    padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid #f7c9dc38;
+    background: #24151ff2;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 -8px 30px #24151f12;
+  }
+  .design-purchase-bar .commerce-button {
+    min-height: 50px;
+    background: #f7c9dc;
+    color: #35232c;
+    box-shadow: inset 0 1px 0 #ffffff80;
+  }
+  .design-purchase-bar .commerce-button:hover {
+    background: #ffe2ed;
+  }
+  body:has(.custom-design-page) {
+    --route-header-background: #24151f;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+  }
+
+  html:has(.custom-design-page),
+  body:has(.custom-design-page) {
+    overflow-x: clip;
+    overscroll-behavior-x: none;
+  }
+
+  .custom-design-page {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+}
+
 .commerce-panel {
   border: 1px solid #eee3e5;
   border-radius: 28px;
