@@ -1,9 +1,10 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
-import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, X, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import { PaletteCharm, type CharmData } from "./Charm";
 import styles from "./builder-studio.module.css";
+import { CharmCategoryMenu } from "./CharmCategoryMenu";
 
 const PAGE_SIZE = 12;
 
@@ -19,6 +20,8 @@ function normalize(value: string) {
 }
 
 interface CharmPaletteProps {
+  mobileFilters?: boolean;
+  singleCharm?: boolean;
   charms: CharmData[];
   selectedCharmId?: string;
   counts: Record<string, number>;
@@ -36,6 +39,8 @@ export function CharmPalette({
   onAdd,
   loading = false,
   error = "",
+  singleCharm = false,
+  mobileFilters = false,
 }: CharmPaletteProps) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("همه");
@@ -101,90 +106,126 @@ export function CharmPalette({
   return (
     <div className={styles.palette}>
       <div className={styles.paletteFilters}>
-        <div className={styles.paletteTitle}>
+        <div className={styles.paletteTitle} data-palette-title>
+          <span className={styles.paletteEyebrow}>
+            <Sparkles size={14} /> THE CHARM COLLECTION
+          </span>
           <h2>کدام چارم شبیه توست؟</h2>
-          <p>«افزودن» برای چیدمان خودکار؛ تصویر چارم برای انتخاب جای دلخواه.</p>
+          <p>
+            {singleCharm
+              ? "این مدل فقط یک چارم در پایین محصول دارد؛ انتخاب جدید جایگزین قبلی می‌شود."
+              : "«افزودن» برای چیدمان خودکار؛ تصویر چارم برای انتخاب جای دلخواه."}
+          </p>
         </div>
 
-        <label className={styles.searchBox} htmlFor={searchId}>
-          <Search size={18} aria-hidden="true" />
-          <input
-            id={searchId}
-            type="search"
-            value={search}
-            onChange={(event) => {
-              setSearch(event.target.value);
-              setPage(1);
-            }}
-            placeholder="جست‌وجوی نام یا موضوع..."
-            aria-label="جست‌وجوی چارم"
-          />
-          {search && (
-            <button
-              type="button"
-              onClick={() => {
-                setSearch("");
-                setPage(1);
-              }}
-              aria-label="پاک کردن جست‌وجو"
-            >
-              <X size={17} />
-            </button>
-          )}
-        </label>
-
-        <div
-          className={styles.categories}
-          role="group"
-          aria-label="دسته‌بندی چارم‌ها"
-        >
-          {categories.map((name) => (
-            <button
-              key={name}
-              type="button"
-              aria-pressed={category === name}
-              className={category === name ? styles.categoryActive : ""}
-              onClick={() => {
-                setCategory(name);
-                setPage(1);
-              }}
-            >
-              {name}
-            </button>
-          ))}
-        </div>
-
-        <div className={styles.filterMeta}>
-          <span>{filtered.length.toLocaleString("fa-IR")} چارم</span>
-          <select
-            value={sort}
-            aria-label="مرتب‌سازی چارم‌ها"
-            onChange={(event) => {
-              setSort(event.target.value);
-              setPage(1);
-            }}
+        <div data-mobile-palette-controls={mobileFilters || undefined}>
+          <label
+            className={styles.searchBox}
+            htmlFor={searchId}
+            data-mobile-search={mobileFilters || undefined}
           >
-            <option value="default">ترتیب پیش‌فرض</option>
-            <option value="asc">نام: الف تا ی</option>
-            <option value="desc">نام: ی تا الف</option>
-          </select>
+            <Search size={18} aria-hidden="true" />
+            <input
+              id={searchId}
+              type="search"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+              placeholder={
+                mobileFilters ? "جست‌وجوی چارم…" : "جست‌وجوی نام یا موضوع..."
+              }
+              aria-label="جست‌وجوی چارم"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setPage(1);
+                }}
+                aria-label="پاک کردن جست‌وجو"
+              >
+                <X size={17} />
+              </button>
+            )}
+          </label>
+          {mobileFilters && (
+            <CharmCategoryMenu
+              categories={categories}
+              value={category}
+              onChange={(value) => {
+                setCategory(value);
+                setPage(1);
+              }}
+            />
+          )}
         </div>
+
+        {!mobileFilters && (
+          <div
+            className={styles.categories}
+            data-charm-categories
+            role="group"
+            aria-label="دسته‌بندی چارم‌ها"
+          >
+            {categories.map((name) => (
+              <button
+                key={name}
+                type="button"
+                aria-pressed={category === name}
+                className={category === name ? styles.categoryActive : ""}
+                onClick={() => {
+                  setCategory(name);
+                  setPage(1);
+                }}
+              >
+                {name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {!mobileFilters && (
+          <div className={styles.filterMeta} data-palette-meta>
+            <span>{filtered.length.toLocaleString("fa-IR")} چارم</span>
+            <select
+              value={sort}
+              aria-label="مرتب‌سازی چارم‌ها"
+              onChange={(event) => {
+                setSort(event.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="default">ترتیب پیش‌فرض</option>
+              <option value="asc">نام: الف تا ی</option>
+              <option value="desc">نام: ی تا الف</option>
+            </select>
+          </div>
+        )}
       </div>
 
       <div className={styles.paletteResults}>
         {loading && (
-          <p role="status" className="p-4 text-sm text-[#8b777d]">
-            در حال دریافت چارم‌های فروشگاه…
-          </p>
+          <div role="status" className={styles.paletteLoading}>
+            <p>داریم انتخاب‌های قشنگت را آماده می‌کنیم…</p>
+            <div aria-hidden="true">
+              {Array.from({ length: 6 }, (_, index) => (
+                <span key={index} />
+              ))}
+            </div>
+          </div>
         )}
         {error && (
           <p role="alert" className="commerce-error">
             {error}
           </p>
         )}
-        <div className={styles.charmGrid}>
+        <div className={styles.charmGrid} data-charm-grid>
           {visible.map((charm) => (
             <PaletteCharm
+              singleCharm={singleCharm}
               key={charm.id}
               charm={charm}
               selected={selectedCharmId === charm.id}

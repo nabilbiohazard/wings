@@ -6,6 +6,7 @@ import { useState, type RefObject } from "react";
 import { PlacedCharmItem } from "./Placedcharmitem";
 import type { CharmData } from "./Charm";
 import type { DesignProduct } from "@/lib/design-products";
+import { designRules } from "@/lib/design-rules";
 
 export interface PlacedCharm {
   instanceId: string;
@@ -28,19 +29,28 @@ export const BLOCKED_ARC_START_DEG = 310;
 export const BLOCKED_ARC_END_DEG = 50;
 
 export function isNecklace(product: DesignProduct): boolean {
-  return /گردنبند|necklace/i.test(`${product.name} ${product.category} ${product.slug}`);
+  return designRules(product).kind === "necklace";
 }
 
-// Two separate branches, traced in the same square as the product image.
-// Do not join across the pendant: that would allow charms to float in the gap.
+// Trace the complete unadorned necklace in the normalized 600px product image.
 export const NECKLACE_PATH_D =
-  "M 103 0 C 100 155 133 294 224 386 M 496 0 C 499 155 466 294 376 386";
+  "M 300 24 C 132 24 85 153 85 284 C 85 433 159 578 300 578 C 441 578 515 433 515 284 C 515 153 468 24 300 24 Z";
 
-export function isCharmPositionBlocked(x: number, y: number, product?: DesignProduct): boolean {
+export function isCharmPositionBlocked(
+  x: number,
+  y: number,
+  product?: DesignProduct,
+): boolean {
+  if (product && designRules(product).single) return false;
   if (product && isNecklace(product)) return false;
   const normalize = (angle: number) => ((angle % 360) + 360) % 360;
   const angle = normalize(
-    (Math.atan2((x - CHAIN_CENTER_X) / RADIUS_X, -(y - CHAIN_CENTER_Y) / RADIUS_Y) * 180) / Math.PI,
+    (Math.atan2(
+      (x - CHAIN_CENTER_X) / RADIUS_X,
+      -(y - CHAIN_CENTER_Y) / RADIUS_Y,
+    ) *
+      180) /
+      Math.PI,
   );
   const start = normalize(BLOCKED_ARC_START_DEG);
   const end = normalize(BLOCKED_ARC_END_DEG);
@@ -55,26 +65,18 @@ export const CHAIN_PATH_D = `M ${CHAIN_CENTER_X} ${CHAIN_CENTER_Y - RADIUS_Y} A 
   CHAIN_CENTER_X - 0.01
 } ${CHAIN_CENTER_Y - RADIUS_Y} Z`;
 
-export function getCharmRotation(x: number, y: number, product?: DesignProduct): number {
+export function getCharmRotation(
+  x: number,
+  y: number,
+  product?: DesignProduct,
+): number {
+  if (product && designRules(product).single) return 0;
   if (product && isNecklace(product)) {
-    // Find the parameter on the monotonic cubic branch from its height.
-    // Its outward normal points left/down on the left and right/down on the right.
-    let low = 0;
-    let high = 1;
-    for (let step = 0; step < 30; step += 1) {
-      const t = (low + high) / 2;
-      const height = 3 * (1 - t) ** 2 * t * 155 +
-        3 * (1 - t) * t ** 2 * 294 + t ** 3 * 386;
-      if (height < y) low = t;
-      else high = t;
-    }
-    const t = (low + high) / 2;
-    const dx = 3 * (1 - t) ** 2 * -3 +
-      6 * (1 - t) * t * 33 + 3 * t ** 2 * (x < 300 ? 91 : 90);
-    const dy = 3 * (1 - t) ** 2 * 155 +
-      6 * (1 - t) * t * 139 + 3 * t ** 2 * 92;
-    const outwardX = x < 300 ? -dy : dy;
-    return Math.atan2(dx, outwardX) * 180 / Math.PI - 90;
+    const outwardAngle = Math.atan2(
+      (y - 300) / (278 * 278),
+      (x - 300) / (215 * 215),
+    );
+    return (outwardAngle * 180) / Math.PI - 90;
   }
   const outwardAngle = Math.atan2(
     (y - CHAIN_CENTER_Y) / (RADIUS_Y * RADIUS_Y),
@@ -97,7 +99,16 @@ interface ChainProps {
   pathRef: RefObject<SVGPathElement | null>;
 }
 
-export function Chain({ product, placedCharms, onRemove, onMove, onCancelPlacement, onCanvasTap, placementHint, pathRef }: ChainProps) {
+export function Chain({
+  product,
+  placedCharms,
+  onRemove,
+  onMove,
+  onCancelPlacement,
+  onCanvasTap,
+  placementHint,
+  pathRef,
+}: ChainProps) {
   const { setNodeRef, isOver } = useDroppable({ id: "chain-drop-zone" });
   const [selectedCharmId, setSelectedCharmId] = useState<string | null>(null);
 
@@ -106,9 +117,16 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCancelPlaceme
       ref={setNodeRef}
       id="chain-container"
       onClickCapture={(event) => {
-        if (!placementHint || (event.target as HTMLElement).closest("[data-charm-actions]")) return;
-        if (window.matchMedia("(max-width: 1023px)").matches &&
-          (event.target as HTMLElement).closest("[data-placed-charm]")) return;
+        if (
+          !placementHint ||
+          (event.target as HTMLElement).closest("[data-charm-actions]")
+        )
+          return;
+        if (
+          window.matchMedia("(max-width: 1023px)").matches &&
+          (event.target as HTMLElement).closest("[data-placed-charm]")
+        )
+          return;
         event.stopPropagation();
         setSelectedCharmId(null);
         onCanvasTap(event.clientX, event.clientY);
@@ -126,16 +144,22 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCancelPlaceme
           {placementHint}
         </div>
       )}
-      {product.image ? <Image
-        key={product.id}
-        src={product.image}
-        alt={product.name}
-        fill
-        unoptimized
-        sizes="(max-width: 768px) 100vw, 448px"
-        className="pointer-events-none select-none object-contain"
-        draggable={false}
-      /> : <div className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[#806d75]">تصویر این محصول هنوز ثبت نشده است.</div>}
+      {product.image ? (
+        <Image
+          key={product.id}
+          src={product.image}
+          alt={product.name}
+          fill
+          unoptimized
+          sizes="(max-width: 768px) 100vw, 448px"
+          className="pointer-events-none select-none object-contain"
+          draggable={false}
+        />
+      ) : (
+        <div className="absolute inset-0 grid place-items-center p-8 text-center text-sm text-[#806d75]">
+          تصویر این محصول هنوز ثبت نشده است.
+        </div>
+      )}
       <svg
         viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
         className="pointer-events-none absolute inset-0 h-full w-full"
@@ -152,6 +176,7 @@ export function Chain({ product, placedCharms, onRemove, onMove, onCancelPlaceme
       {placedCharms.map((pc) => {
         return (
           <PlacedCharmItem
+            fixed={designRules(product).single}
             key={pc.instanceId}
             instanceId={pc.instanceId}
             charm={pc.charm}

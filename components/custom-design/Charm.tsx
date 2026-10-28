@@ -19,6 +19,7 @@ export interface CharmData {
 }
 
 interface PaletteCharmProps {
+  singleCharm?: boolean;
   charm: CharmData;
   selected: boolean;
   count?: number;
@@ -32,6 +33,7 @@ export function PaletteCharm({
   count = 0,
   onSelect,
   onAdd,
+  singleCharm = false,
 }: PaletteCharmProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `palette-${charm.id}`,
@@ -60,10 +62,14 @@ export function PaletteCharm({
           {...listeners}
           className={styles.charmDragHandle}
           onClick={() => onSelect(charm)}
-          aria-label={`انتخاب جای ${charm.name} روی محصول؛ برای کشیدن تصویر را نگه دار`}
+          aria-label={
+            singleCharm
+              ? `انتخاب ${charm.name} برای جایگاه ثابت`
+              : `انتخاب جای ${charm.name} روی محصول؛ برای کشیدن تصویر را نگه دار`
+          }
           aria-pressed={selected}
         >
-          <div className={styles.charmImage}>
+          <div className={styles.charmImage} data-charm-image>
             {charm.image ? (
               <Image
                 src={charm.image}
@@ -97,7 +103,15 @@ export function PaletteCharm({
           aria-label={`افزودن ${charm.name}`}
         >
           <Plus size={15} />
-          <span>{charm.available === false ? "غیرقابل سفارش" : "افزودن"}</span>
+          <span>
+            {charm.available === false
+              ? "غیرقابل سفارش"
+              : singleCharm
+                ? count
+                  ? "انتخاب فعلی"
+                  : "انتخاب چارم"
+                : "افزودن"}
+          </span>
         </button>
       </div>
     </article>

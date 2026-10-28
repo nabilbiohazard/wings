@@ -14,6 +14,23 @@ final class Wings_Designs {
         return (bool) preg_match('/گردنبند|دستبند|گوشواره|necklace|bracelet|earring/iu', $text);
     }
     private static function fail($message, $status = 400) { throw new RuntimeException($message, $status); }
+    public static function rules($product) {
+        $terms = wp_get_post_terms($product->get_id(), 'product_cat');
+        if (is_wp_error($terms)) self::fail('دریافت دسته‌بندی محصول انجام نشد.', 503);
+        $categories = array(); $text = '';
+        foreach ($terms as $term) {
+            $categories[] = array('id' => (int) $term->term_id, 'name' => $term->name, 'slug' => $term->slug);
+            $text .= ' ' . $term->name . ' ' . urldecode($term->slug);
+        }
+        $text = str_replace(array('ي', 'ك'), array('ی', 'ک'), $text);
+        $text = preg_replace('/[\s\x{200C}_-]+/u', ' ', $text);
+        if (!preg_match('/گردنبند|دستبند|necklace|bracelet/iu', $text)) $text .= ' ' . $product->get_name();
+        $kind = preg_match('/گردنبند|necklace/iu', $text) ? 'necklace' : (preg_match('/دستبند|bracelet/iu', $text) ? 'bracelet' : 'other');
+        $single = (bool) preg_match('/تک\s*چارم|single\s*charm|one\s*charm/iu', $text);
+        return array('single' => $single, 'categories' => $categories,
+            'label' => ($kind === 'necklace' ? 'گردنبند' : ($kind === 'bracelet' ? 'دستبند' : 'محصول')) . ($single ? ' تک‌چارم' : ' چندچارم'),
+            'anchor' => $kind === 'necklace' ? array('x' => 300, 'y' => 578, 'rotation' => 0) : ($kind === 'bracelet' && $single ? array('x' => 298, 'y' => 472, 'rotation' => 0) : array('x' => 289, 'y' => 516, 'rotation' => 0)));
+    }
     private static function term_ids() {
         if (self::$charm_terms !== null) return self::$charm_terms;
         $terms = get_terms(array('taxonomy' => 'product_cat', 'hide_empty' => false));
@@ -80,6 +97,8 @@ final class Wings_Designs {
         if (($raw['product']['image'] ?? '') !== $image) self::fail('تصویر محصول پایه تغییر کرده است؛ طرح را باز کنید و دوباره بررسی کنید.', 409);
         $placed = $raw['charms'] ?? null;
         if (!is_array($placed) || count($placed) < 1 || count($placed) > 30) self::fail('طرح باید بین یک تا سی چارم داشته باشد.');
+        $rules = self::rules($base);
+        if ($rules['single'] && count($placed) !== 1) self::fail('این محصول فقط یک چارم در جایگاه ثابت می‌پذیرد.');
         $known = array_column(self::catalogue(), null, 'id');
         $charms = array(); $components = array(); $instances = array(); $currency = get_woocommerce_currency();
         foreach ($placed as $item) {
@@ -89,6 +108,12 @@ final class Wings_Designs {
             foreach (array('x','y','rotation') as $field) {
                 $value = $item[$field] ?? null;
                 if ((!is_int($value) && !is_float($value)) || !is_finite((float) $value) || ($field === 'rotation' ? abs($value) > 3600 : $value < 0 || $value > 600)) self::fail('موقعیت چارم‌های طرح معتبر نیست.');
+            }
+            if ($rules['single']) {
+                foreach ($rules['anchor'] as $field => $expected) {
+                    if (abs($item[$field] - $expected) > 0.01) self::fail('جای اتصال چارم این محصول ثابت است؛ طرح را دوباره باز کنید.', 409);
+                    $item[$field] = $expected;
+                }
             }
             $instances[$instance] = true; $product = self::linked($id); $pid = $product->get_id();
             $definition = isset($known[$id]) ? $known[$id] : self::entry($product);
@@ -105,7 +130,7 @@ final class Wings_Designs {
             if (!$product->is_in_stock() || !$product->has_enough_stock($count) || ($product->is_sold_individually() && $count > 1)) self::fail('موجودی چارم‌های این طرح برای تعداد انتخاب‌شده کافی نیست.', 409);
         }
         return array('snapshot' => array('version' => 1, 'id' => '', 'savedAt' => '', 'product' => array('id' => $base->get_id(), 'name' => $base->get_name(), 'image' => $image,
-            'slug' => $base->get_slug(), 'category' => '', 'price' => $currency === 'IRR' ? (float) $base->get_price() / 10 : (float) $base->get_price(), 'hasOptions' => $base->is_type('variable')), 'charms' => $charms), 'components' => $components);
+            'slug' => $base->get_slug(), 'category' => $rules['label'], 'categories' => $rules['categories'], 'price' => $currency === 'IRR' ? (float) $base->get_price() / 10 : (float) $base->get_price(), 'hasOptions' => $base->is_type('variable')), 'charms' => $charms), 'components' => $components);
     }
     public static function identity($design) {
         return hash('sha256', wp_json_encode(array($design['product']['id'], $design['variation_id'] ?? 0, $design['attributes'] ?? array(), $design['product']['image'], array_map(function($item) {return array($item['charm']['id'], $item['x'], $item['y'], $item['rotation']);}, $design['charms']))));

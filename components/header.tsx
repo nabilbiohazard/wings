@@ -1,5 +1,7 @@
 "use client";
 
+// @refresh reset
+
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -68,7 +70,8 @@ export function Header() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const solid = scrolled || mobileOpen;
+  const isHome = pathname === "/";
+  const solid = isHome && (scrolled || mobileOpen);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,7 +122,7 @@ export function Header() {
         {/* BACKGROUND */}
 
         <div
-          style={{ backgroundColor: solid || pathname === "/" ? undefined : getHeaderColor(pathname) }}
+          style={{ backgroundColor: isHome ? undefined : getHeaderColor(pathname) }}
           className={`
             absolute inset-0
             transition-all duration-500
@@ -131,7 +134,7 @@ export function Header() {
                   backdrop-blur-2xl
                 `
                 : `
-                  ${pathname === "/" ? "bg-transparent" : "backdrop-blur-[2px]"}
+                  ${isHome ? "bg-transparent" : ""}
                 `
             }
           `}
@@ -233,11 +236,11 @@ export function Header() {
             <div className="flex w-full items-center justify-center md:w-auto md:justify-end">
               <div
                 className={`
-                  flex items-center
-                  gap-1
+                  flex w-full max-w-78 items-center justify-between
+                  gap-2 md:w-auto md:max-w-none md:justify-start md:gap-1
                   rounded-full
                   border
-                  p-1.5
+                  px-3 py-1.5 md:p-1.5
                   transition-all duration-500
                   ${
                     solid

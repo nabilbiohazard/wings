@@ -1,6 +1,6 @@
 const headerColors: Record<string, string> = {
   shop: "#302332",
-  "custom-design": "#283a40",
+  "custom-design": "#291c24",
   collections: "#263b34",
   about: "#40302b",
   blog: "#30354b",

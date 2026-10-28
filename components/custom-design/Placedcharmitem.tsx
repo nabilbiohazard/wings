@@ -39,6 +39,7 @@ const CHARM_HIT_AREAS: Record<
 };
 
 interface PlacedCharmItemProps {
+  fixed?: boolean;
   instanceId: string;
   charm: CharmData;
   x: string;
@@ -60,6 +61,7 @@ export function PlacedCharmItem({
   onSelect,
   onRemove,
   onMove,
+  fixed = false,
 }: PlacedCharmItemProps) {
   const {
     attributes,
@@ -69,6 +71,7 @@ export function PlacedCharmItem({
     transform,
     isDragging,
   } = useDraggable({
+    disabled: fixed,
     id: `placed-${instanceId}`,
     data: { type: "placed" as const, instanceId, charm },
   });
@@ -125,8 +128,11 @@ export function PlacedCharmItem({
           top: `${hitArea.top}%`,
           width: `${hitArea.width}%`,
           height: `${hitArea.height}%`,
+          cursor: fixed ? "pointer" : undefined,
         }}
-        aria-label={`کشیدن و جابه‌جایی ${charm.name}`}
+        aria-label={
+          fixed ? `انتخاب ${charm.name}` : `کشیدن و جابه‌جایی ${charm.name}`
+        }
         onClick={(event) => {
           event.stopPropagation();
           if (window.matchMedia("(max-width: 1023px)").matches) {
@@ -146,17 +152,19 @@ export function PlacedCharmItem({
           transform: `translate(-50%, -100%) rotate(${-rotation}deg)`,
         }}
       >
-        <button
-          type="button"
-          {...listeners}
-          onClick={(event) => {
-            event.stopPropagation();
-            onMove(instanceId);
-          }}
-          aria-label={`انتخاب و جابه‌جایی ${charm.name}`}
-        >
-          <Move size={15} />
-        </button>
+        {!fixed && (
+          <button
+            type="button"
+            {...listeners}
+            onClick={(event) => {
+              event.stopPropagation();
+              onMove(instanceId);
+            }}
+            aria-label={`انتخاب و جابه‌جایی ${charm.name}`}
+          >
+            <Move size={15} />
+          </button>
+        )}
 
         <button
           type="button"

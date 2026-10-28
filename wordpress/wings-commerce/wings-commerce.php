@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Wings Commerce
  * Description: Private Next.js bridge for Melipayamak OTP, WooCommerce customer accounts and orders without online payment.
- * Version: 1.2.5
+ * Version: 1.2.7
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  */
@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
 require_once __DIR__ . '/designs.php';
 
 final class Wings_Commerce {
-    const VERSION = '1.2.5';
+    const VERSION = '1.2.7';
     private static $uid = 0;
     private static $session_key = '';
     private static function setting($name) {

@@ -1,0 +1,73 @@
+.trigger[aria-haspopup="menu"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 116px;
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #e4d4dc;
+  border-radius: 12px;
+  background: #f8eef3;
+  color: #854f68;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.trigger > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.trigger > svg {
+  flex-shrink: 0;
+  transition: transform 160ms;
+}
+.trigger[aria-expanded="true"] > svg {
+  transform: rotate(180deg);
+}
+.trigger:focus-visible {
+  outline: 2px solid #b58b64;
+  outline-offset: 2px;
+}
+.menu {
+  position: fixed;
+  z-index: 250;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px;
+  border: 1px solid #e6d5df;
+  border-radius: 14px;
+  background: #fffcfa;
+  color: #553342;
+  box-shadow: 0 12px 40px #36202f26;
+  scrollbar-width: thin;
+}
+.menu > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 11px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  text-align: right;
+  cursor: pointer;
+}
+.menu > button[aria-checked="true"] {
+  background: #f3e5ec;
+  color: #8c4c65;
+}
+.menu > button:hover,
+.menu > button:focus-visible {
+  outline: none;
+  background: #f5edf1;
+}

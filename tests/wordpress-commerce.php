@@ -8,8 +8,8 @@ define('WINGS_MELIPAYAMAK_USERNAME', 'test'); define('WINGS_MELIPAYAMAK_PASSWORD
 function register_activation_hook($file, $fn) {} function register_deactivation_hook($file, $fn) {}
 function add_action($name, $fn, $priority = 10) { $GLOBALS['hooks'][$name][]=$fn; }
 function remove_action($name,$fn,$priority=10) { $GLOBALS['hooks'][$name]=array_filter($GLOBALS['hooks'][$name] ?? array(),function($entry)use($fn){return $entry!==$fn;}); }
-function get_option($key,$default=null) { return $key === 'wings_schema' ? '1.2.5' : ($GLOBALS['options'][$key] ?? $default); }
-function wp_get_post_terms(){return array();}
+function get_option($key,$default=null) { return $key === 'wings_schema' ? Wings_Commerce::VERSION : ($GLOBALS['options'][$key] ?? $default); }
+function wp_get_post_terms($id=0){return $GLOBALS['product_terms'][$id] ?? array();}
 function get_terms($args){return array((object)array('term_id'=>100,'name'=>'چارم','slug'=>'charms'), (object)array('term_id'=>102,'name'=>'فلزی','slug'=>'metal'));}
 function get_term_children($id,$taxonomy){return $id===100 ? array(102) : array();}
 function has_term($terms,$taxonomy,$id){return in_array($id,array(40,41,42,44),true);}
@@ -377,14 +377,14 @@ echo "\n".$passed." total WordPress checks passed.\n";
 $GLOBALS['shipping_fee_hook']=true;
 $feeQuote=call_route('checkout/quote','POST',$input,$token);
 check(status($feeQuote)===200 && $feeQuote->data['total']==='310000','Default shipping is resolved before shipping-dependent fee hooks run');
-check($feeQuote->data['bridge_version']==='1.2.5','Quote identifies the installed bridge version');
+check($feeQuote->data['bridge_version']===Wings_Commerce::VERSION,'Quote identifies the installed bridge version');
 $feeOrder=call_route('checkout/order','POST',array('quote_id'=>$feeQuote->data['id'],'idempotency_key'=>'b36b2367-7875-4446-a93a-c88f386fe2e5'),$token);
 check(status($feeOrder)===200,'Quote with default shipping and shipping-dependent fees remains valid on order recalculation');
 $GLOBALS['shipping_fee_hook']=false;
 $diagnosticQuote=call_route('checkout/quote','POST',$input,$token);
 $GLOBALS['server_price']=260000;
 $diagnosticOrder=call_route('checkout/order','POST',array('quote_id'=>$diagnosticQuote->data['id'],'idempotency_key'=>'c36b2367-7875-4446-a93a-c88f386fe2e5'),$token);
-check(status($diagnosticOrder)===409 && strpos($diagnosticOrder->message,'1.2.5')!==false,'Changed checkout terms give a versioned diagnostic without creating an order');
+check(status($diagnosticOrder)===409 && strpos($diagnosticOrder->message,Wings_Commerce::VERSION)!==false,'Changed checkout terms give a versioned diagnostic without creating an order');
 $GLOBALS['server_price']=250000;
 echo "\n".$passed." total WordPress checks passed.\n";
 

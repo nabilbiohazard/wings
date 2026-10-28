@@ -1,5 +1,6 @@
 import type { Product } from "./types";
 import { isCharmProduct } from "./charm-products";
+import { designRules } from "./design-rules";
 
 export type DesignProduct = Pick<
   Product,
@@ -9,6 +10,7 @@ export type DesignProduct = Pick<
   | "image"
   | "price"
   | "category"
+  | "categories"
   | "isInStock"
   | "hasOptions"
 >;
@@ -24,13 +26,18 @@ export function isCustomizable(
 }
 
 export function toDesignProduct(product: Product): DesignProduct {
+  const rules = designRules(product);
   return {
     id: product.id,
     name: product.name,
     slug: product.slug,
     image: product.image,
     price: product.price,
-    category: product.categories?.[0]?.name ?? product.category,
+    category:
+      rules.kind === "other"
+        ? (product.categories?.[0]?.name ?? product.category)
+        : rules.label,
+    categories: product.categories,
     isInStock: product.isInStock,
     hasOptions: product.hasOptions,
   };
