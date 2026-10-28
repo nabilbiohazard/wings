@@ -1,0 +1,16 @@
+.purchaseRow { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+.quantityGroup { display: grid; gap: 7px; }
+.quantityLabel { font-size: 10px; color: #806d75; }
+.stepper { display: flex; align-items: center; height: 46px; padding: 4px; border: 1px solid #dfcdd5; border-radius: 12px; background: #fffafb; }
+.stepper button { display: grid; place-items: center; width: 32px; height: 36px; border-radius: 8px; color: #79465a; cursor: pointer; transition: background .2s; }
+.stepper button:hover { background: #f2e5e9; }
+.stepper button:disabled { opacity: .35; cursor: default; }
+.stepper input { width: 38px; height: 34px; padding: 0; text-align: center; border: 0; background: transparent; color: #38292e; font-size: 14px; appearance: textfield; -moz-appearance: textfield; }
+.stepper input::-webkit-inner-spin-button, .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.stepper:focus-within { border-color: #95677b; box-shadow: 0 0 0 3px #95677b12; }
+.stepper input:focus { outline: none; }
+.stepper button:focus-visible { outline: 2px solid #95677b; outline-offset: 1px; }
+.addButton { flex: 1; min-height: 46px; font-size: 11px; padding-inline: 16px; }
+.stacked { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+.stacked .quantityGroup { grid-template-columns: 1fr auto; align-items: center; }
+.stacked .addButton { width: 100%; flex: auto; }

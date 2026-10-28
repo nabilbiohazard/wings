@@ -1,0 +1,72 @@
+.page { background: #fcf9f7; min-height: 100vh; color: #382c30; }
+.container { padding-top: 32px; padding-bottom: 80px; }
+.breadcrumb { display: flex; gap: 12px; font-size: 12px; color: #8b777d; }
+.loading { display: grid; justify-items: center; gap: 20px; padding: 100px 20px; }
+.eyebrow { font-size: 10px; letter-spacing: 2px; color: #9b5870; }
+.welcome { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 42px 0; }
+.welcome h1, .loginStory h1 { font-size: clamp(26px, 3vw, 42px); line-height: 1.8; }
+.welcome h1 span, .loginStory h1 span { color: #9b5870; }
+.welcome p, .loginStory p { line-height: 2; }
+.welcomeArt { display: flex; align-items: center; gap: 16px; color: #9b5870; }
+.layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; align-items: start; }
+.sidebar, .loginCard, .designs { background: white; border: 1px solid #eee3e5; border-radius: 24px; padding: 24px; }
+.identity { display: flex; align-items: center; gap: 12px; padding-bottom: 24px; border-bottom: 1px solid #eee3e5; }
+.identity > div { display: grid; gap: 6px; font-size: 13px; }
+.identity small { display: flex; align-items: center; gap: 4px; color: #8b777d; }
+.avatar, .statIcon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; background: #f8eef1; color: #9b5870; flex-shrink: 0; }
+.navigation { display: grid; gap: 8px; margin: 20px 0; }
+.navigation a, .navigation button { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; font-size: 12px; text-align: right; }
+.navigation span { flex: 1; }
+.navigation a[aria-current="page"], .navigation a:hover, .navigation button:hover { background: #f8eef1; color: #9b5870; }
+.sidebarNote { padding: 20px; border-radius: 16px; background: #fcf9f7; line-height: 2; font-size: 13px; }
+.sidebarNote a, .logout, .loginBack { display: flex; align-items: center; gap: 8px; margin-top: 16px; font-size: 12px; color: #9b5870; }
+.logout:disabled { opacity: .5; }
+.content { display: grid; gap: 24px; min-width: 0; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.stats > a, .stats > button { display: flex; align-items: center; gap: 12px; padding: 20px; border: 1px solid #eee3e5; border-radius: 20px; background: white; text-align: right; }
+.stats > a > div, .stats > button > div { display: grid; gap: 6px; flex: 1; }
+.stats strong { font-size: 24px; }
+.stats div > span { font-size: 11px; color: #8b777d; }
+.orders { scroll-margin-top: 120px; }
+.shortcuts, .designGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.shortcuts > a { display: flex; align-items: center; gap: 16px; border: 1px solid #eee3e5; border-radius: 20px; padding: 24px; background: white; }
+.shortcuts > a > div { flex: 1; }
+.shortcuts h2, .designEmpty h3, .designGrid h3 { font-size: 15px; }
+.shortcuts p, .designEmpty p, .designGrid p { font-size: 12px; color: #8b777d; line-height: 2; margin-top: 6px; }
+.panelHeading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 24px; }
+.panelHeading h2 { margin-top: 8px; font-size: 20px; }
+.panelHeading button, .designEmpty a, .designGrid a span { display: flex; align-items: center; gap: 8px; color: #9b5870; font-size: 12px; }
+.designEmpty { display: flex; align-items: center; gap: 20px; padding: 24px 0; }
+.designEmpty > div { flex: 1; }
+.designPreview { overflow: hidden; border-radius: 16px; background: #fcf9f7; margin-bottom: 16px; }
+.designGrid a span { margin-top: 12px; }
+.helpNote { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #8b777d; line-height: 2; }
+.helpNote p { flex: 1; }
+.helpNote a { display: flex; align-items: center; gap: 6px; color: #9b5870; }
+.loginLayout { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 64px; padding-top: 48px; }
+.loginImage { position: relative; min-height: 280px; overflow: hidden; border-radius: 24px; margin-top: 24px; }
+.loginImage > span { position: absolute; bottom: 24px; left: 24px; color: white; font-size: 24px; font-style: italic; }
+.loginMark { display: grid; justify-items: center; gap: 12px; margin-bottom: 28px; color: #9b5870; }
+.loginMark span { font-size: 10px; letter-spacing: 3px; }
+.loginNote { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; color: #8b777d; margin-top: 24px; }
+.loginBack { justify-content: center; }
+@media (max-width: 1023px) {
+  .layout { grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
+  .stats { gap: 8px; }
+  .stats > a, .stats > button { flex-wrap: wrap; padding: 12px; }
+  .shortcuts { grid-template-columns: 1fr; }
+  .loginLayout { gap: 28px; }
+}
+@media (max-width: 767px) {
+  .layout, .loginLayout { grid-template-columns: 1fr; }
+  .welcomeArt { display: none; }
+  .sidebar, .loginCard, .designs { padding: 20px; }
+  .navigation { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sidebarNote { display: none; }
+  .stats { grid-template-columns: 1fr; }
+  .stats > a, .stats > button { flex-wrap: nowrap; }
+  .designEmpty, .helpNote { flex-wrap: wrap; }
+  .designGrid { grid-template-columns: 1fr; }
+  .loginLayout { padding-top: 24px; }
+  .loginImage { min-height: 220px; }
+}

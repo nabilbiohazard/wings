@@ -25,7 +25,7 @@ export function ContactHero() {
           <p className="text-xs tracking-[6px] text-white/60">CONTACT WINGS</p>
 
           <h1 className="mt-8 font-serif text-5xl leading-tight sm:text-6xl lg:text-7xl">
-            Let's
+            Let&apos;s
             <span className="text-pink-300 italic">talk.</span>
           </h1>
 

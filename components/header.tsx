@@ -365,10 +365,9 @@ export function Header() {
 
                 {/* ACCOUNT */}
 
-                <button
-                  type="button"
+                <Link
+                  href="/account/profile"
                   aria-label="حساب کاربری"
-                  onClick={() => openPanel("account")}
                   className={`
                     flex h-9 w-9
                     items-center justify-center
@@ -383,7 +382,7 @@ export function Header() {
                   `}
                 >
                   <Icon name="user" size={18} />
-                </button>
+                </Link>
               </div>
             </div>
           </div>

@@ -3,25 +3,25 @@ import { Reveal } from "../reveal";
 
 const values = [
   {
-    icon: "sparkle",
+    icon: "sparkle" as const,
     title: "طراحی با احساس",
     text: "هر قطعه با الهام از لحظه‌ها، رنگ‌ها و داستان‌های شخصی طراحی می‌شود.",
   },
 
   {
-    icon: "check",
+    icon: "check" as const,
     title: "انتخاب با دقت",
     text: "ما جزئیاتی را انتخاب می‌کنیم که زیبایی و کیفیت را کنار هم داشته باشند.",
   },
 
   {
-    icon: "gift",
+    icon: "gift" as const,
     title: "بسته‌بندی خاص",
     text: "تجربه وینگز از لحظه انتخاب شروع می‌شود؛ حتی قبل از باز کردن جعبه.",
   },
 
   {
-    icon: "heart",
+    icon: "heart" as const,
     title: "برای تو ساخته شده",
     text: "هر ترکیب می‌تواند داستانی متفاوت داشته باشد؛ درست مثل خود تو.",
   },
@@ -51,7 +51,7 @@ export function AboutValues() {
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white transition-all duration-500 group-hover:bg-pink-400">
                   <Icon
-                    name={item.icon as any}
+                    name={item.icon}
 
                     size={25}
                   />

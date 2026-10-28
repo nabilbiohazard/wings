@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useSavedDesigns, removeSavedDesign } from "@/lib/saved-designs";
 import { Wishlist } from "./wishlist";
 import { categories, persianNumber } from "@/lib/products";
@@ -91,6 +92,7 @@ function MiniProduct({
 }
 
 export function ShopProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const savedDesigns = useSavedDesigns();
   const [savedDesignError, setSavedDesignError] = useState("");
   const [category, setCategory] = useState<Category>("all");
@@ -111,12 +113,21 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        const saved: unknown = JSON.parse(localStorage.getItem("wings-favorites-v1") || "[]");
+        if (Array.isArray(saved)) setFavorites(saved.filter((id): id is number => Number.isSafeInteger(id) && id > 0));
+      } catch { /* Favorites remain usable without browser storage. */ }
+    });
+  }, []);
+
   const toggleFavorite = (id: number) => {
-    setFavorites((current) =>
-      current.includes(id)
-        ? current.filter((item) => item !== id)
-        : [...current, id],
-    );
+    setFavorites((current) => {
+      const next = current.includes(id) ? current.filter((item) => item !== id) : [...current, id];
+      try { localStorage.setItem("wings-favorites-v1", JSON.stringify(next)); } catch { /* In-memory favorites remain usable. */ }
+      return next;
+    });
   };
 
   const viewProduct = (product: Product) => {
@@ -214,7 +225,12 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
     productsLoading,
     productsError,
 
-    openPanel: setPanel,
+    openPanel: (next) => {
+      if (next === "cart" || next === "wishlist") {
+        setPanel(null);
+        router.push(next === "cart" ? "/cart" : "/wishlist");
+      } else setPanel(next);
+    },
 
     viewProduct,
   };

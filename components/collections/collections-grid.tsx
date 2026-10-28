@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
@@ -53,7 +54,7 @@ export function CollectionsGrid() {
 
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {collections.map((item) => (
-              <a
+              <Link
                 key={item.title}
 
                 href="/shop"
@@ -92,7 +93,7 @@ export function CollectionsGrid() {
                     />
                   </span>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </Reveal>

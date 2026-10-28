@@ -3,22 +3,22 @@ import { Reveal } from "../reveal";
 
 const categories = [
   {
-    icon: "sparkle",
+    icon: "sparkle" as const,
     title: "استایل و ترندها",
     subtitle: "STYLE GUIDE",
   },
   {
-    icon: "heart",
+    icon: "heart" as const,
     title: "راهنمای انتخاب",
     subtitle: "JEWELRY GUIDE",
   },
   {
-    icon: "gift",
+    icon: "gift" as const,
     title: "ایده‌های هدیه",
     subtitle: "GIFT IDEAS",
   },
   {
-    icon: "check",
+    icon: "check" as const,
     title: "داستان وینگز",
     subtitle: "OUR STORY",
   },
@@ -50,7 +50,7 @@ export function BlogCategories() {
               >
                 <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white transition-all duration-500 group-hover:bg-pink-400">
                   <Icon
-                    name={item.icon as any}
+                    name={item.icon}
 
                     size={25}
                   />

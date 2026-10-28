@@ -98,39 +98,20 @@ export function Wishlist({
                       <Trash2 size={16} />
                     </button>
                   </div>
-                  <div className={styles.details}>
-                    <p className={styles.meta}>
-                      {persianNumber(design.charms.length)} چارم · یک ترکیب شخصی
-                    </p>
-                    <h5>
-                      <Link href={href} onClick={onClose}>
-                        {design.product.name}
-                      </Link>
-                    </h5>
-                    <div className={styles.price}>
-                      <span>{complete ? "برآورد قیمت طرح" : "قیمت محصول پایه"}</span>
-                      <strong>
-                        {persianNumber(price)} <small>تومان</small>
-                      </strong>
+                  <div className={styles.designDetails}>
+                    <div className={styles.designSummary}>
+                      <p className={styles.meta}>{persianNumber(design.charms.length)} چارم · یک ترکیب شخصی</p>
+                      <h5><Link href={href} onClick={onClose}>{design.product.name}</Link></h5>
+                      <p className={styles.charmHeading}>چارم‌های استفاده‌شده</p>
+                      <ul className={styles.charmList}>{Array.from(new Set(design.charms.map(item => item.charm.id))).map(id => {
+                        const items = design.charms.filter(item => item.charm.id === id);
+                        return <li key={id}>{items[0].charm.name}{items.length > 1 && <span> × {persianNumber(items.length)}</span>}</li>;
+                      })}</ul>
                     </div>
-                    <Link
-                      href={href}
-                      onClick={onClose}
-                      className={styles.action}
-                    >
-                      <span>
-                        <Pencil size={14} /> باز کردن و ویرایش
-                      </span>
-                      <ArrowLeft size={16} />
-                    </Link>
-                    {isCustomizable(design.product) && (
-                      <div className="mt-3">
-                        <ProductPurchase
-                          product={design.product}
-                          design={design}
-                        />
-                      </div>
-                    )}
+                    <div className={styles.designControls}>
+                      <div className={styles.price}><span>{complete ? "برآورد قیمت طرح" : "قیمت محصول پایه"}</span><strong>{persianNumber(price)} <small>تومان</small></strong></div>
+                      {isCustomizable(design.product) ? <ProductPurchase product={design.product} design={design} stacked beforeAdd={<Link href={href} onClick={onClose} className={styles.action}><span><Pencil size={14} /> باز کردن و ویرایش</span><ArrowLeft size={16} /></Link>} /> : <Link href={href} onClick={onClose} className={styles.action}>باز کردن و ویرایش <ArrowLeft size={16} /></Link>}
+                    </div>
                   </div>
                 </article>
               );
@@ -172,8 +153,8 @@ export function Wishlist({
                         alt={product.name}
                         fill
                         unoptimized
-                        sizes="(max-width: 599px) 72px, 100px"
-                        className="object-contain"
+                        sizes="(max-width: 480px) 80vw, (max-width: 767px) 42vw, (max-width: 1100px) 28vw, 360px"
+                        className={styles.productImage}
                       />
                     ) : (
                       <Sparkles size={40} />

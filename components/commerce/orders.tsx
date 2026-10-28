@@ -7,9 +7,15 @@ import type { Order } from "@/lib/commerce-types";
 import { useCommerce } from "./provider";
 import { Package, ArrowUpLeft, Heart } from "lucide-react";
 import { SavedDesignPreview } from "../custom-design/SavedDesignPreview";
+import { useShop } from "../shop-provider";
+import { useSavedDesigns } from "@/lib/saved-designs";
+import { Sparkles } from "lucide-react";
+import styles from "./account.module.css";
 
-export function OrderList() {
+export function OrderList({overview = false}: {overview?: boolean} = {}) {
   const { customer } = useCommerce();
+  const {favorites, openPanel}=useShop();
+  const designs=useSavedDesigns();
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
@@ -44,7 +50,9 @@ export function OrderList() {
     };
   }, [page, customer?.id]);
   return (
-    <section className="commerce-panel space-y-6">
+    <>
+    {overview && <div className={styles.stats} aria-label="خلاصهٔ حساب"><a href="#account-orders"><span className={styles.statIcon}><Package size={21} strokeWidth={1.3} /></span><div><strong>{loading || error ? "—" : total.toLocaleString("fa-IR")}</strong><span>سفارش‌های من</span></div><ArrowUpLeft size={16} /></a><button type="button" onClick={()=>openPanel("wishlist")}><span className={styles.statIcon}><Heart size={21} strokeWidth={1.3} /></span><div><strong>{favorites.length.toLocaleString("fa-IR")}</strong><span>علاقه‌مندی‌ها</span></div><ArrowUpLeft size={16} /></button><a href="#saved-designs-title"><span className={styles.statIcon}><Sparkles size={21} strokeWidth={1.3} /></span><div><strong>{designs.length.toLocaleString("fa-IR")}</strong><span>طرح‌های ذخیره‌شده</span></div><ArrowUpLeft size={16} /></a></div>}
+    <section id="account-orders" className={`commerce-panel space-y-6 ${styles.orders}`}>
       <div className="commerce-section-intro">
         <span className="commerce-section-icon">
           <Package size={22} aria-hidden="true" />
@@ -145,6 +153,7 @@ export function OrderList() {
         </div>
       )}
     </section>
+    </>
   );
 }
 

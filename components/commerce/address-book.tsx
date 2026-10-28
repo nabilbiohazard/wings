@@ -5,7 +5,8 @@ import { commerce } from "@/lib/commerce-client";
 import { digits } from "@/lib/commerce-types";
 import type { Address } from "@/lib/commerce-types";
 import { useCommerce } from "./provider";
-import { MapPin } from "lucide-react";
+import { Check, MapPin, Package, Pencil, Plus, Trash2, X } from "lucide-react";
+import styles from "./account-details.module.css";
 
 const empty: Address = {
   id: "",
@@ -34,6 +35,8 @@ export function AddressBook({
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [deleting, setDeleting] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
     Promise.all([
@@ -69,6 +72,7 @@ export function AddressBook({
       );
       setAddresses(response.addresses);
       setForm(null);
+      setNotice("آدرست با موفقیت ذخیره شد.");
       const id =
         form.id || response.addresses[response.addresses.length - 1]?.id;
       if (id) onSelect?.(id);
@@ -88,6 +92,8 @@ export function AddressBook({
         "DELETE",
       );
       setAddresses(response.addresses);
+      setDeleting(null);
+      setNotice("آدرس حذف شد.");
       if (selected === address.id) onSelect?.("");
     } catch (reason) {
       setError((reason as Error).message);
@@ -102,10 +108,10 @@ export function AddressBook({
     extra: React.InputHTMLAttributes<HTMLInputElement> = {},
   ) {
     return (
-      <label className="commerce-label">
+      <label className={styles.field}>
         {label}
         <input
-          className="commerce-input"
+          className={styles.input}
           value={form?.[name] || ""}
           required={required}
           maxLength={name === "address_1" ? 400 : 100}
@@ -120,13 +126,13 @@ export function AddressBook({
     );
   }
   return (
-    <section className="commerce-panel space-y-5">
-      <div className="commerce-section-intro">
-        <span className="commerce-section-icon">
+    <section className={styles.panel}>
+      <div className={styles.heading}>
+        <span className={styles.sectionIcon}>
           <MapPin size={22} aria-hidden="true" />
         </span>
         <div>
-          <p className="commerce-eyebrow" lang="en">
+          <p className={styles.eyebrow} lang="en">
             JOY KNOWS THE WAY
           </p>
           <p className="text-sm leading-7 text-[#8b777d]">
@@ -134,13 +140,13 @@ export function AddressBook({
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className={styles.addressToolbar}>
         <h2 className="text-lg font-medium">
           {onSelect ? "آدرس دریافت سفارش" : "آدرس‌های من"}
         </h2>
         <button
           type="button"
-          className="commerce-secondary"
+          className={styles.secondary}
           disabled={busy || loading}
           onClick={() =>
             setForm({
@@ -151,7 +157,7 @@ export function AddressBook({
             })
           }
         >
-          + آدرس جدید
+          <Plus size={16} /> آدرس جدید
         </button>
       </div>
       {loading ? (
@@ -160,16 +166,17 @@ export function AddressBook({
         </p>
       ) : (
         !addresses.length && (
-          <p className="text-sm leading-7 text-[#8b777d]">
+          <p className={styles.emptyState}><MapPin size={38} strokeWidth={1} />
             هنوز آدرسی ذخیره نکرده‌اید. برای ثبت سفارش، آدرس جدید اضافه کنید.
           </p>
         )
       )}
-      <div className="grid gap-3 sm:grid-cols-2">
+      {notice && <p className={styles.success} role="status"><Check size={16} />{notice}</p>}
+      <div className={styles.addressGrid}>
         {addresses.map((address) => (
           <article
             key={address.id}
-            className={`rounded-2xl border p-4 ${selected === address.id ? "border-[#9b5870] bg-[#fff5f8]" : "border-[#eee3e5]"}`}
+            className={styles.addressCard} data-selected={selected === address.id}
           >
             {onSelect ? (
               <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
@@ -182,7 +189,7 @@ export function AddressBook({
                 {address.label}
               </label>
             ) : (
-              <h3 className="text-sm font-medium">{address.label}</h3>
+              <h3 className={styles.addressTitle}><MapPin size={19} strokeWidth={1.3} />{address.label}<span lang="en">WINGS ADDRESS</span></h3>
             )}
             <p className="mt-3 text-sm leading-7">
               {address.first_name} {address.last_name}
@@ -194,35 +201,38 @@ export function AddressBook({
             <p className="mt-2 text-xs text-[#8b777d]">
               کد پستی: {address.postcode} · تماس: {address.phone}
             </p>
-            <div className="mt-4 flex gap-4 text-xs text-[#79465a]">
+            <div className={styles.cardActions}>
               <button
                 type="button"
                 disabled={busy}
                 onClick={() => setForm(address)}
               >
-                ویرایش
+                <Pencil size={14} /> ویرایش
               </button>
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void remove(address)}
+                onClick={() => setDeleting(address.id)}
               >
-                حذف آدرس
+                <Trash2 size={14} /> حذف آدرس
               </button>
             </div>
+            {deleting === address.id && <div className={styles.deleteConfirm} role="group" aria-label="تأیید حذف آدرس"><p>این آدرس از دفترچه‌ات حذف شود؟</p><button type="button" disabled={busy} onClick={() => void remove(address)}>بله، حذف شود</button><button type="button" disabled={busy} onClick={() => setDeleting(null)}>انصراف</button></div>}
           </article>
         ))}
       </div>
       {form && (
         <form
           onSubmit={save}
-          className="space-y-4 rounded-2xl border border-[#e7dadd] bg-[#fffafb] p-4"
+          className={styles.addressForm}
         >
-          <h3 className="font-medium">
+          <h3 className={styles.formTitle}><Package size={20} strokeWidth={1.3} />
             {form.id ? "ویرایش آدرس" : "افزودن آدرس"}
           </h3>
+          <p className={styles.formHint}>جزئیات دقیق‌تر، رسیدن بسته‌ات را راحت‌تر می‌کند. همه فیلدها به‌جز توضیحات تکمیلی ضروری‌اند.</p>
+          <fieldset className={styles.fieldset} disabled={busy}><legend className={styles.srOnly}>جزئیات آدرس</legend>
           {field("label", "عنوان آدرس (مثلاً منزل)")}
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className={styles.formGrid}>
             {field("first_name", "نام گیرنده", true, {
               autoComplete: "given-name",
             })}
@@ -237,7 +247,7 @@ export function AddressBook({
             <label className="commerce-label">
               استان
               <select
-                className="commerce-input"
+                className={styles.input}
                 required
                 value={form.state}
                 onChange={(event) =>
@@ -260,6 +270,8 @@ export function AddressBook({
               dir: "ltr",
               autoComplete: "postal-code",
               maxLength: 10,
+              pattern: "[0-9۰-۹٠-٩]{10}",
+              title: "کد پستی باید دقیقاً ۱۰ رقم باشد",
             })}
           </div>
           {field("address_1", "آدرس کامل، خیابان و پلاک", true, {
@@ -268,23 +280,24 @@ export function AddressBook({
           {field("address_2", "طبقه / واحد / توضیح تکمیلی", false, {
             autoComplete: "address-line2",
           })}
-          <div className="flex gap-3">
-            <button className="commerce-button" disabled={busy}>
+          </fieldset>
+          <div className={styles.formFooter}>
+            <button className={styles.primary} disabled={busy}>
               {busy ? "در حال ذخیره…" : "ذخیره آدرس"}
             </button>
             <button
               type="button"
-              className="commerce-secondary"
+              className={styles.secondary}
               disabled={busy}
               onClick={() => setForm(null)}
             >
-              انصراف
+              <X size={15} /> انصراف
             </button>
           </div>
         </form>
       )}
       {error && (
-        <p className="commerce-error" role="alert">
+        <p className={styles.error} role="alert">
           {error}
         </p>
       )}

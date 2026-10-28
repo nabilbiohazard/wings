@@ -34,11 +34,40 @@ function toToman(
   return Math.round(price);
 }
 
-export function mapWooProduct(product: any): Product {
+type WooPrice = string | number | null;
+
+interface WooProduct {
+  id: string | number;
+  type?: string;
+  name?: string;
+  slug?: string;
+  sku?: string;
+  images?: { src?: string | null }[];
+  categories?: { id: string | number; name?: string; slug?: string }[];
+  prices?: { price?: WooPrice; regular_price?: WooPrice; sale_price?: WooPrice; currency_code?: string };
+  price?: WooPrice;
+  regular_price?: WooPrice;
+  sale_price?: WooPrice;
+  is_in_stock?: boolean;
+  stock_status?: string;
+  is_purchasable?: boolean;
+  purchasable?: boolean;
+  on_sale?: boolean;
+  short_description?: string;
+  description?: string;
+  stock_availability?: { class?: string };
+  low_stock_remaining?: number | null;
+  average_rating?: string | number;
+  review_count?: string | number;
+  has_options?: boolean;
+  attributes?: { name?: string; terms?: { name: string }[]; options?: string[] }[];
+}
+
+export function mapWooProduct(product: WooProduct): Product {
   const images: string[] =
     product.images
-      ?.map((image: any) => image?.src)
-      .filter(Boolean) ?? [];
+      ?.map((image) => image?.src)
+      .filter((src): src is string => typeof src === "string" && src.length > 0) ?? [];
 
   /*
    * Store API:
@@ -102,7 +131,7 @@ export function mapWooProduct(product: any): Product {
       "all",
 
     categories:
-      product.categories?.map((category: any) => ({
+      product.categories?.map((category) => ({
         id: Number(category.id),
         name: category.name ?? "",
         slug: category.slug ?? "",
@@ -164,12 +193,12 @@ export function mapWooProduct(product: any): Product {
 
     attributes:
       product.attributes?.map(
-        (attribute: any) => ({
+        (attribute) => ({
           name: attribute.name ?? "",
 
           options:
             attribute.terms?.map(
-              (term: any) => term.name
+              (term) => term.name
             ) ??
             attribute.options ??
             [],

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
@@ -36,7 +37,7 @@ export function CollectionsCTA() {
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
+              <Link
                 href="/custom-design"
 
                 className="group flex items-center gap-4 rounded-full bg-white px-9 py-4 text-sm text-black transition-all duration-300 hover:bg-pink-300"
@@ -49,15 +50,15 @@ export function CollectionsCTA() {
 
                   className="transition-transform duration-300 group-hover:-translate-x-1"
                 />
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/shop"
 
                 className="rounded-full border border-white/40 px-9 py-4 text-sm transition-all duration-300 hover:bg-white hover:text-black"
               >
                 مشاهده محصولات
-              </a>
+              </Link>
             </div>
           </div>
         </Reveal>

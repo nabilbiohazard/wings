@@ -3,19 +3,19 @@ import { Reveal } from "../reveal";
 
 const items = [
   {
-    icon: "sparkle",
+    icon: "sparkle" as const,
     title: "جزئیات کوچک",
     text: "گاهی یک انتخاب کوچک می‌تواند حال یک روز کامل را تغییر دهد.",
   },
 
   {
-    icon: "heart",
+    icon: "heart" as const,
     title: "انتخاب شخصی",
     text: "هر قطعه باید شبیه تو باشد؛ با سلیقه، خاطره و داستان خودت.",
   },
 
   {
-    icon: "gift",
+    icon: "gift" as const,
     title: "لحظه‌های ماندگار",
     text: "اکسسوری‌هایی برای هدیه دادن، به یاد آوردن و ساختن خاطره.",
   },
@@ -53,7 +53,7 @@ export function AboutPhilosophy() {
               >
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black text-white transition-all duration-500 group-hover:bg-pink-400">
                   <Icon
-                    name={item.icon as any}
+                    name={item.icon}
 
                     size={26}
                   />

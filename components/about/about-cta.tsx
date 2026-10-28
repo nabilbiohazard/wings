@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
@@ -38,7 +39,7 @@ export function AboutCTA() {
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <a
+              <Link
                 href="/shop"
 
                 className="flex items-center gap-4 rounded-full bg-white px-9 py-4 text-sm text-black transition-all duration-300 hover:bg-pink-300"
@@ -49,15 +50,15 @@ export function AboutCTA() {
 
                   size={18}
                 />
-              </a>
+              </Link>
 
-              <a
+              <Link
                 href="/custom-design"
 
                 className="rounded-full border border-white/40 px-9 py-4 text-sm transition-all duration-300 hover:bg-white hover:text-black"
               >
                 خودت بساز
-              </a>
+              </Link>
             </div>
           </div>
         </Reveal>

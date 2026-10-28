@@ -3,7 +3,9 @@ import { useState } from "react";
 import { commerce } from "@/lib/commerce-client";
 import type { Customer } from "@/lib/commerce-types";
 import { useCommerce } from "./provider";
-import { UserRound } from "lucide-react";
+import { ArrowUpLeft, Check, Flower2, LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
+import Link from "next/link";
+import styles from "./account-details.module.css";
 
 export function ProfileForm() {
   const { customer, updateCustomer } = useCommerce();
@@ -31,13 +33,15 @@ export function ProfileForm() {
     }
   }
   return (
-    <section className="commerce-panel">
-      <div className="commerce-section-intro mb-6">
-        <span className="commerce-section-icon">
+    <div className={styles.details}>
+      <section className={styles.identityBanner}><span className={styles.monogram}>{customer?.first_name?.[0] || <UserRound size={30} />}</span><div><p className={styles.eyebrow} lang="en">A LITTLE MORE YOU</p><h2>{[customer?.first_name, customer?.last_name].filter(Boolean).join(" ") || "همراه عزیز وینگز"}</h2><p>جزئیات کوچک، برای یک همراهی قشنگ‌تر.</p></div><span className={styles.verified}><ShieldCheck size={15} /> شماره تأییدشده</span></section>
+      <div className={styles.profileLayout}><section className={styles.panel}>
+      <div className={styles.heading}>
+        <span className={styles.sectionIcon}>
           <UserRound size={22} aria-hidden="true" />
         </span>
         <div>
-          <p className="commerce-eyebrow" lang="en">
+          <p className={styles.eyebrow} lang="en">
             A LITTLE ABOUT YOU
           </p>
           <p className="text-sm leading-7 text-[#8b777d]">
@@ -46,12 +50,12 @@ export function ProfileForm() {
         </div>
       </div>
       <h2 className="mb-6 text-xl font-medium">اطلاعات حساب</h2>
-      <form onSubmit={save} className="max-w-xl space-y-5">
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="commerce-label">
+      <form onSubmit={save} className={styles.profileForm} onChange={() => setSaved(false)}>
+        <div className={styles.formGrid}>
+          <label className={styles.field}>
             نام
             <input
-              className="commerce-input"
+              className={styles.input}
               name="first_name"
               required
               maxLength={80}
@@ -59,10 +63,10 @@ export function ProfileForm() {
               defaultValue={customer?.first_name}
             />
           </label>
-          <label className="commerce-label">
+          <label className={styles.field}>
             نام خانوادگی
             <input
-              className="commerce-input"
+              className={styles.input}
               name="last_name"
               required
               maxLength={80}
@@ -71,10 +75,10 @@ export function ProfileForm() {
             />
           </label>
         </div>
-        <label className="commerce-label">
+        <label className={styles.field}>
           ایمیل دریافت اطلاعات سفارش
           <input
-            className="commerce-input"
+            className={styles.input}
             type="email"
             name="email"
             dir="ltr"
@@ -84,29 +88,30 @@ export function ProfileForm() {
             defaultValue={customer?.email}
           />
         </label>
-        <label className="commerce-label">
+        <label className={styles.field}>
           شماره موبایل تأییدشده
           <input
-            className="commerce-input"
+            className={styles.input}
             dir="ltr"
             readOnly
             value={customer?.phone || ""}
           />
         </label>
-        <button className="commerce-button" disabled={busy}>
+        <button className={styles.primary} disabled={busy}>
           {busy ? "در حال ذخیره…" : "ذخیره اطلاعات"}
         </button>
         {saved && (
-          <p className="text-sm text-emerald-700" role="status">
+          <p className={styles.success} role="status">
             اطلاعات حساب ذخیره شد.
           </p>
         )}
         {error && (
-          <p className="commerce-error" role="alert">
+          <p className={styles.error} role="alert">
             {error}
           </p>
         )}
       </form>
-    </section>
+      <p className={styles.privacy}><LockKeyhole size={14} /> شماره موبایل، شناسه ورود تو است و در این فرم قابل تغییر نیست.</p>
+    </section><aside className={styles.sideNotes}><section className={styles.editorial}><Flower2 size={42} strokeWidth={.8} /><p lang="en" dir="ltr">Little details.<br /><em>Lovely connections.</em></p><span>یک آشنایی کوچک،<br />یک همراهی دوست‌داشتنی.</span></section><section className={styles.noteCard}><h3><Check size={17} /> قدم بعدی، مقصد تو</h3><p>آدرس‌هایت را ثبت کن تا هنگام خرید، فقط به انتخاب دوست‌داشتنی بعدی فکر کنی.</p><Link href="/account/addresses">آدرس‌های من <ArrowUpLeft size={16} /></Link></section></aside></div></div>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
@@ -45,7 +46,7 @@ export function FeaturedCollection() {
               </p>
 
               <div className="mt-8 flex justify-end">
-                <a
+                <Link
                   href="/shop"
 
                   className="group flex items-center gap-4 rounded-full bg-black px-8 py-4 text-sm text-white transition-all duration-300 hover:bg-pink-400 hover:text-black"
@@ -58,7 +59,7 @@ export function FeaturedCollection() {
 
                     className="transition-transform duration-300 group-hover:-translate-x-1"
                   />
-                </a>
+                </Link>
               </div>
             </div>
           </div>

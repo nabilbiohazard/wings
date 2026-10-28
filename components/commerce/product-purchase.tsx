@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Minus, Plus } from "lucide-react";
+import styles from "./product-purchase.module.css";
 import { commerce } from "@/lib/commerce-client";
 import { money, cartPayload } from "@/lib/commerce-types";
 import type { Variation, VariationAttribute } from "@/lib/commerce-types";
@@ -14,6 +16,8 @@ export function ProductPurchase({
   product,
   design,
   onAdded,
+  beforeAdd,
+  stacked = false,
 }: {
   product: Pick<
     Product,
@@ -27,6 +31,8 @@ export function ProductPurchase({
   >;
   design?: SavedDesign;
   onAdded?: () => void;
+  beforeAdd?: React.ReactNode;
+  stacked?: boolean;
 }) {
   const { addItem, loading } = useCommerce();
   const { openPanel } = useShop();
@@ -114,24 +120,18 @@ export function ProductPurchase({
       {product.hasOptions && allSelected && !variation && (
         <p className="text-sm text-[#9b5870]">این ترکیب مشخصات موجود نیست.</p>
       )}
-      <label className="commerce-label">
-        تعداد
-        <input
-          className="commerce-input max-w-28"
-          type="number"
-          min={1}
-          max={99}
-          value={quantity}
-          onChange={(event) =>
-            setQuantity(
-              Math.max(1, Math.min(99, Number(event.target.value) || 1)),
-            )
-          }
-        />
-      </label>
+      <div className={`${styles.purchaseRow} ${stacked ? styles.stacked : ""}`}>
+        <div className={styles.quantityGroup}><span className={styles.quantityLabel}>تعداد</span>
+          <div className={styles.stepper} dir="ltr">
+            <button type="button" aria-label="کاهش تعداد" disabled={quantity <= 1 || adding} onClick={() => setQuantity(value => Math.max(1, value - 1))}><Minus size={15} /></button>
+            <input aria-label="تعداد محصول" type="number" inputMode="numeric" min={1} max={99} step={1} value={quantity} disabled={adding} onChange={event => setQuantity(Math.max(1, Math.min(99, Math.trunc(Number(event.target.value)) || 1)))} />
+            <button type="button" aria-label="افزایش تعداد" disabled={quantity >= 99 || adding} onClick={() => setQuantity(value => Math.min(99, value + 1))}><Plus size={15} /></button>
+          </div>
+        </div>
+      {beforeAdd}
       <button
         type="button"
-        className="commerce-button w-full"
+        className={`commerce-button ${styles.addButton}`}
         disabled={loading || fetching || adding || !available}
         onClick={async () => {
           if (!available) return;
@@ -207,7 +207,7 @@ export function ProductPurchase({
               : design
                 ? "افزودن طرح به سبد خرید"
                 : "افزودن به سبد خرید"}
-      </button>
+      </button></div>
       {error && (
         <p role="alert" className="commerce-error">
           {error}
