@@ -51,9 +51,11 @@ export function Header() {
     const header = headerRef.current;
     if (!header) return;
     const updateHeight = () => {
+      const height = header.getBoundingClientRect().height;
+      if (height === 0) return;
       document.documentElement.style.setProperty(
         "--site-header-height",
-        `${header.getBoundingClientRect().height}px`,
+        `${height}px`,
       );
     };
     updateHeight();
@@ -111,6 +113,7 @@ export function Header() {
   return (
     <>
       <header
+        data-site-header
         ref={headerRef}
         className={`
           fixed left-0 top-0 z-100

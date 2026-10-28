@@ -1,471 +1,442 @@
-﻿"use client";
+"use client";
 
 import { useMemo, useState } from "react";
-import { BlogImage } from "./blog-image";
-import { postImageSources } from "@/lib/blog-text";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  ArrowDown,
+  ArrowUpLeft,
+  BookOpen,
+  Check,
+  Clock3,
+  Flower2,
+  Search,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { BlogImage } from "./blog-image";
+import {
+  dateLabel,
+  plainText,
+  postCategories,
+  postImageSources,
+} from "@/lib/blog-text";
 import type { BlogPost } from "@/lib/types";
+import styles from "./journal.module.css";
 
-type Category = {
-  id: number;
-  name: string;
-  slug: string;
-  taxonomy: string;
-};
-
-function plainText(html: string) {
-  return html
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&#(x[0-9a-f]+|\d+);/gi, (entity, code: string) => {
-      const value = code.toLowerCase().startsWith("x")
-        ? parseInt(code.slice(1), 16)
-        : Number(code);
-
-      return value >= 0 && value <= 0x10ffff
-        ? String.fromCodePoint(value)
-        : entity;
-    })
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&quot;/gi, '"')
-    .replace(/&apos;|&rsquo;|&lsquo;/gi, "'")
-    .replace(/&rdquo;|&ldquo;/gi, '"')
-    .replace(/&hellip;/gi, "…")
-    .replace(/&ndash;/gi, "–")
-    .replace(/&mdash;/gi, "—")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function normalize(value: string) {
-  return value
+const normalize = (text: string) =>
+  text
+    .normalize("NFKC")
     .toLocaleLowerCase("fa")
     .replace(/ي/g, "ی")
     .replace(/ك/g, "ک")
     .replace(/\u200c/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+function readingTime(post: BlogPost) {
+  return Math.max(
+    1,
+    Math.ceil(
+      plainText(post.content?.rendered || post.excerpt?.rendered || "")
+        .split(/\s+/)
+        .filter(Boolean).length / 200,
+    ),
+  ).toLocaleString("fa-IR");
 }
-
-function postCategories(post: BlogPost): Category[] {
-  return (
-    post._embedded?.["wp:term"]
-      ?.flat()
-      .filter((term) => term.taxonomy === "category") ?? []
-  );
-}
-
-function dateLabel(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "";
-
-  return new Intl.DateTimeFormat("fa-IR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(date);
-}
-
-function PostImage({
+function PostPicture({
   post,
-  sizes,
-  priority = false,
+  featured = false,
 }: {
   post: BlogPost;
-  sizes: string;
-  priority?: boolean;
+  featured?: boolean;
 }) {
-  const sources = postImageSources(post);
+  const sources = [...postImageSources(post), "/images/blog-hero.png"];
   return (
     <BlogImage
       key={sources.join("|")}
       sources={sources}
-      alt={plainText(post.title?.rendered ?? "????? ?????")}
-      sizes={sizes}
-      preload={priority}
+      alt={plainText(post.title.rendered)}
+      sizes={
+        featured
+          ? "(max-width: 767px) 100vw, 55vw"
+          : "(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw"
+      }
+      preload={featured}
     />
   );
 }
-
 function PostMeta({ post }: { post: BlogPost }) {
-  const date = dateLabel(post.date);
-
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] leading-6">
-      <span className="text-[#805163]">
-        {plainText(postCategories(post)[0]?.name ?? "مجله وینگز")}
+    <div className={styles.meta}>
+      <time dateTime={post.date}>{dateLabel(post.date)}</time>
+      <span aria-hidden="true">·</span>
+      <span>
+        <Clock3 size={12} />
+        {readingTime(post)} دقیقه مطالعه
       </span>
-      {date && (
-        <>
-          <span aria-hidden="true" className="text-[#b99ba7]">
-            /
-          </span>
-          <time dateTime={post.date} className="text-[#75676c]">
-            {date}
-          </time>
-        </>
-      )}
     </div>
   );
 }
 
-function PostCard({
-  post,
-  large = false,
-  compact = false,
+export function Journal({
+  posts,
+  failed = false,
 }: {
-  post: BlogPost;
-  large?: boolean;
-  compact?: boolean;
+  posts: BlogPost[];
+  failed?: boolean;
 }) {
-  const title = plainText(post.title?.rendered ?? "");
-  const excerpt = plainText(post.excerpt?.rendered ?? "");
-  const href = `/blog/${post.slug}`;
-
-  return (
-    <article className="group min-w-0">
-      <Link
-        href={href}
-        aria-label={`مطالعه ${title}`}
-        className={`relative block overflow-hidden rounded-md bg-[#eadde1] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#805163] ${
-          compact ? "aspect-[16/9]" : "aspect-[4/3]"
-        }`}
-      >
-        <PostImage
-          post={post}
-          sizes={
-            large
-              ? "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 720px"
-              : "(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 400px"
-          }
-        />
-      </Link>
-
-      <div className={compact ? "pt-4" : "pt-5"}>
-        <PostMeta post={post} />
-
-        <h3
-          className={`mt-2 font-medium leading-[1.7] ${
-            large
-              ? "text-2xl sm:text-[28px]"
-              : compact
-                ? "text-lg sm:text-xl"
-                : "text-xl"
-          }`}
-        >
-          <Link
-            href={href}
-            className="line-clamp-3 transition-colors hover:text-[#945e73] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#805163]"
-          >
-            {title}
-          </Link>
-        </h3>
-
-        {!compact && excerpt && (
-          <p className="mt-3 line-clamp-2 text-sm leading-8 text-[#75676c]">
-            {excerpt}
-          </p>
-        )}
-
-        {!compact && (
-          <Link
-            href={href}
-            aria-label={`خواندن مقاله ${title}`}
-            className="mt-4 inline-flex min-h-11 items-center gap-4 text-xs font-medium text-[#805163] hover:text-[#49313b]"
-          >
-            خواندن مقاله
-            <span
-              aria-hidden="true"
-              className="transition-transform group-hover:-translate-x-1 motion-reduce:transform-none"
-            >
-              ←
-            </span>
-          </Link>
-        )}
-      </div>
-    </article>
-  );
-}
-
-export function Journal({ posts }: { posts: BlogPost[] }) {
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [visible, setVisible] = useState(9);
-
   const categories = useMemo(() => {
-    const found = new Map<string, Category>();
-
+    const found = new Map<string, ReturnType<typeof postCategories>[number]>();
     posts.forEach((post) =>
       postCategories(post).forEach((item) => found.set(item.slug, item)),
     );
-
     return [...found.values()];
   }, [posts]);
-
-  const filtered = useMemo(() => {
-    const needle = normalize(query);
-
-    return posts.filter((post) => {
-      const matchesCategory =
-        category === "all" ||
-        postCategories(post).some((item) => item.slug === category);
-
-      const text = normalize(
-        `${plainText(post.title?.rendered ?? "")} ${plainText(
-          post.excerpt?.rendered ?? "",
-        )}`,
-      );
-
-      return matchesCategory && (!needle || text.includes(needle));
-    });
-  }, [posts, category, query]);
-
+  const filtered = useMemo(
+    () =>
+      posts.filter(
+        (post) =>
+          (category === "all" ||
+            postCategories(post).some((item) => item.slug === category)) &&
+          normalize(
+            `${plainText(post.title.rendered)} ${plainText(post.excerpt?.rendered || "")}`,
+          ).includes(normalize(query)),
+      ),
+    [posts, category, query],
+  );
   const isFiltered = category !== "all" || Boolean(query.trim());
-  const featured = !isFiltered ? filtered[0] : undefined;
-  const gridPosts = featured ? filtered.slice(1) : filtered;
-  const shownPosts = gridPosts.slice(0, visible);
-  const editorial = !isFiltered && shownPosts.length >= 3;
-  const remaining = editorial ? shownPosts.slice(3) : shownPosts;
-
-  function resetFilters() {
+  const featured = posts[0];
+  const archive = isFiltered ? filtered : posts.slice(1);
+  function reset() {
     setCategory("all");
     setQuery("");
     setVisible(9);
   }
-
   return (
     <>
-      {featured && (
-        <section
-          aria-labelledby="featured-title"
-          className="mx-auto site-container  pt-8  sm:pt-12 "
-        >
-          <div className="relative lg:pb-16">
-            <Link
-              href={`/blog/${featured.slug}`}
-              aria-label={`مطالعه ${plainText(featured.title?.rendered ?? "")}`}
-              className="group relative block aspect-[4/3] overflow-hidden rounded-md bg-[#eadde1] sm:aspect-[16/9]"
-            >
-              <PostImage
-                post={featured}
-                priority
-                sizes="(max-width: 1320px) 100vw, 1224px"
-              />
-            </Link>
-
-            <div className="relative border-b border-[#ddcbd0] bg-[#faf7f4] py-7 lg:absolute lg:bottom-0 lg:right-8 lg:w-[48%] lg:border lg:p-8 xl:p-10">
-              <div className="mb-5 flex items-center justify-between gap-4">
-                <span className="text-xs text-[#805163]">
-                  تازه‌ترین داستان
-                </span>
-                <span
-                  dir="ltr"
-                  className="text-[9px] tracking-[0.2em] text-[#75676c]"
-                >
-                  WINGS / JOURNAL
-                </span>
-              </div>
-
-              <h2
-                id="featured-title"
-                className="text-2xl font-medium leading-[1.6] sm:text-3xl xl:text-[36px]"
-              >
-                <Link
-                  href={`/blog/${featured.slug}`}
-                  className="transition-colors hover:text-[#945e73]"
-                >
-                  {plainText(featured.title?.rendered ?? "")}
-                </Link>
-              </h2>
-
-              {featured.excerpt?.rendered && (
-                <p className="mt-4 line-clamp-2 text-sm leading-8 text-[#75676c]">
-                  {plainText(featured.excerpt.rendered)}
-                </p>
-              )}
-
-              <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#ddcbd0] pt-4">
-                <PostMeta post={featured} />
-                <Link
-                  href={`/blog/${featured.slug}`}
-                  className="inline-flex min-h-11 items-center gap-4 text-xs font-medium text-[#49313b] hover:text-[#945e73]"
-                >
-                  خواندن مقاله <span aria-hidden="true">←</span>
-                </Link>
-              </div>
+      <div className={`site-container ${styles.container}`}>
+        <nav className={styles.breadcrumb} aria-label="مسیر صفحه">
+          <Link href="/">خانه</Link>
+          <span>/</span>
+          <span aria-current="page">مجله وینگز</span>
+        </nav>
+        <header className={styles.masthead}>
+          <div className={styles.mastheadTop}>
+            <span lang="en" dir="ltr">
+              NOTES ON LITTLE THINGS
+            </span>
+            <span>
+              <Sparkles size={13} /> جایی برای کمی مکث و الهام
+            </span>
+          </div>
+          <div className={styles.mastheadTitle}>
+            <span className={styles.sideNote} lang="en" dir="ltr">
+              STYLE.
+              <br />
+              STORIES.
+              <br />
+              SMALL JOYS.
+            </span>
+            <div>
+              <p className={styles.eyebrow}>مجلهٔ وینگز</p>
+              <h1 lang="en" dir="ltr">
+                The <em>Journal</em>
+                <span>.</span>
+              </h1>
             </div>
-          </div>
-        </section>
-      )}
-
-      <section
-        id="journal-posts"
-        aria-labelledby="journal-posts-title"
-        className="mx-auto site-container scroll-mt-36  py-14  sm:py-20 "
-      >
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs text-[#805163]">کمی الهام، کمی کشف</p>
-            <h2
-              id="journal-posts-title"
-              className="mt-3 text-2xl font-medium leading-relaxed sm:text-4xl"
-            >
-              برای سلیقه کنجکاو تو
-              <span className="text-[#b98295]">.</span>
-            </h2>
-          </div>
-          <span
-            dir="ltr"
-            className="hidden text-[10px] tracking-[0.2em] text-[#805163] sm:block"
-          >
-            THE JOURNAL
-          </span>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-4 border-y border-[#ddcbd0] py-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
-          <div
-            className="flex min-w-0 gap-6 overflow-x-auto py-1 lg:flex-1"
-            aria-label="دسته‌بندی مقاله‌ها"
-          >
-            {[{ id: 0, slug: "all", name: "همه داستان‌ها" }, ...categories].map(
-              (item) => (
-                <button
-                  key={item.slug}
-                  type="button"
-                  aria-pressed={category === item.slug}
-                  onClick={() => {
-                    setCategory(item.slug);
-                    setVisible(9);
-                  }}
-                  className={`min-h-11 shrink-0 border-b-2 px-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#805163] ${
-                    category === item.slug
-                      ? "border-[#b98295] font-medium text-[#49313b]"
-                      : "border-transparent text-[#75676c] hover:text-[#49313b]"
-                  }`}
-                >
-                  {plainText(item.name)}
-                </button>
-              ),
-            )}
-          </div>
-
-          <div className="relative w-full shrink-0 lg:w-[280px]">
-            <label htmlFor="journal-search" className="sr-only">
-              جستجو در مقاله‌ها
-            </label>
-
-            <svg
+            <Flower2
+              className={styles.flower}
+              size={67}
+              strokeWidth={0.7}
               aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="pointer-events-none absolute right-3 top-1/2 size-5 -translate-y-1/2 text-[#805163]"
-            >
-              <circle cx="10.5" cy="10.5" r="6.5" />
-              <path d="m16 16 4.5 4.5" />
-            </svg>
-
-            <input
-              id="journal-search"
-              type="search"
-              value={query}
-              onChange={(event) => {
-                setQuery(event.target.value);
-                setVisible(9);
-              }}
-              placeholder="دنبال چه می‌گردی؟"
-              className="h-12 w-full rounded-md border border-[#ddcbd0] bg-[#fffdfa] pl-3 pr-11 text-base outline-none placeholder:text-[#8d7a82] focus:border-[#945e73] focus:ring-2 focus:ring-[#945e73]/15"
             />
           </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <p aria-live="polite" className="text-xs leading-6 text-[#75676c]">
-            {isFiltered
-              ? `${filtered.length.toLocaleString("fa-IR")} مقاله پیدا شد`
-              : `${filtered.length.toLocaleString("fa-IR")} داستان در مجله`}
-          </p>
-
-          {isFiltered && (
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="inline-flex min-h-11 items-center gap-2 text-xs text-[#805163] underline underline-offset-4"
-            >
-              پاک‌کردن فیلترها <span aria-hidden="true">×</span>
-            </button>
-          )}
-        </div>
-
-        {shownPosts.length > 0 ? (
-          <div className="mt-8">
-            {editorial && (
-              <div className="grid gap-10 border-b border-[#ddcbd0] pb-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
-                <PostCard post={shownPosts[0]} large />
-
-                <div className="grid content-start gap-8">
-                  <PostCard post={shownPosts[1]} compact />
-                  <PostCard post={shownPosts[2]} compact />
-                </div>
-              </div>
-            )}
-
-            {remaining.length > 0 && (
-              <div
-                className={`grid gap-x-7 gap-y-10 md:grid-cols-2 lg:grid-cols-3 ${
-                  editorial ? "mt-12" : ""
-                }`}
-              >
-                {remaining.map((post) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
-              </div>
-            )}
-          </div>
-        ) : featured ? (
-          <p className="py-10 text-sm leading-8 text-[#75676c]">
-            داستان‌های بیشتری به‌زودی منتشر می‌شوند.
-          </p>
-        ) : (
-          <div className="mt-8 border-y border-[#ddcbd0] px-5 py-16 text-center">
-            <span aria-hidden="true" className="text-3xl text-[#b98295]">
-              ✦
-            </span>
-            <h3 className="mt-4 text-xl font-medium">
-              این داستان هنوز پیدا نشده.
-            </h3>
-            <p className="mt-3 text-sm leading-8 text-[#75676c]">
-              عبارت دیگری بنویس یا همه مقاله‌ها را ببین.
+          <div className={styles.mastheadBottom}>
+            <p>
+              از جزئیات کوچک می‌نویسیم؛ از چیزهایی که زندگی را بیشتر شبیه تو
+              می‌کنند.
             </p>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="mt-6 min-h-12 rounded-md bg-[#49313b] px-6 text-sm text-white hover:bg-[#704658]"
-            >
-              نمایش همه مقاله‌ها
-            </button>
+            <a href="#journal-posts">
+              ورق بزن <ArrowDown size={14} />
+            </a>
           </div>
+        </header>
+
+        {featured && (
+          <section className={styles.featured} aria-labelledby="featured-title">
+            <Link
+              href={`/blog/${featured.slug}`}
+              className={styles.featuredImage}
+              aria-label={`مطالعه ${plainText(featured.title.rendered)}`}
+            >
+              <PostPicture post={featured} featured />
+              <span className={styles.imageTag}>
+                <BookOpen size={14} /> تازه‌ترین داستان
+              </span>
+              <span className={styles.imageNumber} lang="en">
+                THE LATEST CHAPTER / 01
+              </span>
+            </Link>
+            <div className={styles.featuredCopy}>
+              <p className={styles.eyebrow}>
+                <span />
+                {plainText(
+                  postCategories(featured)[0]?.name || "یادداشت وینگز",
+                )}
+              </p>
+              <h2 id="featured-title">
+                <Link href={`/blog/${featured.slug}`}>
+                  {plainText(featured.title.rendered)}
+                </Link>
+              </h2>
+              <p className={styles.featuredExcerpt}>
+                {plainText(featured.excerpt?.rendered || "")}
+              </p>
+              <PostMeta post={featured} />
+              <Link
+                className={styles.primaryLink}
+                href={`/blog/${featured.slug}`}
+              >
+                این داستان را بخوان
+                <span>
+                  <ArrowUpLeft size={19} />
+                </span>
+              </Link>
+              <span className={styles.featuredSignature} lang="en" dir="ltr">
+                A little inspiration, just for you.
+              </span>
+            </div>
+          </section>
         )}
 
-        {visible < gridPosts.length && (
-          <div className="mt-12 flex justify-center">
-            <button
-              type="button"
-              onClick={() => setVisible((count) => count + 9)}
-              className="inline-flex min-h-12 items-center gap-6 rounded-md border border-[#945e73] px-7 text-sm text-[#49313b] transition-colors hover:bg-[#f1e3e7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#805163]"
-            >
-              داستان‌های بیشتر <span aria-hidden="true">↓</span>
-            </button>
+        <section
+          id="journal-posts"
+          className={styles.archive}
+          aria-labelledby="journal-posts-title"
+        >
+          <div className={styles.sectionHeading}>
+            <div>
+              <p className={styles.eyebrow} lang="en" dir="ltr">
+                THE READING ROOM
+              </p>
+              <h2 id="journal-posts-title">
+                برای سلیقهٔ کنجکاو تو<span>.</span>
+              </h2>
+            </div>
+            <p>
+              کمی الهام برای استایل،
+              <br />
+              کمی داستان برای حالِ خوب.
+            </p>
           </div>
-        )}
-
-        <p className="sr-only" role="status">
-          {(
-            shownPosts.length + (featured ? 1 : 0)
-          ).toLocaleString("fa-IR")}{" "}
-          مقاله نمایش داده شده است.
-        </p>
+          {posts.length > 0 && (
+            <>
+              <div className={styles.toolbar}>
+                <div
+                  className={styles.filters}
+                  role="group"
+                  aria-label="دسته‌بندی مقاله‌ها"
+                >
+                  {[{ slug: "all", name: "همهٔ داستان‌ها" }, ...categories].map(
+                    (item) => (
+                      <button
+                        key={item.slug}
+                        type="button"
+                        aria-pressed={category === item.slug}
+                        onClick={() => {
+                          setCategory(item.slug);
+                          setVisible(9);
+                        }}
+                      >
+                        {category === item.slug && <Check size={13} />}
+                        {plainText(item.name)}
+                      </button>
+                    ),
+                  )}
+                </div>
+                <label className={styles.search}>
+                  <Search size={17} />
+                  <input
+                    type="search"
+                    aria-label="جستجو در مقاله‌ها"
+                    placeholder="دنبال چه داستانی می‌گردی؟"
+                    value={query}
+                    onChange={(event) => {
+                      setQuery(event.target.value);
+                      setVisible(9);
+                    }}
+                  />
+                  {query && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setQuery("");
+                        setVisible(9);
+                      }}
+                      aria-label="پاک کردن جستجو"
+                    >
+                      <X size={15} />
+                    </button>
+                  )}
+                </label>
+              </div>
+              <div className={styles.results}>
+                <span aria-live="polite">
+                  {isFiltered
+                    ? `${filtered.length.toLocaleString("fa-IR")} مقاله پیدا شد`
+                    : `${posts.length.toLocaleString("fa-IR")} داستان در مجله`}
+                </span>
+                {isFiltered && (
+                  <button type="button" onClick={reset}>
+                    پاک‌کردن فیلترها <X size={12} />
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+          {archive.length > 0 ? (
+            <div
+              className={styles.postGrid}
+              data-count={Math.min(archive.length, visible)}
+            >
+              {archive.slice(0, visible).map((post, index) => (
+                <article key={post.id} className={styles.postCard}>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className={styles.postImage}
+                    aria-label={`مطالعه ${plainText(post.title.rendered)}`}
+                  >
+                    <PostPicture post={post} />
+                    <span className={styles.postCategory}>
+                      {plainText(postCategories(post)[0]?.name || "مجله وینگز")}
+                    </span>
+                    <span className={styles.postArrow} aria-hidden="true">
+                      <ArrowUpLeft size={20} />
+                    </span>
+                  </Link>
+                  <div className={styles.postCardTop}>
+                    <span lang="en">
+                      {String(index + (isFiltered ? 1 : 2)).padStart(2, "0")}
+                    </span>
+                    <PostMeta post={post} />
+                  </div>
+                  <h3>
+                    <Link href={`/blog/${post.slug}`}>
+                      {plainText(post.title.rendered)}
+                    </Link>
+                  </h3>
+                  <p>{plainText(post.excerpt?.rendered || "")}</p>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className={styles.readLink}
+                    aria-label={`خواندن مقاله ${plainText(post.title.rendered)}`}
+                  >
+                    ادامهٔ داستان <ArrowUpLeft size={15} />
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.empty}>
+              <BookOpen size={32} strokeWidth={1} />
+              <h3>
+                {failed
+                  ? "مجله فعلاً در دسترس نیست."
+                  : !posts.length
+                    ? "اولین داستان، به‌زودی اینجاست."
+                    : isFiltered
+                      ? "این داستان هنوز پیدا نشده."
+                      : "داستان بعدی در راه است."}
+              </h3>
+              <p>
+                {failed
+                  ? "کمی بعد دوباره سر بزن؛ داستان‌ها منتظرت می‌مانند."
+                  : isFiltered
+                    ? "عبارت دیگری بنویس یا همهٔ داستان‌ها را ببین."
+                    : "تا داستان بعدی، دنیای کالکشن‌های وینگز را کشف کن."}
+              </p>
+              {isFiltered ? (
+                <button type="button" onClick={reset}>
+                  نمایش همه مقاله‌ها <ArrowUpLeft size={16} />
+                </button>
+              ) : (
+                <Link href="/collections">
+                  کشف کالکشن‌ها <ArrowUpLeft size={16} />
+                </Link>
+              )}
+            </div>
+          )}
+          {archive.length > visible && (
+            <div className={styles.loadMore}>
+              <button
+                type="button"
+                onClick={() => setVisible((count) => count + 9)}
+              >
+                داستان‌های بیشتر <ArrowDown size={16} />
+              </button>
+              <span>
+                {Math.min(visible, archive.length).toLocaleString("fa-IR")} از{" "}
+                {archive.length.toLocaleString("fa-IR")} مقاله
+              </span>
+            </div>
+          )}
+        </section>
+      </div>
+      <section className={styles.interlude}>
+        <div className={`site-container ${styles.interludeInner}`}>
+          <Flower2 size={36} strokeWidth={1} aria-hidden="true" />
+          <blockquote>
+            استایل، از جزئیات شروع می‌شود.
+            <br />
+            <span>از همان چیزهای کوچکی که دوستشان داری.</span>
+          </blockquote>
+          <span lang="en" dir="ltr">
+            THE WINGS POINT OF VIEW
+          </span>
+        </div>
+      </section>
+      <section
+        className={`site-container ${styles.storyCta}`}
+        aria-labelledby="story-cta-title"
+      >
+        <div className={styles.ctaImage}>
+          <Image
+            src="/images/custom-hero.png"
+            alt="چارم‌ها و ابزار ساخت زیورآلات شخصی وینگز"
+            fill
+            sizes="(max-width: 767px) 100vw, 45vw"
+            className="object-cover"
+          />
+          <span lang="en" dir="ltr">
+            FROM INSPIRATION TO EXPRESSION
+          </span>
+        </div>
+        <div className={styles.ctaCopy}>
+          <p className={styles.eyebrow}>
+            <Sparkles size={14} /> از خواندن تا ساختن
+          </p>
+          <h2 id="story-cta-title">
+            داستان بعدی را
+            <br />
+            <span>خودت بساز.</span>
+          </h2>
+          <p>
+            از میان علاقه‌هایت الهام بگیر، چارم‌ها را کنار هم بگذار و چیزی بساز
+            که فقط شبیه خودت باشد.
+          </p>
+          <Link href="/custom-design" className={styles.primaryLink}>
+            ورود به استودیوی طراحی
+            <span>
+              <ArrowUpLeft size={18} />
+            </span>
+          </Link>
+          <Link href="/collections" className={styles.secondaryLink}>
+            یا کالکشن‌های وینگز را کشف کن <ArrowUpLeft size={15} />
+          </Link>
+        </div>
       </section>
     </>
   );

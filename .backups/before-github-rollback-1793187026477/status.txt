@@ -1,0 +1,60 @@
+M  app/api/woo/products/route.ts
+M  app/custom-design/page.tsx
+UU app/globals.css
+M  app/page.tsx
+ M app/shop/page.tsx
+ M components/about/about-cta.tsx
+ M components/about/about-philosophy.tsx
+ M components/about/about-values.tsx
+ M components/blog/blog-categories.tsx
+ M components/collections/collections-cta.tsx
+ M components/collections/collections-grid.tsx
+ M components/collections/featured-collection.tsx
+M  components/commerce/product-purchase.tsx
+ M components/contact/contact-cta.tsx
+ M components/contact/contact-hero.tsx
+M  components/custom-design/Charm.tsx
+M  components/custom-design/CharmBuilder.tsx
+M  components/custom-design/CharmPalette.tsx
+M  components/custom-design/SavedDesignPreview.tsx
+UU components/custom-design/builder-studio.module.css
+M  components/custom-design/product-picker.module.css
+M  components/custom-design/saved-design-confirmation.module.css
+M  components/footer.tsx
+M  components/header-backdrop.tsx
+M  components/header.tsx
+M  components/homepage/charms.module.css
+M  components/homepage/charms.tsx
+M  components/homepage/hover-video-section.tsx
+M  components/homepage/new-arrivals.tsx
+M  components/shop/shop-catalogue.tsx
+ M eslint.config.mjs
+M  lib/charm-catalogue.json
+M  lib/design-products.ts
+A  lib/product-categories.ts
+A  lib/studio-charms.ts
+ M lib/woo-mapper.ts
+D  public/images/about-hero.png
+D  public/images/blog-hero.png
+D  public/images/bracelet.png
+D  public/images/charms.png
+A  public/images/charms/chocolate.png
+A  public/images/charms/cocktail.png
+A  public/images/charms/fashion.png
+A  public/images/charms/gold-dress.png
+A  public/images/charms/ice-cream.png
+A  public/images/charms/pink-dress.png
+A  public/images/charms/shrimp.png
+A  public/images/charms/tennis.png
+A  public/images/charms/travel.png
+D  public/images/collections-hero.png
+D  public/images/contact-hero.jpg
+D  public/images/custom-hero.png
+D  public/images/earrings.png
+D  public/images/hero-butterfly.png
+D  public/images/hero.png
+D  public/images/necklace.png
+D  public/images/shop-hero.png
+ M wordpress/wings-commerce/charm-catalogue.json
+?? .backups/
+?? app/shop/error.tsx

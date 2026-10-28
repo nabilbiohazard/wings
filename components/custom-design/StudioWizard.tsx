@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useSyncExternalStore, type RefObject } from "react";
+import Image from "next/image";
 import { StudioDesktop } from "./StudioDesktop";
 import {
   ArrowLeft,
@@ -8,6 +9,8 @@ import {
   Check,
   Gem,
   Heart,
+  Pencil,
+  Plus,
   RotateCcw,
   Sparkles,
   Undo2,
@@ -240,9 +243,12 @@ export function StudioWizard(props: StudioWizardProps) {
         {step === 3 && product && snapshot && (
           <div className={styles.review}>
             <div className={styles.finished}>
-              <span className={styles.edition}>
-                ONE OF A KIND · MADE BY YOU
-              </span>
+              <div className={styles.previewHeading}>
+                <span className={styles.edition}>THE PERSONAL EDITION</span>
+                <span className={styles.previewBadge}>
+                  <Check size={12} /> طرح نهایی تو
+                </span>
+              </div>
               <div
                 className={styles.finishedArt}
                 role="img"
@@ -250,16 +256,69 @@ export function StudioWizard(props: StudioWizardProps) {
               >
                 <SavedDesignPreview design={snapshot} large />
               </div>
-              <span className={styles.signature}>
-                <Sparkles size={14} /> ساختهٔ سلیقهٔ تو
-              </span>
+              <div className={styles.previewCaption}>
+                <span className={styles.signature}>
+                  <Sparkles size={14} /> ساختهٔ سلیقهٔ تو
+                </span>
+                <button type="button" onClick={() => onStep(2)}>
+                  <Pencil size={13} /> ویرایش طرح
+                </button>
+              </div>
             </div>
             <div className={styles.receipt}>
-              <span className={styles.receiptLabel}>جزئیات انتخاب تو</span>
+              <span className={styles.receiptLabel}>
+                <span /> از انتخاب تو، به امضای تو
+              </span>
               <h2>{product.name}</h2>
-              <p>
-                {rule?.label} · {placed.length.toLocaleString("fa-IR")} چارم
+              <p className={styles.reviewSubtitle}>
+                ترکیبی که خودت انتخاب کردی؛ با تمام جزئیاتش.
               </p>
+              <div className={styles.designFacts}>
+                <span>
+                  <Gem size={14} />
+                  {rule?.label}
+                </span>
+                <span>
+                  <Sparkles size={14} />
+                  {placed.length.toLocaleString("fa-IR")} چارم انتخابی
+                </span>
+              </div>
+              <div className={styles.charmSelectionHeading}>
+                <h3>جزئیات کوچک، داستان تو</h3>
+                <span>{placed.length.toLocaleString("fa-IR")} چارم</span>
+              </div>
+              <ul className={styles.charmCards} aria-label="چارم‌های طرح نهایی">
+                {placed.map((item, index) => (
+                  <li key={item.instanceId}>
+                    <div className={styles.charmThumbnail}>
+                      <Image
+                        src={item.charm.image}
+                        alt=""
+                        fill
+                        unoptimized
+                        sizes="48px"
+                        className="object-contain"
+                      />
+                    </div>
+                    <div className={styles.charmDetails}>
+                      <small>
+                        انتخاب {(index + 1).toLocaleString("fa-IR")}
+                      </small>
+                      <strong>{item.charm.name}</strong>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={`حذف ${item.charm.name}`}
+                      onClick={() => {
+                        props.onRemove(item.instanceId);
+                        onStep(2);
+                      }}
+                    >
+                      <X size={15} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
               <dl>
                 <div>
                   <dt>محصول پایه</dt>
@@ -274,7 +333,9 @@ export function StudioWizard(props: StudioWizardProps) {
                   </dd>
                 </div>
                 <div className={styles.receiptTotal}>
-                  <dt>مجموع طرح</dt>
+                  <dt>
+                    مجموع طرح <small>برای هر عدد</small>
+                  </dt>
                   <dd>
                     {priced ? (
                       <>
@@ -293,37 +354,20 @@ export function StudioWizard(props: StudioWizardProps) {
                   ? " قیمت نهایی با انتخاب مدل مشخص می‌شود."
                   : ""}
               </p>
-              <div className={styles.chosenCharms}>
-                {placed.map((item) => (
-                  <span key={item.instanceId}>
-                    {item.charm.name}
-                    <button
-                      type="button"
-                      aria-label={`حذف ${item.charm.name}`}
-                      onClick={() => {
-                        props.onRemove(item.instanceId);
-                        onStep(2);
-                      }}
-                    >
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
               <div className={styles.reviewActions}>
                 <button
                   type="button"
                   onClick={props.onSave}
                   disabled={props.saved}
                 >
-                  <Heart size={16} />
+                  {props.saved ? <Check size={16} /> : <Heart size={16} />}
                   {props.saved ? "طرح ذخیره شده" : "ذخیرهٔ طرح من"}
                 </button>
                 <button type="button" onClick={() => onStep(2)}>
-                  ویرایش چیدمان
+                  <Pencil size={15} /> ویرایش چیدمان
                 </button>
                 <button type="button" onClick={props.onNew}>
-                  طرح جدید
+                  <Plus size={15} /> طرح جدید
                 </button>
               </div>
             </div>

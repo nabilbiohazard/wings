@@ -1,0 +1,154 @@
+[
+  {
+    "id": "clover",
+    "name": "Clover",
+    "image": "/images/charms/clover.png",
+    "price": 250000,
+    "category": "دریایی",
+    "keywords": [
+      "خرچنگ",
+      "crab"
+    ],
+    "attachment": {
+      "x": 57,
+      "y": 30
+    }
+  },
+  {
+    "id": "pink-dress",
+    "name": "Pink Dress",
+    "price": 250000,
+    "category": "مد و زیبایی",
+    "keywords": [
+      "لباس",
+      "پیراهن",
+      "صورتی"
+    ],
+    "image": "/images/charms/pink-dress.png",
+    "attachment": {
+      "x": 51,
+      "y": 32
+    }
+  },
+  {
+    "id": "cocktail",
+    "name": "Cocktail",
+    "price": 250000,
+    "category": "خوراکی‌ها",
+    "keywords": [
+      "نوشیدنی",
+      "لیوان"
+    ],
+    "image": "/images/charms/cocktail.png",
+    "attachment": {
+      "x": 47,
+      "y": 33
+    }
+  },
+  {
+    "id": "ice-cream",
+    "name": "Ice Cream",
+    "price": 250000,
+    "category": "خوراکی‌ها",
+    "keywords": [
+      "بستنی"
+    ],
+    "image": "/images/charms/ice-cream.png",
+    "attachment": {
+      "x": 50,
+      "y": 33
+    }
+  },
+  {
+    "id": "travel",
+    "name": "Travel",
+    "price": 250000,
+    "category": "سفر و سرگرمی",
+    "keywords": [
+      "سفر",
+      "هواپیما",
+      "پاسپورت"
+    ],
+    "image": "/images/charms/travel.png",
+    "attachment": {
+      "x": 51,
+      "y": 30
+    }
+  },
+  {
+    "id": "tennis",
+    "name": "Tennis Racket",
+    "price": 250000,
+    "category": "سفر و سرگرمی",
+    "keywords": [
+      "تنیس",
+      "راکت",
+      "ورزش"
+    ],
+    "image": "/images/charms/tennis.png",
+    "attachment": {
+      "x": 51,
+      "y": 23
+    }
+  },
+  {
+    "id": "chocolate",
+    "name": "Chocolate",
+    "price": 250000,
+    "category": "خوراکی‌ها",
+    "keywords": [
+      "شکلات"
+    ],
+    "image": "/images/charms/chocolate.png",
+    "attachment": {
+      "x": 43,
+      "y": 41
+    }
+  },
+  {
+    "id": "gold-dress",
+    "name": "Gold Dress",
+    "price": 250000,
+    "category": "مد و زیبایی",
+    "keywords": [
+      "لباس",
+      "پیراهن",
+      "طلایی"
+    ],
+    "image": "/images/charms/gold-dress.png",
+    "attachment": {
+      "x": 51,
+      "y": 32
+    }
+  },
+  {
+    "id": "shrimp",
+    "name": "Shrimp",
+    "price": 250000,
+    "category": "دریایی",
+    "keywords": [
+      "میگو"
+    ],
+    "image": "/images/charms/shrimp.png",
+    "attachment": {
+      "x": 49,
+      "y": 29
+    }
+  },
+  {
+    "id": "fashion",
+    "name": "Fashion",
+    "price": 250000,
+    "category": "مد و زیبایی",
+    "keywords": [
+      "آرایش",
+      "رژلب",
+      "کیف"
+    ],
+    "image": "/images/charms/fashion.png",
+    "attachment": {
+      "x": 52,
+      "y": 30
+    }
+  }
+]

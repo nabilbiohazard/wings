@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac } from "node:crypto";
 import { cookies } from "next/headers";
+import { isAllowedRequestOrigin } from "./request-origin";
 
 export const sessionCookie = "wings_session";
 export const challengeCookie = "wings_otp";
@@ -22,12 +23,13 @@ export class CommerceError extends Error {
 }
 
 export function requireSameOrigin(request: Request) {
-  const origin = request.headers.get("origin");
-  const configured = process.env.APP_URL;
-  const expected = configured
-    ? new URL(configured).origin
-    : new URL(request.url).origin;
-  if (!origin || origin !== expected)
+  if (
+    !isAllowedRequestOrigin(
+      request,
+      process.env.APP_URL,
+      process.env.NODE_ENV === "development",
+    )
+  )
     throw new CommerceError("درخواست نامعتبر است؛ صفحه را تازه کنید.", 403);
 }
 

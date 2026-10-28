@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import Parser from "php-parser";
+import { isAllowedRequestOrigin } from "../lib/request-origin.ts";
 import {
   charmCategoryIds,
   isCharmCategory,
@@ -15,6 +16,40 @@ import {
   money,
   cartPayload,
 } from "../lib/commerce-types.ts";
+
+test("commerce accepts the current development origin and enforces the production origin", () => {
+  const configured = "https://shop.example";
+  const request = (origin) =>
+    new Request("http://localhost:3000/api/commerce/designs/prepare", {
+      headers: origin ? { origin } : {},
+    });
+  assert.equal(
+    isAllowedRequestOrigin(request("http://localhost:3000"), configured, true),
+    true,
+  );
+  for (const origin of [
+    undefined,
+    "https://foreign.example",
+    "http://localhost:3001",
+  ]) {
+    assert.equal(
+      isAllowedRequestOrigin(request(origin), configured, true),
+      false,
+    );
+  }
+  assert.equal(
+    isAllowedRequestOrigin(request("http://localhost:3000"), configured, false),
+    false,
+  );
+  assert.equal(
+    isAllowedRequestOrigin(request(configured), configured, false),
+    true,
+  );
+  assert.equal(
+    isAllowedRequestOrigin(request("http://localhost:3000"), undefined, false),
+    true,
+  );
+});
 
 test("normalizes Persian, Arabic, national and international mobile numbers", () => {
   for (const input of [
