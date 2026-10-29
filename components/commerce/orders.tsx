@@ -5,23 +5,34 @@ import { commerce } from "@/lib/commerce-client";
 import { money } from "@/lib/commerce-types";
 import type { Order } from "@/lib/commerce-types";
 import { useCommerce } from "./provider";
-import { Package, ArrowUpLeft, Heart } from "lucide-react";
+import {
+  Package,
+  ArrowUpLeft,
+  Heart,
+  Check,
+  MapPin,
+  ClipboardCheck,
+} from "lucide-react";
 import { SavedDesignPreview } from "../custom-design/SavedDesignPreview";
 import { useShop } from "../shop-provider";
 import { useSavedDesigns } from "@/lib/saved-designs";
 import { Sparkles } from "lucide-react";
 import styles from "./account.module.css";
 
-export function OrderList({overview = false}: {overview?: boolean} = {}) {
+export function OrderList({ overview = false }: { overview?: boolean } = {}) {
   const { customer } = useCommerce();
-  const {favorites, openPanel}=useShop();
-  const designs=useSavedDesigns();
+  const { favorites, openPanel } = useShop();
+  const designs = useSavedDesigns();
   const [orders, setOrders] = useState<Order[]>([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [status, setStatus] = useState("all");
+  const visibleOrders = orders.filter(
+    (order) => status === "all" || order.status === status,
+  );
   useEffect(() => {
     let active = true;
     async function load() {
@@ -51,108 +62,174 @@ export function OrderList({overview = false}: {overview?: boolean} = {}) {
   }, [page, customer?.id]);
   return (
     <>
-    {overview && <div className={styles.stats} aria-label="خلاصهٔ حساب"><a href="#account-orders"><span className={styles.statIcon}><Package size={21} strokeWidth={1.3} /></span><div><strong>{loading || error ? "—" : total.toLocaleString("fa-IR")}</strong><span>سفارش‌های من</span></div><ArrowUpLeft size={16} /></a><button type="button" onClick={()=>openPanel("wishlist")}><span className={styles.statIcon}><Heart size={21} strokeWidth={1.3} /></span><div><strong>{favorites.length.toLocaleString("fa-IR")}</strong><span>علاقه‌مندی‌ها</span></div><ArrowUpLeft size={16} /></button><a href="#saved-designs-title"><span className={styles.statIcon}><Sparkles size={21} strokeWidth={1.3} /></span><div><strong>{designs.length.toLocaleString("fa-IR")}</strong><span>طرح‌های ذخیره‌شده</span></div><ArrowUpLeft size={16} /></a></div>}
-    <section id="account-orders" className={`commerce-panel space-y-6 ${styles.orders}`}>
-      <div className="commerce-section-intro">
-        <span className="commerce-section-icon">
-          <Package size={22} aria-hidden="true" />
-        </span>
-        <div>
-          <p className="commerce-eyebrow" lang="en">
-            YOUR PICKS, YOUR STORIES
-          </p>
-          <p className="text-sm leading-7 text-[#8b777d]">
-            از اولین انتخاب تا رسیدن بسته، اینجا همراهت هستیم.
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-wrap justify-between gap-4">
-        <h2 className="text-xl font-medium">سفارش‌های من</h2>
-        <span className="text-sm text-[#8b777d]">
-          {new Intl.NumberFormat("fa").format(total)} سفارش
-        </span>
-      </div>
-      {!customer?.email && (
-        <p className="rounded-xl bg-[#fff4dc] p-4 text-sm leading-7">
-          برای ثبت اولین سفارش،{" "}
-          <Link className="underline" href="/account/profile">
-            نام و ایمیل خود را تکمیل کنید
-          </Link>
-          .
-        </p>
-      )}
-      {loading ? (
-        <p role="status">در حال دریافت سفارش‌ها…</p>
-      ) : error ? (
-        <p role="alert" className="commerce-error">
-          {error}
-        </p>
-      ) : !orders.length ? (
-        <div className="space-y-5 py-8 text-center">
-          <div className="commerce-empty-icon">
-            <Heart size={30} aria-hidden="true" />
-          </div>
-          <p>هنوز سفارشی ثبت نکرده‌اید.</p>
-          <Link href="/shop" className="commerce-button">
-            شروع خرید
-          </Link>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {orders.map((order) => (
-            <Link
-              key={order.id}
-              href={`/account/orders/${order.id}`}
-              className="commerce-order-card"
-            >
-              <span className="commerce-order-icon">
-                <Package size={20} aria-hidden="true" />
-              </span>
-              <div>
-                <h3 className="font-medium">سفارش #{order.number}</h3>
-                <p className="mt-2 text-xs text-[#8b777d]">
-                  {new Date(order.created).toLocaleDateString("fa-IR")}
-                </p>
-              </div>
-              <span
-                className="commerce-order-status"
-                data-status={order.status}
-              >
-                {order.status_label}
-              </span>
-              <strong className="text-sm">
-                {money(order.total, order.currency)}
+      {overview && (
+        <div className={styles.stats} aria-label="خلاصهٔ حساب">
+          <a href="#account-orders">
+            <span className={styles.statIcon}>
+              <Package size={21} strokeWidth={1.3} />
+            </span>
+            <div>
+              <strong>
+                {loading || error ? "—" : total.toLocaleString("fa-IR")}
               </strong>
-              <span className="commerce-order-arrow">
-                <ArrowUpLeft size={18} aria-hidden="true" />
-                <span className="sr-only">جزئیات</span>
-              </span>
-            </Link>
-          ))}
+              <span>سفارش‌های من</span>
+            </div>
+            <ArrowUpLeft size={16} />
+          </a>
+          <button type="button" onClick={() => openPanel("wishlist")}>
+            <span className={styles.statIcon}>
+              <Heart size={21} strokeWidth={1.3} />
+            </span>
+            <div>
+              <strong>{favorites.length.toLocaleString("fa-IR")}</strong>
+              <span>علاقه‌مندی‌ها</span>
+            </div>
+            <ArrowUpLeft size={16} />
+          </button>
+          <a href="#saved-designs-title">
+            <span className={styles.statIcon}>
+              <Sparkles size={21} strokeWidth={1.3} />
+            </span>
+            <div>
+              <strong>{designs.length.toLocaleString("fa-IR")}</strong>
+              <span>طرح‌های ذخیره‌شده</span>
+            </div>
+            <ArrowUpLeft size={16} />
+          </a>
         </div>
       )}
-      {pages > 1 && (
-        <div className="flex items-center justify-center gap-4 text-sm">
-          <button
-            className="commerce-secondary"
-            disabled={loading || page <= 1}
-            onClick={() => setPage((value) => value - 1)}
-          >
-            قبلی
-          </button>
-          <span>
-            {page.toLocaleString("fa")} / {pages.toLocaleString("fa")}
+      <section
+        id="account-orders"
+        className={`commerce-panel space-y-6 ${styles.orders}`}
+      >
+        <div className="commerce-section-intro">
+          <span className="commerce-section-icon">
+            <Package size={22} aria-hidden="true" />
           </span>
-          <button
-            className="commerce-secondary"
-            disabled={loading || page >= pages}
-            onClick={() => setPage((value) => value + 1)}
-          >
-            بعدی
-          </button>
+          <div>
+            <p className="commerce-eyebrow" lang="en">
+              YOUR PICKS, YOUR STORIES
+            </p>
+            <p className="text-sm leading-7 text-[#8b777d]">
+              از اولین انتخاب تا رسیدن بسته، اینجا همراهت هستیم.
+            </p>
+          </div>
         </div>
-      )}
-    </section>
+        <div className={styles.orderTools}>
+          <h2 className="text-xl font-medium">سفارش‌های من</h2>
+          <span className="text-sm text-[#8b777d]">
+            {loading || error ? "—" : new Intl.NumberFormat("fa").format(total)}{" "}
+            سفارش
+          </span>
+          {orders.length > 0 && (
+            <label>
+              نمایش در این صفحه
+              <select
+                value={status}
+                onChange={(event) => setStatus(event.target.value)}
+              >
+                <option value="all">همه وضعیت‌ها</option>
+                {Array.from(
+                  new Map(
+                    orders.map((order) => [order.status, order.status_label]),
+                  ),
+                ).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+        </div>
+        {!customer?.email && (
+          <p className="rounded-xl bg-[#fff4dc] p-4 text-sm leading-7">
+            برای ثبت اولین سفارش،{" "}
+            <Link className="underline" href="/account/profile">
+              نام و ایمیل خود را تکمیل کنید
+            </Link>
+            .
+          </p>
+        )}
+        {loading ? (
+          <p role="status">در حال دریافت سفارش‌ها…</p>
+        ) : error ? (
+          <p role="alert" className="commerce-error">
+            {error}
+          </p>
+        ) : !orders.length ? (
+          <div className={styles.emptyOrders}>
+            <span>
+              <Heart size={30} aria-hidden="true" />
+            </span>
+            <p>هنوز سفارشی ثبت نکرده‌اید.</p>
+            <p>اولین انتخاب دوست‌داشتنی‌ات، شروع یک داستان تازه است.</p>
+            <Link href="/shop" className="commerce-button">
+              شروع خرید
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visibleOrders.map((order) => (
+              <Link
+                key={order.id}
+                href={`/account/orders/${order.id}`}
+                className="commerce-order-card"
+              >
+                <span className="commerce-order-icon">
+                  <Package size={20} aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="font-medium">سفارش #{order.number}</h3>
+                  <p className="mt-2 text-xs text-[#8b777d]">
+                    {new Date(order.created).toLocaleDateString("fa-IR")}
+                  </p>
+                </div>
+                <span
+                  className="commerce-order-status"
+                  data-status={order.status}
+                >
+                  {order.status_label}
+                </span>
+                <strong className="text-sm">
+                  {money(order.total, order.currency)}
+                </strong>
+                <span className="commerce-order-arrow">
+                  <ArrowUpLeft size={18} aria-hidden="true" />
+                  <span className="sr-only">جزئیات</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        )}
+        {pages > 1 && (
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <button
+              className="commerce-secondary"
+              disabled={loading || page <= 1}
+              onClick={() => {
+                setStatus("all");
+                setPage((value) => value - 1);
+              }}
+            >
+              قبلی
+            </button>
+            <span>
+              {page.toLocaleString("fa")} / {pages.toLocaleString("fa")}
+            </span>
+            <button
+              className="commerce-secondary"
+              disabled={loading || page >= pages}
+              onClick={() => {
+                setStatus("all");
+                setPage((value) => value + 1);
+              }}
+            >
+              بعدی
+            </button>
+          </div>
+        )}
+      </section>
     </>
   );
 }
@@ -209,9 +286,9 @@ export function OrderDetail({ id }: { id: string }) {
       <Link href="/account" className="text-sm text-[#79465a]">
         → همه سفارش‌ها
       </Link>
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className={styles.detailHeading}>
         <h2 className="text-2xl font-medium">سفارش #{order.number}</h2>
-        <span className="rounded-full bg-[#f8eef1] px-4 py-2 text-sm">
+        <span className="commerce-order-status" data-status={order.status}>
           {order.status_label}
         </span>
       </div>
@@ -219,15 +296,43 @@ export function OrderDetail({ id }: { id: string }) {
         تاریخ ثبت: {new Date(order.created).toLocaleDateString("fa-IR")} ·{" "}
         {order.payment_title}
       </p>
+      {["pending", "on-hold", "processing", "completed"].includes(
+        order.status,
+      ) && (
+        <ol className={styles.orderProgress} aria-label="وضعیت سفارش">
+          {[
+            { label: "ثبت سفارش", icon: ClipboardCheck, done: true },
+            {
+              label: "در حال انجام",
+              icon: Package,
+              done: ["processing", "completed"].includes(order.status),
+            },
+            {
+              label: "تکمیل سفارش",
+              icon: Check,
+              done: order.status === "completed",
+            },
+          ].map((step) => (
+            <li key={step.label} data-done={step.done}>
+              <span>
+                <step.icon size={18} strokeWidth={1.5} />
+              </span>
+              {step.label}
+              <b className="sr-only">{step.done ? "انجام شده" : "در انتظار"}</b>
+            </li>
+          ))}
+        </ol>
+      )}
       {order.payment_title === "ثبت سفارش بدون پرداخت آنلاین" && (
         <p className="rounded-xl bg-[#fff4dc] p-4 text-sm leading-7">
           این سفارش بدون پرداخت آنلاین ثبت شده است. فروشگاه وضعیت بررسی و
           آماده‌سازی آن را اعلام می‌کند.
         </p>
       )}
-      <div className="divide-y divide-[#eee3e5]">
+      <div className={styles.orderItems}>
         {order.items.map((item) => (
-          <div key={item.id} className="flex justify-between gap-4 py-4">
+          <div key={item.id} className={styles.orderItem}>
+            <Package size={24} strokeWidth={1.2} aria-hidden="true" />
             <div>
               <p className="font-medium">{item.name}</p>
               {item.design && (
@@ -255,30 +360,34 @@ export function OrderDetail({ id }: { id: string }) {
           </div>
         ))}
       </div>
-      <dl className="ml-auto max-w-sm space-y-3 text-sm">
-        {[
-          ["جمع کالاها", order.subtotal],
-          ["تخفیف", order.discount],
-          ["ارسال", order.shipping_total],
-          ["مالیات", order.tax],
-          ["مبلغ سفارش", order.total],
-        ].map(([label, value]) => (
-          <div key={label} className="flex justify-between gap-6">
-            <dt>{label}</dt>
-            <dd>{money(value, order.currency)}</dd>
-          </div>
-        ))}
-      </dl>
-      <div className="rounded-2xl border border-[#eee3e5] p-5">
-        <h3 className="font-medium">آدرس ارسال</h3>
-        <p className="mt-3 text-sm leading-7">
-          {order.shipping.first_name} {order.shipping.last_name}
-          <br />
-          {order.shipping.city}، {order.shipping.address_1}{" "}
-          {order.shipping.address_2}
-          <br />
-          کد پستی: {order.shipping.postcode}
-        </p>
+      <div className={styles.orderSummary}>
+        <dl>
+          {[
+            ["جمع کالاها", order.subtotal],
+            ["تخفیف", order.discount],
+            ["ارسال", order.shipping_total],
+            ["مالیات", order.tax],
+            ["مبلغ سفارش", order.total],
+          ].map(([label, value]) => (
+            <div key={label} className="flex justify-between gap-6">
+              <dt>{label}</dt>
+              <dd>{money(value, order.currency)}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className={styles.shippingAddress}>
+          <h3>
+            <MapPin size={17} /> آدرس ارسال
+          </h3>
+          <p className="mt-3 text-sm leading-7">
+            {order.shipping.first_name} {order.shipping.last_name}
+            <br />
+            {order.shipping.city}، {order.shipping.address_1}{" "}
+            {order.shipping.address_2}
+            <br />
+            کد پستی: {order.shipping.postcode}
+          </p>
+        </div>
       </div>
       {order.customer_note && (
         <div>
@@ -286,7 +395,7 @@ export function OrderDetail({ id }: { id: string }) {
           <p className="mt-2 text-sm leading-7">{order.customer_note}</p>
         </div>
       )}
-      <div>
+      <div className={styles.orderNotes}>
         <h3 className="font-medium">پیام‌ها و پیگیری سفارش</h3>
         {order.notes.length ? (
           <ul className="mt-4 space-y-3">

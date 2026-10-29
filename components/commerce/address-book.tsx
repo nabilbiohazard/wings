@@ -143,6 +143,14 @@ export function AddressBook({
       <div className={styles.addressToolbar}>
         <h2 className="text-lg font-medium">
           {onSelect ? "آدرس دریافت سفارش" : "آدرس‌های من"}
+          {!loading && (
+            <span
+              className={styles.addressCount}
+              aria-label={`${addresses.length} آدرس`}
+            >
+              {addresses.length.toLocaleString("fa-IR")}
+            </span>
+          )}
         </h2>
         <button
           type="button"
@@ -166,17 +174,24 @@ export function AddressBook({
         </p>
       ) : (
         !addresses.length && (
-          <p className={styles.emptyState}><MapPin size={38} strokeWidth={1} />
+          <p className={styles.emptyState}>
+            <MapPin size={38} strokeWidth={1} />
             هنوز آدرسی ذخیره نکرده‌اید. برای ثبت سفارش، آدرس جدید اضافه کنید.
           </p>
         )
       )}
-      {notice && <p className={styles.success} role="status"><Check size={16} />{notice}</p>}
+      {notice && (
+        <p className={styles.success} role="status">
+          <Check size={16} />
+          {notice}
+        </p>
+      )}
       <div className={styles.addressGrid}>
         {addresses.map((address) => (
           <article
             key={address.id}
-            className={styles.addressCard} data-selected={selected === address.id}
+            className={styles.addressCard}
+            data-selected={selected === address.id}
           >
             {onSelect ? (
               <label className="flex cursor-pointer items-center gap-2 text-sm font-medium">
@@ -189,7 +204,11 @@ export function AddressBook({
                 {address.label}
               </label>
             ) : (
-              <h3 className={styles.addressTitle}><MapPin size={19} strokeWidth={1.3} />{address.label}<span lang="en">WINGS ADDRESS</span></h3>
+              <h3 className={styles.addressTitle}>
+                <MapPin size={19} strokeWidth={1.3} />
+                {address.label}
+                <span lang="en">WINGS ADDRESS</span>
+              </h3>
             )}
             <p className="mt-3 text-sm leading-7">
               {address.first_name} {address.last_name}
@@ -217,69 +236,95 @@ export function AddressBook({
                 <Trash2 size={14} /> حذف آدرس
               </button>
             </div>
-            {deleting === address.id && <div className={styles.deleteConfirm} role="group" aria-label="تأیید حذف آدرس"><p>این آدرس از دفترچه‌ات حذف شود؟</p><button type="button" disabled={busy} onClick={() => void remove(address)}>بله، حذف شود</button><button type="button" disabled={busy} onClick={() => setDeleting(null)}>انصراف</button></div>}
+            {deleting === address.id && (
+              <div
+                className={styles.deleteConfirm}
+                role="group"
+                aria-label="تأیید حذف آدرس"
+              >
+                <p>این آدرس از دفترچه‌ات حذف شود؟</p>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void remove(address)}
+                >
+                  بله، حذف شود
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => setDeleting(null)}
+                >
+                  انصراف
+                </button>
+              </div>
+            )}
           </article>
         ))}
       </div>
       {form && (
-        <form
-          onSubmit={save}
-          className={styles.addressForm}
-        >
-          <h3 className={styles.formTitle}><Package size={20} strokeWidth={1.3} />
+        <form onSubmit={save} className={styles.addressForm}>
+          <h3 className={styles.formTitle}>
+            <Package size={20} strokeWidth={1.3} />
             {form.id ? "ویرایش آدرس" : "افزودن آدرس"}
           </h3>
-          <p className={styles.formHint}>جزئیات دقیق‌تر، رسیدن بسته‌ات را راحت‌تر می‌کند. همه فیلدها به‌جز توضیحات تکمیلی ضروری‌اند.</p>
-          <fieldset className={styles.fieldset} disabled={busy}><legend className={styles.srOnly}>جزئیات آدرس</legend>
-          {field("label", "عنوان آدرس (مثلاً منزل)")}
-          <div className={styles.formGrid}>
-            {field("first_name", "نام گیرنده", true, {
-              autoComplete: "given-name",
+          <p className={styles.formHint}>
+            جزئیات دقیق‌تر، رسیدن بسته‌ات را راحت‌تر می‌کند. همه فیلدها به‌جز
+            توضیحات تکمیلی ضروری‌اند.
+          </p>
+          <fieldset className={styles.fieldset} disabled={busy}>
+            <legend className={styles.srOnly}>جزئیات آدرس</legend>
+            {field("label", "عنوان آدرس (مثلاً منزل)")}
+            <div className={styles.formGrid}>
+              {field("first_name", "نام گیرنده", true, {
+                autoComplete: "given-name",
+              })}
+              {field("last_name", "نام خانوادگی گیرنده", true, {
+                autoComplete: "family-name",
+              })}
+              {field("phone", "موبایل گیرنده", true, {
+                type: "tel",
+                dir: "ltr",
+                autoComplete: "tel",
+              })}
+              <label className="commerce-label">
+                استان
+                <select
+                  className={styles.input}
+                  required
+                  value={form.state}
+                  onChange={(event) =>
+                    setForm((current) =>
+                      current
+                        ? { ...current, state: event.target.value }
+                        : null,
+                    )
+                  }
+                >
+                  <option value="">استان را انتخاب کنید</option>
+                  {Object.entries(states).map(([code, label]) => (
+                    <option key={code} value={code}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {field("city", "شهر", true, { autoComplete: "address-level2" })}
+              {field("postcode", "کد پستی ده‌رقمی", true, {
+                inputMode: "numeric",
+                dir: "ltr",
+                autoComplete: "postal-code",
+                maxLength: 10,
+                pattern: "[0-9۰-۹٠-٩]{10}",
+                title: "کد پستی باید دقیقاً ۱۰ رقم باشد",
+              })}
+            </div>
+            {field("address_1", "آدرس کامل، خیابان و پلاک", true, {
+              autoComplete: "address-line1",
             })}
-            {field("last_name", "نام خانوادگی گیرنده", true, {
-              autoComplete: "family-name",
+            {field("address_2", "طبقه / واحد / توضیح تکمیلی", false, {
+              autoComplete: "address-line2",
             })}
-            {field("phone", "موبایل گیرنده", true, {
-              type: "tel",
-              dir: "ltr",
-              autoComplete: "tel",
-            })}
-            <label className="commerce-label">
-              استان
-              <select
-                className={styles.input}
-                required
-                value={form.state}
-                onChange={(event) =>
-                  setForm((current) =>
-                    current ? { ...current, state: event.target.value } : null,
-                  )
-                }
-              >
-                <option value="">استان را انتخاب کنید</option>
-                {Object.entries(states).map(([code, label]) => (
-                  <option key={code} value={code}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            {field("city", "شهر", true, { autoComplete: "address-level2" })}
-            {field("postcode", "کد پستی ده‌رقمی", true, {
-              inputMode: "numeric",
-              dir: "ltr",
-              autoComplete: "postal-code",
-              maxLength: 10,
-              pattern: "[0-9۰-۹٠-٩]{10}",
-              title: "کد پستی باید دقیقاً ۱۰ رقم باشد",
-            })}
-          </div>
-          {field("address_1", "آدرس کامل، خیابان و پلاک", true, {
-            autoComplete: "address-line1",
-          })}
-          {field("address_2", "طبقه / واحد / توضیح تکمیلی", false, {
-            autoComplete: "address-line2",
-          })}
           </fieldset>
           <div className={styles.formFooter}>
             <button className={styles.primary} disabled={busy}>
