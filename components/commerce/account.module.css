@@ -214,6 +214,7 @@
 }
 .content {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 22px;
   min-width: 0;
 }
@@ -594,6 +595,8 @@
   background: #a98499;
 }
 .orderItems {
+  min-width: 0;
+  overflow-wrap: anywhere;
   border-block: 1px solid var(--line);
 }
 .orderItem {
@@ -620,7 +623,7 @@
 }
 .orderSummary {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 20px;
 }
@@ -762,7 +765,7 @@
 }
 @media (max-width: 959px) {
   .layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .sidebar {
     position: static;
@@ -779,23 +782,22 @@
   .navigation {
     grid-column: 1 / -1;
     grid-row: 2;
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     margin: 0;
     gap: 6px;
-    overflow-x: auto;
     padding: 2px;
     min-width: 0;
   }
   .navigation a,
   .navigation button {
-    flex: 1 0 auto;
-    justify-content: center;
+    justify-content: flex-start;
     min-height: 44px;
     font-size: 11px;
     padding: 10px 13px;
   }
   .navigation span {
-    flex: initial;
+    flex: 1;
   }
   .navigation svg:last-child {
     display: none;
@@ -970,9 +972,13 @@
     margin-inline-start: 29px;
   }
   .orderItem {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
   }
   .orderItem > p {
+    grid-column: 2;
+    max-width: 100%;
     margin-inline-start: auto;
   }
   .orderItem > svg {

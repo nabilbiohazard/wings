@@ -28,6 +28,11 @@ html {
   scrollbar-gutter: stable;
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 @media (forced-colors: none) {
   html::-webkit-scrollbar {
     width: 12px;

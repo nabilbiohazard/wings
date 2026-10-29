@@ -174,6 +174,25 @@ test("account pages render without overflow and preserve form actions", async ({
   expect(errors).toEqual([]);
 });
 
+test("order metadata stays within the mobile page", async ({ page }, testInfo) => {
+  await page.route("**/api/commerce/orders/1001", (route) =>
+    route.fulfill({ json: { order: {
+      ...order,
+      items: [{ ...order.items[0], attributes: ["Design: " + "a7f83d".repeat(24)] }],
+    } } }),
+  );
+  await page.goto("/account/orders/1001");
+  await expect(page.getByText(/Design:/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  for (const selector of ["[data-site-header]", "footer", "main .commerce-panel"]) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  }
+  await page.screenshot({ path: testInfo.outputPath("order-metadata.png"), fullPage: true });
+});
+
 test("logged out account has an accessible login form", async ({
   page,
 }, testInfo) => {
