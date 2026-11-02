@@ -1,3 +1,12 @@
+.sideOrnaments { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; color: #efd0dd; }
+.leftOrnament, .rightOrnament { position: absolute; width: clamp(100px, 13vw, 200px); height: auto; stroke: currentColor; stroke-width: .7; opacity: .3; }
+.leftOrnament { left: -25px; top: 24%; }
+.rightOrnament { right: -35px; top: 21%; }
+.leftSideNote, .rightSideNote { position: absolute; top: 48%; font-size: 8px; letter-spacing: 3px; writing-mode: vertical-rl; opacity: .5; }
+.leftSideNote { left: 38px; transform: rotate(180deg); }
+.rightSideNote { right: 38px; }
+@media (max-width: 1100px) { .leftSideNote, .rightSideNote { display: none; } .leftOrnament { left: -45px; } .rightOrnament { right: -45px; } }
+@media (max-width: 600px) { .leftOrnament, .rightOrnament { width: 82px; opacity: .24; } .leftOrnament { left: -44px; top: 23%; } .rightOrnament { right: -47px; top: 29%; } }
 .titleComposition {
   position: relative;
   width: fit-content;

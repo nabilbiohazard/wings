@@ -28,6 +28,21 @@ export function Hero() {
         <div className="absolute top-1/2 -left-30 h-137.5 w-137.5 -translate-y-1/2 rounded-full bg-pink-300/10 blur-[130px]" />
       </div>
 
+      <div className={styles.sideOrnaments} aria-hidden="true">
+        <svg className={styles.leftOrnament} viewBox="0 0 160 540" fill="none">
+          <path d="M-44 60C142 72 152 208 49 270S-9 446 116 482M-63 80C118 92 130 211 34 275S-28 450 96 499" />
+          <circle cx="49" cy="270" r="7" /><circle cx="116" cy="482" r="3" />
+          <path d="M108 123Q108 144 91 144Q108 144 108 165Q108 144 125 144Q108 144 108 123Z" />
+        </svg>
+        <svg className={styles.rightOrnament} viewBox="0 0 160 540" fill="none">
+          <ellipse cx="147" cy="268" rx="90" ry="177" transform="rotate(18 147 268)" />
+          <ellipse cx="147" cy="268" rx="106" ry="193" transform="rotate(18 147 268)" />
+          <circle cx="63" cy="294" r="6" /><circle cx="109" cy="110" r="3" />
+          <path d="M61 391Q61 413 44 413Q61 413 61 435Q61 413 78 413Q61 413 61 391Z" />
+        </svg>
+        <span className={styles.leftSideNote}>A LITTLE MAGIC</span>
+        <span className={styles.rightSideNote}>EVERY DETAIL, A LITTLE YOU</span>
+      </div>
       {/* HERO CONTENT */}
       <div className="relative z-10 flex h-full items-center justify-center px-5 pt-20 text-center sm:px-8">
         <Reveal className="mx-auto w-full site-container ">

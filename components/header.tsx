@@ -240,7 +240,7 @@ export function Header() {
               <div
                 className={`
                   flex w-full max-w-78 items-center justify-between
-                  gap-2 md:w-auto md:max-w-none md:justify-start md:gap-1 lg:gap-[14px]
+                  gap-2 md:w-auto md:max-w-none md:justify-start md:gap-1 lg:gap-2.5
                   rounded-full
                   border
                   px-3 py-1.5 md:p-1.5
