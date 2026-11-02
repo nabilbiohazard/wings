@@ -18,7 +18,7 @@ export function Hero() {
           className="absolute inset-0 h-full w-full object-cover"
         >
           <source
-            src="/videos/videoplayback.mp4"
+            src="/videos/videoplayback3.mp4"
             type="video/mp4"
           />
         </video>
