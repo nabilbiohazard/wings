@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import detail from "./order-detail.module.css";
 import { useEffect, useState } from "react";
 import { commerce } from "@/lib/commerce-client";
 import { money } from "@/lib/commerce-types";
@@ -282,11 +284,12 @@ export function OrderDetail({ id }: { id: string }) {
       </div>
     );
   return (
-    <section className="commerce-panel space-y-6">
+    <section className={`commerce-panel ${detail.page}`}>
       <Link href="/account" className="text-sm text-[#79465a]">
         → همه سفارش‌ها
       </Link>
-      <div className={styles.detailHeading}>
+      <div className={`${styles.detailHeading} ${detail.hero}`}>
+        <p className={detail.eyebrow} lang="en">YOUR ORDER, EVERY DETAIL</p>
         <h2 className="text-2xl font-medium">سفارش #{order.number}</h2>
         <span className="commerce-order-status" data-status={order.status}>
           {order.status_label}
@@ -329,20 +332,31 @@ export function OrderDetail({ id }: { id: string }) {
           آماده‌سازی آن را اعلام می‌کند.
         </p>
       )}
-      <div className={styles.orderItems}>
+      <div className={detail.items}>
+        <div className={detail.sectionHeading}>
+          <h3>محصولات سفارش</h3>
+          <span>{order.items.length.toLocaleString("fa-IR")} محصول</span>
+        </div>
         {order.items.map((item) => (
-          <div key={item.id} className={styles.orderItem}>
-            <Package size={24} strokeWidth={1.2} aria-hidden="true" />
-            <div>
-              <p className="font-medium">{item.name}</p>
-              {item.design && (
-                <div className="mt-3 max-w-64">
-                  <SavedDesignPreview design={item.design} />
-                  <p className="mt-2 text-xs text-[#9b5870]">
-                    نسخهٔ ثبت‌شدهٔ طرح شما ·{" "}
-                    {item.design.charms.length.toLocaleString("fa")} چارم
-                  </p>
+          <article key={item.id} className={detail.item}>
+            <div className={detail.visual}>
+              {item.design ? (
+                <div className={detail.design} role="img" aria-label={`طرح ثبت‌شده: ${item.name}`}>
+                  <SavedDesignPreview design={item.design} large />
                 </div>
+              ) : item.image ? (
+                <Image src={item.image} alt={item.name} fill unoptimized
+                  sizes="(max-width: 600px) 85vw, 320px"
+                  className={detail.productImage} />
+              ) : (
+                <div className={detail.noImage}><Package size={40} strokeWidth={1} /><span>تصویر محصول موجود نیست</span></div>
+              )}
+            </div>
+            <div className={detail.itemInfo}>
+              <p className={detail.itemLabel}>{item.design ? "طراحی اختصاصی شما" : "انتخاب شما"}</p>
+              <h4>{item.name}</h4>
+              {item.design && (
+                <p className="mt-2 text-xs text-[#9b5870]">نسخهٔ ثبت‌شدهٔ طرح شما · {item.design.charms.length.toLocaleString("fa")} چارم</p>
               )}
               {item.design_component && (
                 <p className="mt-2 text-xs text-[#9b5870]">
@@ -354,13 +368,13 @@ export function OrderDetail({ id }: { id: string }) {
                 {item.attributes.join(" · ")}
               </p>
             </div>
-            <p className="shrink-0 text-sm">
+            <p className={detail.price}>
               {money(item.total, order.currency)}
             </p>
-          </div>
+          </article>
         ))}
       </div>
-      <div className={styles.orderSummary}>
+      <div className={`${styles.orderSummary} ${detail.summary}`}>
         <dl>
           {[
             ["جمع کالاها", order.subtotal],
@@ -395,7 +409,7 @@ export function OrderDetail({ id }: { id: string }) {
           <p className="mt-2 text-sm leading-7">{order.customer_note}</p>
         </div>
       )}
-      <div className={styles.orderNotes}>
+      <div className={`${styles.orderNotes} ${detail.notes}`}>
         <h3 className="font-medium">پیام‌ها و پیگیری سفارش</h3>
         {order.notes.length ? (
           <ul className="mt-4 space-y-3">

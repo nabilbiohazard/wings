@@ -12,6 +12,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { categories } from "@/lib/products";
+import { matchesProductCategory } from "@/lib/product-category";
+import { ShopSort } from "./shop-sort";
 import type { Product } from "@/lib/types";
 import { ProductCard } from "../product-card";
 import { useShop } from "../shop-provider";
@@ -104,11 +106,7 @@ export function ShopCatalogue({
     const minimum = selected.min ? parsePrice(selected.min) : 0;
     const maximum = selected.max ? parsePrice(selected.max) : Infinity;
     const result = products.filter((product) => {
-      if (
-        selected.category !== "all" &&
-        product.category !== selected.category &&
-        !product.categories?.some((item) => item.slug === selected.category)
-      )
+      if (!matchesProductCategory(product, selected.category))
         return false;
       if (product.price < minimum || product.price > maximum) return false;
       if (selected.stock && product.isInStock === false) return false;
@@ -220,8 +218,7 @@ export function ShopCatalogue({
                   {format(
                     products.filter(
                       (product) =>
-                        product.category === slug ||
-                        product.categories?.some((item) => item.slug === slug),
+                        matchesProductCategory(product, slug),
                     ).length,
                   )}
                 </span>
@@ -498,23 +495,7 @@ export function ShopCatalogue({
               </span>
             )}
           </button>
-          <label htmlFor="shop-sort" className="sr-only">
-            مرتب‌سازی
-          </label>
-          <select
-            id="shop-sort"
-            value={sort}
-            onChange={(event) => {
-              setSort(event.target.value as Sort);
-              setVisible(24);
-            }}
-            className="h-13 flex-1 rounded-xl border border-[#e7dadd] bg-white px-4 text-sm outline-none focus:border-[#ad7688] sm:min-w-44"
-          >
-            <option value="newest">جدیدترین</option>
-            <option value="popular">محبوب‌ترین</option>
-            <option value="low">ارزان‌ترین</option>
-            <option value="high">گران‌ترین</option>
-          </select>
+<ShopSort value={sort} onChange={(value) => { setSort(value); setVisible(24); }} />
         </div>
       </div>
       <div className={styles.resultBar}>

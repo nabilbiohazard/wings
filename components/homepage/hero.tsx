@@ -1,31 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
+import styles from "./hero.module.css";
 
 export function Hero() {
-  const [word, setWord] = useState<"style" | "story">("style");
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(false);
-
-      const timeout = setTimeout(() => {
-        setWord((current) =>
-          current === "style" ? "story" : "style"
-        );
-
-        setVisible(true);
-      }, 400);
-
-      return () => clearTimeout(timeout);
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <section className="relative h-dvh min-h-dvh overflow-hidden text-white">
       
@@ -60,26 +39,26 @@ export function Hero() {
               </div>
 
               {/* ANIMATED TITLE */}
-              <h1 className="flex items-center justify-center gap-[0.2em] font-serif text-6xl leading-[1.05] sm:text-7xl lg:text-8xl">
-                
-
-                <span className="relative inline-flex min-w-[2.5em] justify-start overflow-hidden">
-                  <span
-                    className={`
-                      text-pink-300 italic
-                      transition-all duration-400 ease-out
-                      ${
-                        visible
-                          ? "translate-y-0 opacity-100 blur-0"
-                          : "-translate-y-3 opacity-0 blur-[4px]"
-                      }
-                    `}
-                  >
-                    {word}
+              <div className={styles.titleComposition} dir="ltr" lang="en">
+                <h1 className={styles.title} aria-label="Your style. Your story.">
+                  <span className={styles.your} aria-hidden="true">Your</span>
+                  <span className={styles.wordStage} aria-hidden="true">
+                    <span className={styles.styleWord}>style.</span>
+                    <span className={styles.storyWord}>story.</span>
+                    <svg className={styles.underline} viewBox="0 0 280 24" fill="none">
+                      <path d="M8 17C66 3 169 2 269 10M45 21C114 13 195 12 244 15" />
+                    </svg>
                   </span>
-                </span>
-                <span>Your</span>
-              </h1>
+                  <svg className={styles.sparkle} viewBox="0 0 40 56" fill="none" aria-hidden="true">
+                    <path d="M20 1C20 20 16 28 1 28C16 28 20 36 20 55C20 36 24 28 39 28C24 28 20 20 20 1Z" />
+                  </svg>
+                </h1>
+                <div className={styles.signature} aria-hidden="true">
+                  <span className={styles.rule} />
+                  <span>A LITTLE MORE YOU</span>
+                  <span className={styles.rule} />
+                </div>
+              </div>
 
               {/* BUILD YOUR OWN */}
               <div className="relative mx-auto mt-8 w-full max-w-[420px]">

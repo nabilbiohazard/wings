@@ -174,6 +174,22 @@ test("account pages render without overflow and preserve form actions", async ({
   expect(errors).toEqual([]);
 });
 
+test("order product image loads in full without cropping", async ({ page }, testInfo) => {
+  await page.route("**/api/commerce/orders/1001", (route) =>
+    route.fulfill({ json: { order: {
+      ...order,
+      items: [{ ...order.items[0], image: "/images/collection-necklaces.png" }],
+    } } }),
+  );
+  await page.goto("/account/orders/1001");
+  const image = page.getByRole("img", { name: order.items[0].name, exact: true });
+  await expect(image).toBeVisible();
+  await expect.poll(() => image.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(image).toHaveCSS("object-fit", "contain");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("order-product.png"), fullPage: true });
+});
+
 test("order metadata stays within the mobile page", async ({ page }, testInfo) => {
   await page.route("**/api/commerce/orders/1001", (route) =>
     route.fulfill({ json: { order: {

@@ -1,0 +1,91 @@
+.titleComposition {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 4px 16px 12px;
+}
+.title {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: .17em;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(64px, 10vw, 118px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -.055em;
+  text-shadow: 0 4px 32px #0003;
+}
+.your { color: #fffaf6; }
+.wordStage {
+  position: relative;
+  display: grid;
+  width: 2.35em;
+  padding-block: .06em .16em;
+  color: #f4c3d4;
+  font-style: italic;
+  text-align: left;
+  perspective: 600px;
+}
+.styleWord, .storyWord {
+  grid-area: 1 / 1;
+  display: block;
+  transform-origin: center bottom;
+  will-change: transform, opacity;
+}
+.styleWord { animation: styleReveal 8s infinite; }
+.storyWord { animation: storyReveal 8s infinite; }
+.underline {
+  position: absolute;
+  bottom: .03em;
+  left: -.04em;
+  width: 98%;
+  height: .2em;
+  overflow: visible;
+  stroke: #e4acbf;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  opacity: .75;
+}
+.sparkle {
+  position: absolute;
+  top: -.04em;
+  right: -.13em;
+  width: .24em;
+  height: .34em;
+  stroke: #f5d9c3;
+  stroke-width: 1;
+}
+.signature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: #ead4d9b3;
+}
+.rule { width: 30px; height: 1px; background: linear-gradient(90deg, transparent, #eac8d5a6); }
+.rule:last-child { transform: rotate(180deg); }
+@keyframes styleReveal {
+  0%, 40%, 100% { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+  47% { opacity: 0; transform: translateY(-.22em) rotateX(12deg); filter: blur(5px); }
+  48%, 90% { opacity: 0; transform: translateY(.25em) rotateX(-12deg); filter: blur(5px); }
+}
+@keyframes storyReveal {
+  0%, 40% { opacity: 0; transform: translateY(.25em) rotateX(-12deg); filter: blur(5px); }
+  50%, 90% { opacity: 1; transform: translateY(0) rotateX(0); filter: blur(0); }
+  97%, 100% { opacity: 0; transform: translateY(-.22em) rotateX(12deg); filter: blur(5px); }
+}
+@media (max-width: 400px) {
+  .title { font-size: clamp(54px, 17vw, 68px); }
+  .titleComposition { padding-inline: 8px; }
+  .signature { font-size: 7px; letter-spacing: 2.5px; gap: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .styleWord, .storyWord { animation: none; will-change: auto; }
+  .storyWord { display: none; }
+}

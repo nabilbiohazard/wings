@@ -123,11 +123,11 @@ export function ProductGallery({
 
   return (
     <>
-      <div className="w-full">
+      <div className="w-full min-w-0">
         {/* MAIN IMAGE */}
 
         <div
-          className="group/gallery relative mx-auto aspect-square w-full max-w-[560px] overflow-hidden rounded-[28px] bg-[#f6f6f6] sm:max-w-[580px] lg:max-w-[600px]"
+          className="group/gallery relative mx-auto aspect-square w-full max-w-[600px] overflow-hidden rounded-[18px] border border-[#e8dde3] bg-white"
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
@@ -142,9 +142,9 @@ export function ProductGallery({
               src={currentImage}
               alt={`${productName} - تصویر ${activeIndex + 1}`}
               fill
-              priority={activeIndex === 0}
+              preload={activeIndex === 0}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-              className="object-contain object-center transition-transform duration-700 ease-out"
+              className="object-contain object-center p-4 sm:p-6"
             />
           </button>
 
@@ -223,10 +223,11 @@ export function ProductGallery({
                     setActiveIndex(index)
                   }
                   aria-label={`نمایش تصویر ${index + 1}`}
+                  aria-pressed={active}
                   className={`relative h-[70px] w-[60px] shrink-0 overflow-hidden rounded-[14px] border transition-all duration-300 sm:h-[78px] sm:w-[66px] ${
                     active
-                      ? "border-black opacity-100 shadow-[0_6px_18px_rgba(0,0,0,0.07)]"
-                      : "border-black/[0.06] opacity-45 hover:opacity-100"
+                      ? "border-[#95677b] bg-white opacity-100 shadow-[0_4px_12px_#50374712]"
+                      : "border-[#dacbd4] bg-white/70 opacity-60 hover:opacity-100"
                   }`}
                 >
                   <Image

@@ -1,0 +1,112 @@
+.page {
+  display: grid;
+  gap: 26px;
+  min-width: 0;
+  padding: clamp(18px, 3vw, 36px);
+  border: 1px solid #e8dce2;
+  border-radius: 24px;
+  background: #fff;
+  color: #44323c;
+  box-shadow: 0 12px 48px #50374706;
+  overflow-wrap: anywhere;
+}
+.page > a { justify-self: start; padding-block: 8px; }
+.hero {
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #e8dce2;
+  border-radius: 18px;
+  background: radial-gradient(ellipse at top left, #eadce7, transparent 75%), #faf5f7;
+}
+.eyebrow {
+  flex-basis: 100%;
+  color: #917084;
+  font-size: 9px;
+  letter-spacing: 2px;
+}
+.items { min-width: 0; }
+.sectionHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+}
+.sectionHeading h3 { font-size: 17px; font-weight: 500; }
+.sectionHeading > span {
+  background: #f5eef2;
+  color: #876477;
+  border-radius: 30px;
+  padding: 6px 12px;
+  font-size: 11px;
+}
+.item {
+  display: grid;
+  grid-template-columns: minmax(180px, 40%) minmax(0, 1fr);
+  align-items: center;
+  gap: 18px 26px;
+  padding: 20px;
+  border: 1px solid #eadfe5;
+  border-radius: 20px;
+  background: #fffdfd;
+}
+.item + .item { margin-top: 16px; }
+.visual {
+  position: relative;
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  min-width: 0;
+  border: 1px solid #f0e9ed;
+  border-radius: 14px;
+  background: white;
+}
+.productImage { object-fit: contain; padding: 14px; border-radius: 14px; }
+.design { width: 78%; }
+.noImage {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 20px;
+  color: #9c8593;
+  font-size: 11px;
+  text-align: center;
+}
+.itemInfo { min-width: 0; align-self: end; }
+.itemInfo h4 { font-size: clamp(15px, 1.5vw, 19px); font-weight: 500; line-height: 1.9; }
+.itemLabel { color: #a27c91; font-size: 10px; margin-bottom: 10px; }
+.price {
+  align-self: start;
+  border-top: 1px solid #ecE2e8;
+  padding-top: 18px;
+  color: #69465c;
+  font-size: 16px;
+  font-weight: 600;
+}
+.summary > dl { background: #f8f3f6; }
+.summary > dl::before {
+  content: "خلاصهٔ پرداخت";
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  padding-bottom: 18px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #e7dce3;
+}
+.summary dd { text-align: end; }
+.notes { background: #fffcfa; }
+.page button:focus-visible, .page a:focus-visible { outline: 2px solid #95677b; outline-offset: 4px; }
+@media (max-width: 1100px) {
+  .item { gap: 16px; padding: 14px; grid-template-columns: minmax(140px, 42%) minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .page { padding: 16px; gap: 22px; border-radius: 18px; }
+  .hero { gap: 14px; padding: 20px 16px; }
+  .hero h2 { font-size: 20px; }
+  .item { grid-template-columns: minmax(0, 1fr); padding: 12px; gap: 18px; }
+  .visual { grid-row: auto; width: 100%; }
+  .itemInfo { padding-inline: 4px; }
+  .price { padding: 16px 4px 6px; font-size: 15px; }
+  .summary { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .summary > dl, .summary > div, .notes { padding: 20px; }
+}

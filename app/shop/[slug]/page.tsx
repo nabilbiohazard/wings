@@ -6,6 +6,8 @@ import { getProduct } from "@/lib/get-product";
 import { persianNumber } from "@/lib/products";
 import { ProductPurchase } from "@/components/commerce/product-purchase";
 import { customizationHref, isCustomizable } from "@/lib/design-products";
+import { Gem, Sparkles, ArrowUpLeft } from "lucide-react";
+import styles from "@/components/shop/product-detail.module.css";
 
 function stripHtml(html?: string) {
   if (!html) return "";
@@ -56,14 +58,14 @@ export default async function ProductPage({
   const shortDescription = stripHtml(product.shortDescription);
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className={styles.page} dir="rtl">
       <HeaderBackdrop />
       {/* =========================
           BREADCRUMB
       ========================= */}
 
       <div className="mx-auto site-container  pt-[30px] ">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-black/35">
+        <nav aria-label="مسیر صفحه" className={styles.breadcrumb}>
           <Link href="/" className="transition hover:text-black">
             وینگز
           </Link>
@@ -94,31 +96,35 @@ export default async function ProductPage({
           <span>/</span>
 
           <span className="text-black/60">{product.name}</span>
-        </div>
+        </nav>
       </div>
 
       {/* =========================
           PRODUCT
       ========================= */}
 
-      <section className="mx-auto site-container  pb-24 pt-8  lg:pb-32">
-        <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16 xl:gap-24">
+      <section className={`site-container ${styles.productSection}`}>
+        <div className={styles.layout}>
           {/* =========================
               GALLERY
           ========================= */}
 
+          <div className={styles.galleryPanel}>
+          <div className={styles.galleryHeading}><span lang="en">THE WINGS EDIT</span><Gem size={18} strokeWidth={1} /></div>
           <ProductGallery
             images={product.images}
             fallbackImage={product.image}
             productName={product.name}
           />
+          <p className={styles.galleryCaption}><Sparkles size={14} /> جزئیات کوچک، انتخاب‌های شخصی.</p>
+          </div>
 
           {/* =========================
               PRODUCT INFORMATION
           ========================= */}
 
-          <div className="relative">
-            <div className="lg:sticky lg:top-[170px]">
+          <div className={styles.information}>
+            <div>
               {/* META */}
 
               <div className="flex items-center justify-between gap-5">
@@ -148,7 +154,7 @@ export default async function ProductPage({
 
               {/* TITLE */}
 
-              <h1
+              <h1 data-product-title
                 className="
                   mt-6
                   font-serif
@@ -198,7 +204,7 @@ export default async function ProductPage({
 
               {/* PRICE */}
 
-              <div className="mt-8 border-y border-black/[0.08] py-7">
+              <div className={styles.pricePanel}>
                 <div className="flex flex-wrap items-end justify-between gap-5">
                   <div>
                     {hasDiscount ? (
@@ -250,7 +256,7 @@ export default async function ProductPage({
               ========================= */}
 
               {product.attributes && product.attributes.length > 0 && (
-                <div className="mt-8">
+                <div className={styles.attributes}>
                   <p className="text-xs font-medium text-black">مشخصات محصول</p>
 
                   <div className="mt-4 grid gap-3">
@@ -299,7 +305,7 @@ export default async function ProductPage({
                   PURCHASE AREA
               ========================= */}
 
-              <div className="mt-8">
+              <div className={styles.purchase}>
                 <ProductPurchase product={product} />
 
                 {isCustomizable(product) && (
@@ -329,6 +335,8 @@ export default async function ProductPage({
                   </div>
                 </div>
               </div>
+
+              <Link href="/contact" className={styles.help}><span>برای انتخابت راهنمایی می‌خواهی؟</span><span>کنارت هستیم <ArrowUpLeft size={14} /></span></Link>
 
               {/* RATING */}
 
@@ -361,7 +369,7 @@ export default async function ProductPage({
       ========================= */}
 
       {product.description && (
-        <section className="border-t border-black/[0.08] bg-[#fafafa]">
+        <section className={styles.story}>
           <div
             className="
               mx-auto
