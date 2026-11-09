@@ -33,11 +33,13 @@ export function designRules(product: CategorizedProduct) {
     : /دستبند|bracelet/.test(text)
       ? "bracelet"
       : "other";
+  const holes = kind === "necklace" && /حلقه\s*دار|ring\s*necklace/.test(categories);
   const single = /تک\s*چارم|single\s*charm|one\s*charm/.test(text);
   return {
     kind,
-    single,
-    label: `${kind === "necklace" ? "گردنبند" : kind === "bracelet" ? "دستبند" : "محصول"} ${single ? "تک‌چارم" : "چندچارم"}`,
+    single: single && !holes,
+    holes,
+    label: holes ? "گردنبند حلقه‌دار" : `${kind === "necklace" ? "گردنبند" : kind === "bracelet" ? "دستبند" : "محصول"} ${single ? "تک‌چارم" : "چندچارم"}`,
     anchor:
       kind === "necklace"
         ? { x: 300, y: 578, rotation: 0 }

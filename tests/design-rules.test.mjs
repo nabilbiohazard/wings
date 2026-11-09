@@ -65,3 +65,13 @@ test("encoded and English category slugs and legacy snapshots remain usable", ()
     false,
   );
 });
+
+test("ring necklace categories select discrete holes independently of category order", () => {
+  for (const category of ["گردنبند حلقه‌دار", "ring-necklace", encodeURIComponent("گردنبند حلقه دار")]) {
+    const rules=designRules({name:"New",category});
+    assert.equal(rules.holes,true);
+    assert.equal(rules.single,false);
+    assert.equal(rules.label,"گردنبند حلقه‌دار");
+  }
+  assert.equal(designRules({name:"گردنبند حلقه‌دار",category:"necklace"}).holes,false);
+});

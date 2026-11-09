@@ -1,4 +1,5 @@
 import "server-only";
+import { chocolateAttachment } from "./charm-attachment";
 import woo from "./woocommerce";
 import { getProducts } from "./get-products";
 import { charmCategoryIds, isCharmProduct } from "./charm-products";
@@ -57,7 +58,7 @@ export async function getCharms(): Promise<CharmData[]> {
             image: src,
             price: Number(variation.price) / 10,
             category: "چارم‌ها",
-            attachment: { x: 50, y: 30 },
+            attachment: chocolateAttachment(product) ?? { x: 50, y: 30 },
             available:
               Boolean(src) &&
               variation.price !== "" &&
@@ -74,7 +75,7 @@ export async function getCharms(): Promise<CharmData[]> {
           image,
           price: product.price,
           category: "چارم‌ها",
-          attachment: { x: 50, y: 30 },
+          attachment: chocolateAttachment(product) ?? { x: 50, y: 30 },
           available:
             Boolean(image) &&
             product.isInStock !== false &&

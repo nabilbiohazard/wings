@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { chocolateAttachment } from "@/lib/charm-attachment";
 import { useDraggable } from "@dnd-kit/core";
 import { Move, X } from "lucide-react";
 import type { CSSProperties } from "react";
@@ -14,7 +15,7 @@ export const ATTACHMENT_POINTS: Record<string, { x: number; y: number }> = {
   "ice-cream": { x: 50, y: 33 },
   travel: { x: 51, y: 30 },
   tennis: { x: 51, y: 23 },
-  chocolate: { x: 43, y: 41 },
+  chocolate: { x: 43, y: 43 },
   "gold-dress": { x: 51, y: 32 },
   shrimp: { x: 49, y: 29 },
   fashion: { x: 52, y: 30 },
@@ -76,7 +77,7 @@ export function PlacedCharmItem({
     data: { type: "placed" as const, instanceId, charm },
   });
 
-  const attachment = charm.attachment ??
+  const attachment = chocolateAttachment(charm) ?? charm.attachment ??
     ATTACHMENT_POINTS[charm.id] ?? { x: 50, y: 30 };
   const hitArea = CHARM_HIT_AREAS[charm.id] ?? {
     left: 0,

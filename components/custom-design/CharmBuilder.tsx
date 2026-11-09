@@ -37,6 +37,7 @@ import {
 } from "@/lib/saved-designs";
 import { useShop } from "../shop-provider";
 import styles from "./builder-studio.module.css";
+import { NECKLACE_HOLES, nearestNecklaceHole } from "@/lib/necklace-holes";
 import { designRules } from "@/lib/design-rules";
 
 type Selection =
@@ -83,7 +84,9 @@ export function CharmBuilder({
       ? initialCharms
           .slice(0, 1)
           .map((item) => ({ ...item, ...designRules(initialProduct).anchor }))
-      : initialCharms;
+      : initialProduct && designRules(initialProduct).holes
+        ? initialCharms.map(item => ({ ...item, rotation: getCharmRotation(item.x, item.y, initialProduct) }))
+        : initialCharms;
   const [selectedProduct, setSelectedProduct] = useState(initialProduct);
   const [paletteCharms, setPaletteCharms] = useState<CharmData[]>([]);
   const [charmsLoading, setCharmsLoading] = useState(true);
@@ -221,6 +224,12 @@ export function CharmBuilder({
       setMessage(`${action.charm.name} در جایگاه تک‌چارم قرار گرفت.`);
       return true;
     }
+    if (rules.holes) {
+      position = nearestNecklaceHole(position);
+      if (placedRef.current.some(item => (action.type !== "move" || item.instanceId !== action.instanceId) && Math.hypot(item.x-position.x,item.y-position.y)<1)) {
+        setMessage("این حلقه چارم دارد؛ حلقه دیگری انتخاب کن."); return false;
+      }
+    }
     if (isCharmPositionBlocked(position.x, position.y, selectedProduct)) {
       setMessage("این قسمت برای اتصال چارم مجاز نیست؛ جای دیگری انتخاب کن.");
       return false;
@@ -283,7 +292,7 @@ export function CharmBuilder({
     const localPoint = new DOMPoint(clientX, clientY).matrixTransform(
       matrix.inverse(),
     );
-    return applyPosition(getClosestPointOnPath(path, localPoint), action);
+    return applyPosition(selectedProduct && designRules(selectedProduct).holes ? localPoint : getClosestPointOnPath(path, localPoint), action);
   }
 
   function addAutomatically(charm: CharmData) {
@@ -300,6 +309,12 @@ export function CharmBuilder({
       });
       setSelection(null);
       return;
+    }
+    if (designRules(selectedProduct).holes) {
+      const hole = [...NECKLACE_HOLES].sort((a,b)=>b.y-a.y).find(hole=>!placedRef.current.some(item=>Math.hypot(item.x-hole.x,item.y-hole.y)<1));
+      if (hole) applyPosition(hole,{type:"add",charm});
+      else setMessage("همه حلقه‌های زنجیر پر شده‌اند.");
+      setSelection(null); return;
     }
     const path = pathRef.current;
     if (!path) return;

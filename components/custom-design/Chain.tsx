@@ -6,6 +6,7 @@ import { useState, type RefObject } from "react";
 import { PlacedCharmItem } from "./Placedcharmitem";
 import type { CharmData } from "./Charm";
 import type { DesignProduct } from "@/lib/design-products";
+import { NECKLACE_HOLES, RING_NECKLACE_IMAGE_SCALE, ringNecklaceRotation } from "@/lib/necklace-holes";
 import { designRules } from "@/lib/design-rules";
 
 export interface PlacedCharm {
@@ -71,6 +72,7 @@ export function getCharmRotation(
   product?: DesignProduct,
 ): number {
   if (product && designRules(product).single) return 0;
+  if (product && designRules(product).holes) return ringNecklaceRotation(x, y);
   if (product && isNecklace(product)) {
     const outwardAngle = Math.atan2(
       (y - 300) / (278 * 278),
@@ -153,6 +155,10 @@ export function Chain({
           unoptimized
           sizes="(max-width: 768px) 100vw, 448px"
           className="pointer-events-none select-none object-contain"
+          style={designRules(product).holes ? {
+            transform: `scale(${RING_NECKLACE_IMAGE_SCALE})`,
+            clipPath: `inset(${(1 - 1 / RING_NECKLACE_IMAGE_SCALE) * 50}%)`,
+          } : undefined}
           draggable={false}
         />
       ) : (
@@ -171,6 +177,7 @@ export function Chain({
           fill="none"
           stroke="none"
         />
+        {designRules(product).holes && placementHint && NECKLACE_HOLES.map((hole,index) => <circle key={index} cx={hole.x} cy={hole.y} r={5} fill="#dbc48f66" stroke="#a17c35" />)}
       </svg>
 
       {placedCharms.map((pc) => {

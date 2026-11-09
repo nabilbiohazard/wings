@@ -3,6 +3,9 @@ defined('ABSPATH') || exit;
 
 final class Wings_Designs {
     private static $charm_terms = null;
+    private static function chocolate_attachment($charm) {
+        return ($charm['id'] ?? '') === 'chocolate' || preg_match('/choco(?:late)?|شکلات/iu', $charm['name'] ?? '') || strpos($charm['image'] ?? '', 'photo_7_2026-10-01_15-40-19') !== false;
+    }
     public static function catalogue() {
         return json_decode(file_get_contents(__DIR__ . '/charm-catalogue.json'), true) ?: array();
     }
@@ -26,9 +29,10 @@ final class Wings_Designs {
         $text = preg_replace('/[\s\x{200C}_-]+/u', ' ', $text);
         if (!preg_match('/گردنبند|دستبند|necklace|bracelet/iu', $text)) $text .= ' ' . $product->get_name();
         $kind = preg_match('/گردنبند|necklace/iu', $text) ? 'necklace' : (preg_match('/دستبند|bracelet/iu', $text) ? 'bracelet' : 'other');
+        $holes = $kind === 'necklace' && preg_match('/حلقه\s*دار|ring\s*necklace/iu', $text);
         $single = (bool) preg_match('/تک\s*چارم|single\s*charm|one\s*charm/iu', $text);
-        return array('single' => $single, 'categories' => $categories,
-            'label' => ($kind === 'necklace' ? 'گردنبند' : ($kind === 'bracelet' ? 'دستبند' : 'محصول')) . ($single ? ' تک‌چارم' : ' چندچارم'),
+        return array('holes' => (bool) $holes, 'single' => $single && !$holes, 'categories' => $categories,
+            'label' => $holes ? 'گردنبند حلقه‌دار' : ($kind === 'necklace' ? 'گردنبند' : ($kind === 'bracelet' ? 'دستبند' : 'محصول')) . ($single ? ' تک‌چارم' : ' چندچارم'),
             'anchor' => $kind === 'necklace' ? array('x' => 300, 'y' => 578, 'rotation' => 0) : ($kind === 'bracelet' && $single ? array('x' => 298, 'y' => 472, 'rotation' => 0) : array('x' => 289, 'y' => 516, 'rotation' => 0)));
     }
     private static function term_ids() {
@@ -101,6 +105,7 @@ final class Wings_Designs {
         if ($rules['single'] && count($placed) !== 1) self::fail('این محصول فقط یک چارم در جایگاه ثابت می‌پذیرد.');
         $known = array_column(self::catalogue(), null, 'id');
         $charms = array(); $components = array(); $instances = array(); $currency = get_woocommerce_currency();
+        $occupied_holes = array();
         foreach ($placed as $item) {
             if (!is_array($item) || !isset($item['charm']) || !is_array($item['charm'])) self::fail('جزئیات طرح معتبر نیست.');
             $id = $item['charm']['id'] ?? ''; $instance = $item['instanceId'] ?? '';
@@ -108,6 +113,16 @@ final class Wings_Designs {
             foreach (array('x','y','rotation') as $field) {
                 $value = $item[$field] ?? null;
                 if ((!is_int($value) && !is_float($value)) || !is_finite((float) $value) || ($field === 'rotation' ? abs($value) > 3600 : $value < 0 || $value > 600)) self::fail('موقعیت چارم‌های طرح معتبر نیست.');
+            }
+            if ($rules['holes']) {
+                $matched = false;
+                foreach (json_decode(file_get_contents(__DIR__ . '/necklace-holes.json'), true) as $index => $hole) {
+                    if (abs($item['x']-$hole['x']) > 0.01 || abs($item['y']-$hole['y']) > 0.01) continue;
+                    if (isset($occupied_holes[$index])) self::fail('چارم باید روی یک حلقه خالی زنجیر قرار بگیرد.');
+                    $item['rotation'] = rad2deg(atan2(($hole['y'] - 300) / (250 * 250), ($hole['x'] - 300) / (232 * 232))) - 90;
+                    $occupied_holes[$index] = true; $matched = true; break;
+                }
+                if (!$matched) self::fail('چارم باید روی یک حلقه خالی زنجیر قرار بگیرد.');
             }
             if ($rules['single']) {
                 foreach ($rules['anchor'] as $field => $expected) {
@@ -122,7 +137,7 @@ final class Wings_Designs {
             if (!isset($components[$pid])) $components[$pid] = array('product' => $product, 'count' => 0, 'names' => array());
             $components[$pid]['count']++; $components[$pid]['names'][$id] = $definition['name'];
             $price = (float) $product->get_price();
-            $charm = $definition; $charm['price'] = $currency === 'IRR' ? $price / 10 : $price; $charm['product_id'] = $pid;
+            $charm = $definition; if (self::chocolate_attachment($charm)) $charm['attachment'] = array('x' => 43, 'y' => 43); $charm['price'] = $currency === 'IRR' ? $price / 10 : $price; $charm['product_id'] = $pid;
             $charms[] = array('instanceId' => $instance, 'charm' => $charm, 'x' => $item['x'], 'y' => $item['y'], 'rotation' => $item['rotation']);
         }
         foreach ($components as $component) {
@@ -185,11 +200,14 @@ final class Wings_Designs {
         if (!$design || ($design['version'] ?? null) !== 1) return;
         $origin = $design['asset_origin'] ?? '';
         $url = function($image) use ($origin) {return strpos($image, '/') === 0 ? $origin . $image : $image;};
-        $anchors = array('clover'=>array(57,30),'pink-dress'=>array(51,32),'cocktail'=>array(47,33),'ice-cream'=>array(50,33),'travel'=>array(51,30),'tennis'=>array(51,23),'chocolate'=>array(43,41),'gold-dress'=>array(51,32),'shrimp'=>array(49,29),'fashion'=>array(52,30));
+        $preview_text = urldecode(($design['product']['category'] ?? '') . ' ' . wp_json_encode($design['product']['categories'] ?? array(), JSON_UNESCAPED_UNICODE));
+        $preview_scale = preg_match('/ring[- _]*necklace|\x{062D}\x{0644}\x{0642}\x{0647}[\s\x{200C}_-]*\x{062F}\x{0627}\x{0631}/iu', $preview_text) ? 'transform:scale(1.6);' : '';
+        $anchors = array('clover'=>array(57,30),'pink-dress'=>array(51,32),'cocktail'=>array(47,33),'ice-cream'=>array(50,33),'travel'=>array(51,30),'tennis'=>array(51,23),'chocolate'=>array(43,43),'gold-dress'=>array(51,32),'shrimp'=>array(49,29),'fashion'=>array(52,30));
         echo '<div style="margin:16px 0"><strong>طرح دقیق مشتری (بوم ۶۰۰ × ۶۰۰)</strong><div style="position:relative;width:300px;max-width:100%;aspect-ratio:1;overflow:hidden;background:white;border:1px solid #eee;border-radius:12px">';
-        echo '<img alt="محصول پایه طرح" src="' . esc_url($url($design['product']['image'])) . '" style="position:absolute;width:100%;height:100%;object-fit:contain">';
+        echo '<img alt="محصول پایه طرح" src="' . esc_url($url($design['product']['image'])) . '" style="position:absolute;width:100%;height:100%;object-fit:contain;' . $preview_scale . '">';
         foreach ($design['charms'] as $charm) {
             $anchor = isset($charm['charm']['attachment']) ? array($charm['charm']['attachment']['x'], $charm['charm']['attachment']['y']) : ($anchors[$charm['charm']['id']] ?? array(50,30));
+            if (self::chocolate_attachment($charm['charm'])) $anchor = array(43,43);
             $style = 'position:absolute;width:49%;aspect-ratio:1;left:' . ((float)$charm['x']/6) . '%;top:' . ((float)$charm['y']/6) . '%;transform:translate(-'.$anchor[0].'%, -'.$anchor[1].'%) rotate('.(float)$charm['rotation'].'deg);transform-origin:'.$anchor[0].'% '.$anchor[1].'%;';
             echo '<img alt="' . esc_attr($charm['charm']['name']) . '" src="' . esc_url($url($charm['charm']['image'])) . '" style="' . esc_attr($style) . 'object-fit:contain">';
         }
