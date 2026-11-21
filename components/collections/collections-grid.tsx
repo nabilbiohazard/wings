@@ -7,37 +7,37 @@ const collections = [
   {
     title: "Necklace",
     name: "گردنبندها",
-    image: "/images/grid-necklace.jpg",
+    image: "/images/collection-necklaces.png",
   },
 
   {
     title: "Bracelet",
     name: "دستبندها",
-    image: "/images/grid-bracelet.jpg",
+    image: "/images/collection-bracelets.png",
   },
 
   {
     title: "Charm",
     name: "چارم‌های خاص",
-    image: "/images/grid-charm.jpg",
+    image: "/images/collection-charms-new.png",
   },
 
   {
     title: "Rings",
     name: "انگشترها",
-    image: "/images/grid-rings.jpg",
+    image: "/images/collection-rings.png",
   },
 
   {
     title: "Gift Sets",
     name: "ست‌های هدیه",
-    image: "/images/grid-gift.jpg",
+    image: "/images/collections-personal-bracelet.png",
   },
 
   {
     title: "Limited",
     name: "کالکشن محدود",
-    image: "/images/grid-limited.jpg",
+    image: "/images/collection-earrings-new.png",
   },
 ];
 

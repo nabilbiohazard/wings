@@ -9,7 +9,6 @@ import Link from "next/link";
 import { Icon } from "./icon";
 import { useShop } from "./shop-provider";
 import { Wordmark } from "./wordmark";
-import { getHeaderColor } from "@/lib/header-theme";
 import { useSavedDesigns } from "@/lib/saved-designs";
 
 const links = [
@@ -73,7 +72,7 @@ export function Header() {
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const isHome = pathname === "/";
-  const solid = isHome && (scrolled || mobileOpen);
+  const solid = !isHome || scrolled || mobileOpen;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -125,19 +124,20 @@ export function Header() {
         {/* BACKGROUND */}
 
         <div
-          style={{ backgroundColor: isHome ? undefined : getHeaderColor(pathname) }}
           className={`
             absolute inset-0
             transition-all duration-500
             ${
               solid
                 ? `
-                  bg-white/94
+                  bg-[#fff8fb]/70
+                  border-b border-white/30
                   shadow-[0_10px_45px_rgba(0,0,0,0.045)]
                   backdrop-blur-2xl
+                  backdrop-saturate-75
                 `
                 : `
-                  ${isHome ? "bg-transparent" : ""}
+                  bg-transparent
                 `
             }
           `}

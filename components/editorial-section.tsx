@@ -13,7 +13,7 @@ export function EditorialSection() {
         <Reveal>
           <div className="relative min-h-[650px] overflow-hidden rounded-[40px]">
             <Image
-              src="/images/hero.png"
+              src="/images/shop-slide-1.png"
               alt="لحظه‌ای آرام با اکسسوری‌های ظریف و رنگی"
               fill
               sizes="100vw"

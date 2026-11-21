@@ -1,3 +1,4 @@
+import { sanitizePostContent } from "@/lib/blog-content";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ type BlogGridProps = {
 function getFeaturedImage(post: BlogPost) {
   return (
     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
-    "/images/hero.png"
+    "/images/shop-slide-1.png"
   );
 }
 
@@ -94,7 +95,7 @@ export function BlogGrid({ posts }: BlogGridProps) {
                     <h3
                       className="mt-3 text-xl leading-8 transition group-hover:text-pink-400"
                       dangerouslySetInnerHTML={{
-                        __html: post.title?.rendered || "",
+                        __html: sanitizePostContent(post.title?.rendered || ""),
                       }}
                     />
                   </Link>
@@ -103,7 +104,7 @@ export function BlogGrid({ posts }: BlogGridProps) {
                     <div
                       className="mt-3 line-clamp-2 text-sm leading-7 text-black/60"
                       dangerouslySetInnerHTML={{
-                        __html: post.excerpt.rendered,
+                        __html: sanitizePostContent(post.excerpt.rendered),
                       }}
                     />
                   )}

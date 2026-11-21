@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { A11y, Keyboard, Mousewheel, Pagination } from "swiper/modules";
@@ -85,6 +85,10 @@ const previewNames = {
   ],
 };
 
+const subscribeToHydration = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
+
 function normalizeCategory(value: string) {
   try {
     value = decodeURIComponent(value);
@@ -112,6 +116,12 @@ export function NewArrivals() {
   const { category, setCategory, products, productsLoading, productsError } =
     useShop();
   const slider = useRef<SwiperInstance | null>(null);
+  // Keep SSR and the first hydration render identical before reading slider edges.
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    clientSnapshot,
+    serverSnapshot,
+  );
   const [edges, setEdges] = useState({ beginning: true, end: true });
   const activeFilter =
     filters.find((filter) => filter.id === category) ?? filters[0];
@@ -131,15 +141,15 @@ export function NewArrivals() {
     <section
       id="new-arrivals"
       dir="rtl"
-      className="w-full scroll-mt-28 bg-[#fff8fb] py-16 sm:py-20 lg:py-24"
+      className={`${styles.section} w-full scroll-mt-28 py-16 sm:py-20 lg:py-24`}
       aria-labelledby="arrivals-heading"
     >
-      <div className="mx-auto w-full site-container   ">
+      <div className={`mx-auto w-full site-container ${styles.container}`}>
         <Reveal>
-          <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
-            <div>
+          <div className={`${styles.controls} ${styles.editHeading}`}>
+            <div className={styles.editCopy}>
               <p
-                className="mb-3 text-[10px] tracking-[3px] text-pink-700"
+                className={styles.eyebrow}
                 lang="en"
                 dir="ltr"
               >
@@ -147,25 +157,29 @@ export function NewArrivals() {
               </p>
               <h2
                 id="arrivals-heading"
-                className="text-3xl leading-normal font-medium text-[#211b18] sm:text-4xl lg:text-5xl"
+                className={styles.title}
               >
-                انتخاب‌های این روزها
+                انتخاب‌های <span>این روزها</span>
               </h2>
-              <p className="mt-3 text-sm leading-7 text-black/50">
+              <p className={styles.description}>
                 جزئیاتی تازه، برای حال‌وهوای هر روزت.
               </p>
             </div>
+            <div className={styles.editArtwork}>
+              <span className={styles.editionLabel} lang="en" dir="ltr">CURATED BY WINGS</span>
+              <span className={`font-serif ${styles.editWord}`} aria-hidden="true" dir="ltr">Edit</span>
             <Link
               href="/shop"
-              className="hidden items-center gap-3 border-b border-black/25 pb-2 text-xs transition-colors hover:text-pink-700 focus-visible:outline-2 focus-visible:outline-offset-4 sm:inline-flex"
+              className={styles.shopLink}
             >
               همه محصولات <Icon name="arrow" size={17} />
             </Link>
+            </div>
           </div>
 
-          <div className="mb-7 flex flex-wrap items-center justify-between gap-5 border-b border-pink-200/70 pb-6">
+          <div className={`${styles.controls} ${styles.toolbar}`}>
             <div
-              className="grid w-full grid-cols-4 gap-1.5 rounded-2xl border border-pink-200/60 bg-pink-100/70 p-1.5 sm:w-auto sm:gap-2"
+              className={styles.filters}
               role="group"
               aria-label="دسته‌بندی محصولات"
             >
@@ -176,14 +190,14 @@ export function NewArrivals() {
                   onClick={() => setCategory(filter.id)}
                   aria-pressed={activeFilter.id === filter.id}
                   aria-controls="arrivals-products"
-                  className={`min-h-11 rounded-xl px-2 py-3 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-pink-600 sm:min-w-28 sm:px-5 sm:text-sm ${activeFilter.id === filter.id ? "bg-pink-300 text-pink-950 shadow-sm" : "text-pink-950/60 hover:bg-white hover:text-pink-950"}`}
+                  className={styles.filter}
                 >
                   {filter.name}
                 </button>
               ))}
             </div>
             <div className="flex w-full items-center justify-between gap-5 sm:w-auto">
-              <p className="text-xs text-black/50" role="status">
+              <p className={styles.resultCount} role="status">
                 {productsLoading
                   ? "در حال دریافت محصولات…"
                   : previews.length
@@ -195,7 +209,7 @@ export function NewArrivals() {
                   type="button"
                   aria-label="محصولات قبلی"
                   aria-controls="arrivals-products"
-                  disabled={productsLoading || edges.beginning}
+                  disabled={!hydrated || productsLoading || edges.beginning}
                   onClick={() => slider.current?.slidePrev()}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-pink-200 bg-white text-pink-900 transition-colors hover:bg-pink-300 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default disabled:opacity-25 disabled:hover:bg-white"
                 >
@@ -205,7 +219,7 @@ export function NewArrivals() {
                   type="button"
                   aria-label="محصولات بعدی"
                   aria-controls="arrivals-products"
-                  disabled={productsLoading || edges.end}
+                  disabled={!hydrated || productsLoading || edges.end}
                   onClick={() => slider.current?.slideNext()}
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-pink-200 bg-pink-100 text-pink-900 transition-colors hover:bg-pink-300 focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-default disabled:opacity-25 disabled:hover:bg-pink-100"
                 >
@@ -219,7 +233,7 @@ export function NewArrivals() {
             {productsError && (
               <p
                 role="status"
-                className="mb-5 text-sm leading-7 text-pink-900/70"
+                className="mb-5 text-sm leading-7 text-[#e8b9c7]"
               >
                 دریافت محصولات ممکن نشد؛ فعلاً کارت‌های پیش‌نمایش را می‌بینی.
               </p>
@@ -278,6 +292,7 @@ export function NewArrivals() {
                 {selectedProducts.map((product) => (
                   <SwiperSlide key={product.id} className="!h-auto">
                     <ProductCard
+                      theme="plum"
                       product={product}
                       sizes="(min-width: 1536px) 330px, (min-width: 1280px) 24vw, (min-width: 1024px) 30vw, (min-width: 640px) 38vw, (min-width: 480px) 45vw, 80vw"
                     />
@@ -289,6 +304,7 @@ export function NewArrivals() {
                     className="!h-auto"
                   >
                     <ProductPreviewCard
+                      theme="plum"
                       name={name}
                       index={selectedProducts.length + index}
                     />
@@ -297,15 +313,15 @@ export function NewArrivals() {
                 <SwiperSlide className="!h-auto">
                   <Link
                     href="/shop"
-                    className="group flex h-full min-h-96 flex-col items-center justify-center rounded-[22px] border border-pink-300 bg-pink-100 px-6 py-12 text-center text-pink-950 transition-colors hover:bg-pink-200 focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-pink-700"
+                    className={`group ${styles.moreCard}`}
                   >
-                    <span className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-pink-300 transition-transform group-hover:-translate-x-2 motion-reduce:transform-none">
+                    <span className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-[#f2c4d7] text-[#38212e] transition-transform group-hover:-translate-x-2 motion-reduce:transform-none">
                       <Icon name="arrow" size={30} />
                     </span>
                     <span className="text-2xl font-medium">
                       هنوز ادامه داره…
                     </span>
-                    <span className="mt-4 text-sm leading-7 text-pink-900/70">
+                    <span className="mt-4 text-sm leading-7 text-[#d7bdc9]">
                       انتخاب بعدی‌ات شاید همین‌جا باشد.
                     </span>
                     <span className="mt-8 rounded-full bg-pink-950 px-6 py-3 text-sm text-white">

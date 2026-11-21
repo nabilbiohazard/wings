@@ -41,31 +41,21 @@ export function StudioDesktop(props: StudioWizardProps) {
   return (
     <div className={styles.studio} dir="rtl" data-desktop-studio>
       <div className="site-container">
-        <header className={styles.heading}>
+        <header className={`${styles.heading} ${styles.centeredHeading}`}>
           <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>
-              <span />
-              WINGS — PERSONAL ATELIER
-            </p>
+            <div className={styles.atelierLogo} dir="ltr" aria-label="Wings Gallery">
+              <span className={`font-serif ${styles.atelierWordmark}`}>WINGS</span>
+              <span className={styles.atelierCaption}>GALLERY</span>
+            </div>
             <h1>
-              شبیه هیچ‌کس،
-              <br />
+              شبیه هیچ‌کس،{" "}
               <span>شبیه خودت.</span>
-              <Sparkles aria-hidden="true" strokeWidth={1} />
             </h1>
             <p className={styles.intro}>
-              از یک زنجیر ساده تا تکه‌ای از دنیای تو.
+              تو طراح این داستانی.
               <br />
-              چارم‌ها را کنار هم بچین؛ چیزی بساز که فقط مال توست.
+              انتخاب کن. ترکیب کن. امضای خودت را بساز.
             </p>
-          </div>
-          <div className={styles.heroNote}>
-            <span className={styles.atelierStamp} aria-hidden="true">
-              <Gem strokeWidth={1} />
-              <span>MADE BY YOU</span>
-            </span>
-            <p>تو طراح این داستانی.</p>
-            <span>انتخاب کن. ترکیب کن. امضای خودت را بساز.</span>
           </div>
         </header>
         <nav className={styles.journey} aria-label="راهنمای طراحی">
@@ -92,7 +82,7 @@ export function StudioDesktop(props: StudioWizardProps) {
               {placed.length ? <Check size={18} /> : "۰۲"}
             </span>
             <span>
-              <strong>حال‌وهوایش را بساز</strong>
+              <strong>چارم های دلخواهتو انتخاب کن</strong>
               <small>هر چارم، یک تکه از تو</small>
             </span>
             <ArrowUpLeft size={18} />
@@ -243,7 +233,7 @@ export function StudioDesktop(props: StudioWizardProps) {
                     <div className={styles.emptyCanvas}>
                       <div className={styles.inspirationImage}>
                         <Image
-                          src="/images/bracelet.png"
+                          src="/images/collection-bracelets.png"
                           alt="ایده‌ای برای دستبند شخصی"
                           fill
                           sizes="260px"

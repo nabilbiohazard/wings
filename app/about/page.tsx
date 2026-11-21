@@ -205,7 +205,7 @@ export default function AboutPage() {
 
               <div className="relative aspect-[4/5] overflow-hidden rounded-t-[160px] rounded-b-lg bg-[#e8d7cc] sm:rounded-t-[220px]">
                 <Image
-                  src="/images/hero.png"
+                  src="/images/about-story-intro.png"
                   alt="زیورآلات رنگی وینگز در استایل روزمره"
                   fill
                   priority
@@ -488,7 +488,7 @@ export default function AboutPage() {
           <div className="relative pb-7">
             <div className="relative aspect-[4/5] overflow-hidden rounded-t-full rounded-b-lg bg-[#ead3bf]">
               <Image
-                src="/images/custom-hero.png"
+                src="/images/collections-personal-bracelet.png"
                 alt="چارم‌ها و دستبند برای ساخت طرح شخصی"
                 fill
                 sizes="(max-width: 1023px) 100vw, 50vw"
@@ -528,7 +528,7 @@ export default function AboutPage() {
       >
         <div className="relative isolate mx-auto site-content overflow-hidden rounded-2xl bg-[#38292e] px-6 py-16 text-center text-white sm:px-12 sm:py-24">
           <Image
-            src="/images/hero-butterfly.png"
+            src="/images/about-story-intro.png"
             alt=""
             fill
             sizes="100vw"

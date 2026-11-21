@@ -5,7 +5,7 @@ export function ContactHero() {
   return (
     <section className="relative flex min-h-[92vh] items-center justify-center overflow-hidden text-white">
       <Image
-        src="/images/contact-hero.jpg"
+        src="/images/contact-intro.png"
 
         alt="ارتباط با وینگز"
 

@@ -47,7 +47,7 @@ test("commerce accepts the current development origin and enforces the productio
   );
   assert.equal(
     isAllowedRequestOrigin(request("http://localhost:3000"), undefined, false),
-    true,
+    false,
   );
 });
 

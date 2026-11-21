@@ -5,7 +5,7 @@ export function CollectionsHero() {
   return (
     <section className="relative min-h-[92vh] overflow-hidden text-white">
       <Image
-        src="/images/collections-hero.png"
+        src="/images/collection-necklaces.png"
 
         alt="Wings collections"
 

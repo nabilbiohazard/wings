@@ -1,3 +1,65 @@
+.card[data-theme="plum"],
+.preview[data-theme="plum"] {
+  background: linear-gradient(145deg, #49313f, #32232d);
+  border-color: #e8b9c733;
+  box-shadow: 0 12px 30px #140d1226;
+  color: #fff2f6;
+}
+.card[data-theme="plum"]:hover {
+  border-color: #e8b9c780;
+  box-shadow: 0 16px 36px #140d1240;
+}
+.card[data-theme="plum"] .image {
+  background: #eee1e7;
+}
+.card[data-theme="plum"] .details h3,
+.card[data-theme="plum"] .price > p,
+.preview[data-theme="plum"] h3 {
+  color: #fff2f6;
+}
+.card[data-theme="plum"] .details > div:first-child,
+.card[data-theme="plum"] .details > div:first-child span,
+.card[data-theme="plum"] .details > p,
+.card[data-theme="plum"] .price del,
+.card[data-theme="plum"] .price > p > span,
+.preview[data-theme="plum"] > div:last-child > p,
+.preview[data-theme="plum"] > div:last-child > div > p {
+  color: #d7bdc9;
+}
+.card[data-theme="plum"] .price {
+  border-color: #e8b9c726;
+}
+.card[data-theme="plum"] .actions > a,
+.preview[data-theme="plum"] > div:last-child > p:last-child {
+  background: #e8b9c712;
+  border: 1px solid #e8b9c733;
+  color: #f2c4d7;
+}
+.card[data-theme="plum"] .actions > a:first-child {
+  background: #f2c4d7;
+  color: #38212e;
+}
+.card[data-theme="plum"] .actions > a:hover {
+  background: #fff2f6;
+  color: #38212e;
+}
+.card[data-theme="plum"] a:focus-visible {
+  outline-color: #f2c4d7;
+}
+.preview[data-theme="plum"] > div:first-child > div {
+  background: radial-gradient(circle at 50% 35%, #795269, #3d2935);
+  color: #e8b9c7;
+}
+.preview[data-theme="plum"] > div:first-child > div > span,
+.preview[data-theme="plum"] > div:first-child > span:last-child {
+  color: #d7bdc9;
+}
+.preview[data-theme="plum"] > div:first-child > span:first-of-type {
+  background: #291c24cc;
+  color: #f2c4d7;
+  border: 1px solid #e8b9c733;
+}
+
 .card[data-mobile-horizontal] .image {
   aspect-ratio: 1;
 }

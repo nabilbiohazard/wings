@@ -13,6 +13,7 @@ export type DesignProduct = Pick<
   | "categories"
   | "isInStock"
   | "hasOptions"
+  | "charmLayout"
 >;
 
 export function isCustomizable(
@@ -29,6 +30,7 @@ export function toDesignProduct(product: Product): DesignProduct {
   const rules = designRules(product);
   return {
     id: product.id,
+    charmLayout: product.charmLayout,
     name: product.name,
     slug: product.slug,
     image: product.image,

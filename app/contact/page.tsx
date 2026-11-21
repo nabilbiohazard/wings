@@ -56,7 +56,7 @@ export default function ContactPage() {
           </div>
           <div className={styles.heroArt}>
             <Image
-              src="/images/contact-hero.jpg"
+              src="/images/contact-intro.png"
               alt="هدیهٔ وینگز، گل‌های صورتی و یک یادداشت برای شروع گفت‌وگو"
               fill
               preload

@@ -39,6 +39,8 @@ import { useShop } from "../shop-provider";
 import styles from "./builder-studio.module.css";
 import { designRules } from "@/lib/design-rules";
 
+import { placementSlots, nearestSlot } from "@/lib/charm-layout";
+
 type Selection =
   { type: "add"; charm: CharmData } | { type: "move"; instanceId: string };
 
@@ -79,7 +81,9 @@ export function CharmBuilder({
   requestedUnavailable?: boolean;
 }) {
   const startingCharms =
-    initialProduct && designRules(initialProduct).single
+    initialProduct &&
+    !placementSlots(initialProduct) &&
+    designRules(initialProduct).single
       ? initialCharms
           .slice(0, 1)
           .map((item) => ({ ...item, ...designRules(initialProduct).anchor }))
@@ -205,8 +209,33 @@ export function CharmBuilder({
 
   function applyPosition(position: Position, action: Selection) {
     if (!selectedProduct) return false;
+    const slots = placementSlots(selectedProduct);
+    if (slots) {
+      if (
+        action.type === "add" &&
+        placedRef.current.length >=
+          (selectedProduct.charmLayout?.maxCharms ?? slots.length)
+      ) {
+        setMessage(
+          `This product supports a maximum of ${selectedProduct.charmLayout?.maxCharms ?? slots.length} charms.`,
+        );
+        return false;
+      }
+      position = nearestSlot(slots, position);
+      if (
+        placedRef.current.some(
+          (item) =>
+            item.x === position.x &&
+            item.y === position.y &&
+            (action.type === "add" || item.instanceId !== action.instanceId),
+        )
+      ) {
+        setMessage("This link already has a charm. Choose another link.");
+        return false;
+      }
+    }
     const rules = designRules(selectedProduct);
-    if (rules.single) {
+    if (rules.single && !slots) {
       if (action.type === "move") {
         setMessage("این مدل یک جای اتصال ثابت در پایین محصول دارد.");
         return true;
@@ -229,7 +258,9 @@ export function CharmBuilder({
     const nextPosition = {
       x: position.x,
       y: position.y,
-      rotation: getCharmRotation(position.x, position.y, selectedProduct),
+      rotation:
+        (slots ? nearestSlot(slots, position).rotation : undefined) ??
+        getCharmRotation(position.x, position.y, selectedProduct),
     };
 
     if (action.type === "add") {
@@ -283,7 +314,12 @@ export function CharmBuilder({
     const localPoint = new DOMPoint(clientX, clientY).matrixTransform(
       matrix.inverse(),
     );
-    return applyPosition(getClosestPointOnPath(path, localPoint), action);
+    return applyPosition(
+      placementSlots(selectedProduct!)
+        ? localPoint
+        : getClosestPointOnPath(path, localPoint),
+      action,
+    );
   }
 
   function addAutomatically(charm: CharmData) {
@@ -293,7 +329,32 @@ export function CharmBuilder({
       return;
     }
 
-    if (designRules(selectedProduct).single) {
+    const slots = placementSlots(selectedProduct);
+    if (slots) {
+      const slot = slots.find(
+        (slot) =>
+          !placedRef.current.some(
+            (item) => item.x === slot.x && item.y === slot.y,
+          ),
+      );
+      if (
+        !slot ||
+        placedRef.current.length >=
+          (selectedProduct.charmLayout?.maxCharms ?? slots.length)
+      ) {
+        setMessage(
+          `This product supports a maximum of ${selectedProduct.charmLayout?.maxCharms ?? slots.length} charms.`,
+        );
+        return;
+      }
+      applyPosition(slot, { type: "add", charm });
+      setSelection(null);
+      return;
+    }
+    if (
+      !placementSlots(selectedProduct) &&
+      designRules(selectedProduct).single
+    ) {
       applyPosition(designRules(selectedProduct).anchor, {
         type: "add",
         charm,
@@ -344,7 +405,10 @@ export function CharmBuilder({
       setStep(1);
       return;
     }
-    if (designRules(selectedProduct).single) {
+    if (
+      !placementSlots(selectedProduct) &&
+      designRules(selectedProduct).single
+    ) {
       addAutomatically(charm);
       return;
     }
@@ -358,7 +422,11 @@ export function CharmBuilder({
 
   function selectMove(instanceId: string) {
     if (Date.now() - lastDragEnd.current < 350) return;
-    if (selectedProduct && designRules(selectedProduct).single) {
+    if (
+      selectedProduct &&
+      !placementSlots(selectedProduct) &&
+      designRules(selectedProduct).single
+    ) {
       setMessage(
         "جای اتصال این مدل ثابت است؛ برای تعویض، چارم دیگری انتخاب کن.",
       );

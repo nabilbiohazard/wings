@@ -1,10 +1,17 @@
+import { CommerceError, readBody, requireSameOrigin } from "@/lib/commerce-server";
+import { allowContactRequest } from "@/lib/contact-rate-limit";
 import { sendContactMessage } from "@/lib/contact-service";
 
 export async function POST(request: Request) {
   let input: Record<string, unknown>;
   try {
-    input = await request.json();
-  } catch {
+    requireSameOrigin(request);
+    if (!allowContactRequest(request)) {
+      return Response.json({ error: "تعداد درخواست‌ها زیاد است؛ کمی بعد دوباره تلاش کنید." }, { status: 429, headers: { "Retry-After": "600", "Cache-Control": "no-store" } });
+    }
+    input = await readBody(request, 16384);
+  } catch (error) {
+    if (error instanceof CommerceError) return Response.json({ error: error.message }, { status: error.status, headers: { "Cache-Control": "no-store" } });
     return Response.json({ error: "درخواست نامعتبر است." }, { status: 400 });
   }
   if (!input || typeof input !== "object" || Array.isArray(input)) {
@@ -32,8 +39,8 @@ export async function POST(request: Request) {
       message: subject ? `موضوع: ${subject}\n\n${message}` : message,
     });
     return Response.json({ ok: true });
-  } catch (error) {
-    console.error("Contact message delivery failed:", error);
+  } catch {
+    console.error("Contact message delivery failed");
     return Response.json({ error: "ارسال پیام انجام نشد." }, { status: 502 });
   }
 }

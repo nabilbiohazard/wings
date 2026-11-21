@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { Icon } from "../icon";
 import { Reveal } from "../reveal";
 import { useShop } from "../shop-provider";
@@ -36,6 +37,18 @@ type CollectionCardProps = {
   card: (typeof collectionCards)[number];
 };
 
+function PinkBorder({ children }: { children: ReactNode }) {
+  return (
+    <div className="relative isolate overflow-hidden rounded-[35px] p-[3px]">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -inset-[150%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,#f472b6_180deg,#f9a8d4_220deg,transparent_300deg)] motion-reduce:animate-none"
+      />
+      {children}
+    </div>
+  );
+}
+
 function CollectionCard({ card }: CollectionCardProps) {
   const { setCategory } = useShop();
 
@@ -43,7 +56,7 @@ function CollectionCard({ card }: CollectionCardProps) {
     <a
       href="#new-arrivals"
       onClick={() => setCategory(card.id)}
-      className="group relative isolate min-h-[430px] overflow-hidden rounded-[32px] bg-[#211914] sm:min-h-[500px]"
+      className="group relative isolate block h-full min-h-[430px] overflow-hidden rounded-[32px] bg-[#211914] sm:min-h-[500px]"
     >
       <Image
         src={card.image}
@@ -87,7 +100,7 @@ function CustomDesignCard() {
   return (
     <a
       href="/custom-design"
-      className="group relative isolate flex min-h-[430px] flex-col overflow-hidden rounded-[32px] bg-[#171310] p-6 text-white sm:min-h-[500px] sm:p-7"
+      className="group relative isolate flex h-full min-h-[430px] flex-col overflow-hidden rounded-[32px] bg-[#171310] p-6 text-white sm:min-h-[500px] sm:p-7"
     >
       <div className="absolute -top-16 -right-20 h-72 w-72 rounded-full bg-pink-300/25 blur-[70px] transition-transform duration-1000 group-hover:scale-125" />
       <div className="absolute -bottom-24 -left-20 h-80 w-80 rounded-full bg-[#8a5b3f]/30 blur-[80px]" />
@@ -136,30 +149,30 @@ export function Collections() {
   return (
     <section
       id="collections"
-      className="w-full bg-[#f7f4f0] py-20 sm:py-24 lg:py-32"
+      className="w-full bg-[#140d12] py-20 sm:py-24 lg:py-32"
       aria-labelledby="collections-heading"
     >
       <div className="mx-auto w-full site-container  ">
         <div className="mb-12 text-center sm:mb-16 lg:mb-20" dir="rtl">
-          <div className="inline-flex items-center gap-3 rounded-full border border-black/10 bg-white/70 px-4 py-2 shadow-[0_8px_30px_rgba(34,25,20,0.04)]">
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-2 shadow-[0_8px_30px_rgba(34,25,20,0.04)]">
             <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
-            <span className="text-[10px] tracking-[0.18em] text-black/45">
+            <span className="text-[10px] tracking-[0.18em] text-white/70">
               مجموعه‌های وینگز
             </span>
-            <span className="text-[9px] tracking-[2px] text-black/25" dir="ltr">
+            <span className="text-[9px] tracking-[2px] text-white/45" dir="ltr">
               01 — 04
             </span>
           </div>
 
           <h2
             id="collections-heading"
-            className="mx-auto mt-6 max-w-4xl text-4xl leading-[1.4] font-medium tracking-[-0.035em] text-[#1d1815] sm:mt-8 sm:text-5xl lg:text-6xl"
+            className="mx-auto mt-6 max-w-4xl text-4xl leading-[1.4] font-medium tracking-[-0.035em] text-[#fff8fb] sm:mt-8 sm:text-5xl lg:text-6xl"
           >
             زیبایی، در انتخاب‌های کوچک توست
             <span className="mr-2 text-pink-400">.</span>
           </h2>
 
-          <p className="mx-auto mt-5 max-w-xl text-sm leading-8 text-black/50 sm:text-[15px]">
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-8 text-white/65 sm:text-[15px]">
             از بین کالکشن‌های وینگز، آن تکه‌ای را انتخاب کن که حال‌وهوای تو را
             کامل می‌کند.
           </p>
@@ -168,17 +181,21 @@ export function Collections() {
             className="mx-auto mt-7 flex max-w-52 items-center gap-4 sm:mt-9"
             aria-hidden="true"
           >
-            <span className="h-px flex-1 bg-black/10" />
+            <span className="h-px flex-1 bg-white/15" />
             <span className="text-sm text-pink-400">✦</span>
-            <span className="h-px flex-1 bg-black/10" />
+            <span className="h-px flex-1 bg-white/15" />
           </div>
         </div>
 
         <Reveal className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
           {collectionCards.map((card) => (
-            <CollectionCard key={card.id} card={card} />
+            <PinkBorder key={card.id}>
+              <CollectionCard card={card} />
+            </PinkBorder>
           ))}
-          <CustomDesignCard />
+          <PinkBorder>
+            <CustomDesignCard />
+          </PinkBorder>
         </Reveal>
       </div>
     </section>

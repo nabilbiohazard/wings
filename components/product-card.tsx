@@ -13,6 +13,7 @@ type ProductCardProps = {
   product: Product;
   sizes?: string;
   mobileHorizontal?: boolean;
+  theme?: "light" | "plum";
 };
 
 const previewColors = [
@@ -41,15 +42,18 @@ function ImagePlaceholder({ index = 0 }: { index?: number }) {
 export function ProductPreviewCard({
   name,
   index,
+  theme = "light",
 }: {
   name: string;
   index: number;
+  theme?: "light" | "plum";
 }) {
   return (
     <article
       dir="rtl"
       aria-label={`${name}، کارت نمونه`}
-      className="flex h-full flex-col rounded-[22px] border border-pink-200/70 bg-white p-2"
+      data-theme={theme}
+      className={`${styles.preview} flex h-full flex-col rounded-[22px] border border-pink-200/70 bg-white p-2`}
     >
       <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
         <ImagePlaceholder index={index} />
@@ -83,6 +87,7 @@ export function ProductCard({
   product,
   sizes = "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw",
   mobileHorizontal = false,
+  theme = "light",
 }: ProductCardProps) {
   const { favorites, toggleFavorite } = useShop();
   const saved = favorites.includes(product.id);
@@ -106,6 +111,7 @@ export function ProductCard({
     <article
       dir="rtl"
       data-mobile-horizontal={mobileHorizontal || undefined}
+      data-theme={theme}
       className={`${styles.card} group flex h-full min-w-0 flex-col overflow-hidden rounded-[24px] border border-[#ede3e2] bg-white p-1.5 shadow-[0_8px_28px_rgba(74,43,52,0.035)] transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-1 hover:border-[#d8bac3] hover:shadow-[0_20px_48px_rgba(74,43,52,0.11)] focus-within:border-[#b4778c] motion-reduce:transform-none`}
     >
       <div

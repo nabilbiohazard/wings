@@ -7,7 +7,7 @@ export function ContactCTA() {
   return (
     <section className="relative flex min-h-[65vh] items-center justify-center overflow-hidden text-white">
       <Image
-        src="/images/hero.png"
+        src="/images/shop-slide-1.png"
 
         alt="وینگز گالری"
 

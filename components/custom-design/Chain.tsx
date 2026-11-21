@@ -8,6 +8,8 @@ import type { CharmData } from "./Charm";
 import type { DesignProduct } from "@/lib/design-products";
 import { designRules } from "@/lib/design-rules";
 
+import { placementSlots, nearestSlot } from "@/lib/charm-layout";
+
 export interface PlacedCharm {
   instanceId: string;
   charm: CharmData;
@@ -41,6 +43,7 @@ export function isCharmPositionBlocked(
   y: number,
   product?: DesignProduct,
 ): boolean {
+  if (product && placementSlots(product)) return false;
   if (product && designRules(product).single) return false;
   if (product && isNecklace(product)) return false;
   const normalize = (angle: number) => ((angle % 360) + 360) % 360;
@@ -70,6 +73,11 @@ export function getCharmRotation(
   y: number,
   product?: DesignProduct,
 ): number {
+  if (product && placementSlots(product))
+    return (
+      nearestSlot(placementSlots(product)!, { x, y }).rotation ??
+      (Math.atan2(y - 300, x - 300) * 180) / Math.PI - 90
+    );
   if (product && designRules(product).single) return 0;
   if (product && isNecklace(product)) {
     const outwardAngle = Math.atan2(
@@ -167,7 +175,16 @@ export function Chain({
       >
         <path
           ref={pathRef}
-          d={isNecklace(product) ? NECKLACE_PATH_D : CHAIN_PATH_D}
+          d={
+            placementSlots(product)
+              ? "M " +
+                placementSlots(product)!
+                  .map((slot) => `${slot.x} ${slot.y}`)
+                  .join(" L ")
+              : isNecklace(product)
+                ? NECKLACE_PATH_D
+                : CHAIN_PATH_D
+          }
           fill="none"
           stroke="none"
         />
@@ -176,7 +193,7 @@ export function Chain({
       {placedCharms.map((pc) => {
         return (
           <PlacedCharmItem
-            fixed={designRules(product).single}
+            fixed={!placementSlots(product) && designRules(product).single}
             key={pc.instanceId}
             instanceId={pc.instanceId}
             charm={pc.charm}

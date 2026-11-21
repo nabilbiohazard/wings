@@ -1,3 +1,4 @@
+import { parseCharmLayout } from "./charm-layout";
 import type { Product } from "./types";
 
 function safeDecode(value: string) {
@@ -8,15 +9,8 @@ function safeDecode(value: string) {
   }
 }
 
-function toToman(
-  value?: string | number | null,
-  currency = "IRR"
-): number {
-  if (
-    value === undefined ||
-    value === null ||
-    value === ""
-  ) {
+function toToman(value?: string | number | null, currency = "IRR"): number {
+  if (value === undefined || value === null || value === "") {
     return 0;
   }
 
@@ -37,6 +31,7 @@ function toToman(
 type WooPrice = string | number | null;
 
 interface WooProduct {
+  meta_data?: { key: string; value: unknown }[];
   id: string | number;
   type?: string;
   name?: string;
@@ -44,7 +39,12 @@ interface WooProduct {
   sku?: string;
   images?: { src?: string | null }[];
   categories?: { id: string | number; name?: string; slug?: string }[];
-  prices?: { price?: WooPrice; regular_price?: WooPrice; sale_price?: WooPrice; currency_code?: string };
+  prices?: {
+    price?: WooPrice;
+    regular_price?: WooPrice;
+    sale_price?: WooPrice;
+    currency_code?: string;
+  };
   price?: WooPrice;
   regular_price?: WooPrice;
   sale_price?: WooPrice;
@@ -60,14 +60,24 @@ interface WooProduct {
   average_rating?: string | number;
   review_count?: string | number;
   has_options?: boolean;
-  attributes?: { name?: string; terms?: { name: string }[]; options?: string[] }[];
+  attributes?: {
+    name?: string;
+    terms?: { name: string }[];
+    options?: string[];
+  }[];
 }
 
 export function mapWooProduct(product: WooProduct): Product {
+  const charmLayout = parseCharmLayout(
+    product.meta_data?.find((item) => item.key === "_wings_charm_layout")
+      ?.value,
+  );
   const images: string[] =
     product.images
       ?.map((image) => image?.src)
-      .filter((src): src is string => typeof src === "string" && src.length > 0) ?? [];
+      .filter(
+        (src): src is string => typeof src === "string" && src.length > 0,
+      ) ?? [];
 
   /*
    * Store API:
@@ -76,24 +86,23 @@ export function mapWooProduct(product: WooProduct): Product {
    * wc/v3:
    * product.price
    */
-  const priceSource =
-    product.prices?.price ??
-    product.price ??
-    0;
+  if (charmLayout?.image && images[0] !== charmLayout.image) {
+    images.unshift(charmLayout.image);
+  }
+
+  if (product.sku === "BC-2" && images.length === 0) {
+    images.push("/images/bracelet-bc-2.webp");
+  }
+
+  const priceSource = product.prices?.price ?? product.price ?? 0;
 
   const regularPriceSource =
-    product.prices?.regular_price ??
-    product.regular_price ??
-    priceSource;
+    product.prices?.regular_price ?? product.regular_price ?? priceSource;
 
   const salePriceSource =
-    product.prices?.sale_price ??
-    product.sale_price ??
-    priceSource;
+    product.prices?.sale_price ?? product.sale_price ?? priceSource;
 
-  const currency =
-    product.prices?.currency_code ??
-    "IRR";
+  const currency = product.prices?.currency_code ?? "IRR";
 
   /*
    * Store API:
@@ -118,6 +127,7 @@ export function mapWooProduct(product: WooProduct): Product {
 
   return {
     id: Number(product.id),
+    charmLayout,
     type: product.type,
 
     name: product.name ?? "",
@@ -126,9 +136,7 @@ export function mapWooProduct(product: WooProduct): Product {
 
     sku: product.sku ?? "",
 
-    category:
-      product.categories?.[0]?.slug ??
-      "all",
+    category: product.categories?.[0]?.slug ?? "all",
 
     categories:
       product.categories?.map((category) => ({
@@ -137,72 +145,43 @@ export function mapWooProduct(product: WooProduct): Product {
         slug: category.slug ?? "",
       })) ?? [],
 
-    price: toToman(
-      priceSource,
-      currency
-    ),
+    price: toToman(priceSource, currency),
 
-    regularPrice: toToman(
-      regularPriceSource,
-      currency
-    ),
+    regularPrice: toToman(regularPriceSource, currency),
 
-    salePrice: toToman(
-      salePriceSource,
-      currency
-    ),
+    salePrice: toToman(salePriceSource, currency),
 
-    onSale:
-      product.on_sale ?? false,
+    onSale: product.on_sale ?? false,
 
-    image:
-      images[0] ??
-      "/images/product-placeholder.jpg",
+    image: charmLayout?.image ?? images[0] ?? "/images/product-placeholder.svg",
 
     images,
 
-    shortDescription:
-      product.short_description ?? "",
+    shortDescription: product.short_description ?? "",
 
-    description:
-      product.description ?? "",
+    description: product.description ?? "",
 
     isInStock,
 
     isPurchasable,
 
     stockStatus:
-      product.stock_status ??
-      product.stock_availability?.class ??
-      "",
+      product.stock_status ?? product.stock_availability?.class ?? "",
 
-    lowStockRemaining:
-      product.low_stock_remaining ?? null,
+    lowStockRemaining: product.low_stock_remaining ?? null,
 
-    averageRating: Number(
-      product.average_rating ?? 0
-    ),
+    averageRating: Number(product.average_rating ?? 0),
 
-    reviewCount: Number(
-      product.review_count ?? 0
-    ),
+    reviewCount: Number(product.review_count ?? 0),
 
-    hasOptions:
-      product.has_options ??
-      product.type === "variable",
+    hasOptions: product.has_options ?? product.type === "variable",
 
     attributes:
-      product.attributes?.map(
-        (attribute) => ({
-          name: attribute.name ?? "",
+      product.attributes?.map((attribute) => ({
+        name: attribute.name ?? "",
 
-          options:
-            attribute.terms?.map(
-              (term) => term.name
-            ) ??
-            attribute.options ??
-            [],
-        })
-      ) ?? [],
+        options:
+          attribute.terms?.map((term) => term.name) ?? attribute.options ?? [],
+      })) ?? [],
   };
 }

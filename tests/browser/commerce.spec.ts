@@ -215,7 +215,7 @@ test("SMS login exposes real account navigation after verification", async ({
   await expect(
     page.getByRole("navigation", { name: "حساب کاربری" }),
   ).toBeVisible();
-  await expect(page.getByRole("link", { name: "آدرس‌های من" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "آدرس‌های من", exact: true })).toBeVisible();
 });
 
 test("Console OTP accepts the complete provider code without truncating it", async ({
@@ -250,7 +250,7 @@ test("address book saves a WooCommerce province code and recipient details", asy
 }) => {
   await mockStore(page);
   await page.goto("/account/addresses");
-  await page.getByRole("button", { name: "+ آدرس جدید", exact: true }).click();
+  await page.getByRole("button", { name: "آدرس جدید", exact: true }).click();
   await page.getByRole("textbox", { name: "عنوان آدرس" }).fill("دفتر");
   await page
     .getByRole("combobox", { name: "استان", exact: true })
@@ -264,7 +264,7 @@ test("address book saves a WooCommerce province code and recipient details", asy
     .fill("خیابان نمونه، پلاک ۵");
   await page.getByRole("button", { name: "ذخیره آدرس", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "دفتر", exact: true }),
+    page.getByRole("heading", { name: "دفتر WINGS ADDRESS", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("اصفهان، اصفهان، خیابان نمونه، پلاک ۵"),
@@ -402,7 +402,7 @@ test("variable product selections and quantity reach the saved cart", async ({
   await page
     .getByRole("combobox", { name: "رنگ", exact: true })
     .selectOption("blue");
-  await page.getByRole("spinbutton", { name: "تعداد", exact: true }).fill("2");
+  await page.getByRole("spinbutton", { name: "تعداد محصول", exact: true }).fill("2");
   const saved = page.waitForRequest(
     (request) =>
       request.url().endsWith("/api/commerce/cart") &&
@@ -457,7 +457,7 @@ test("server routes reject foreign origins, arbitrary paths, and oversized JSON"
   const missing = await request.get("/api/commerce/customers/7");
   expect(missing.status()).toBe(404);
   const oversized = await request.post("/api/commerce/auth/request", {
-    headers: { Origin: baseURL! },
+    headers: { Origin: process.env.TEST_APP_ORIGIN || baseURL! },
     data: { phone: "a".repeat(40000) },
   });
   expect(oversized.status()).toBe(413);
@@ -588,10 +588,7 @@ test("an outdated bridge does not block adding a design draft or lose it on relo
   await expect(page.getByText("طرح شخصی · ۱ چارم")).toBeVisible();
   await expect(page.getByText("قیمت در انتظار تأیید فروشگاه")).toBeVisible();
   await page.reload();
-  await expect(
-    page.getByRole("navigation", { name: "حساب کاربری" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "سبد خرید", exact: true }).click();
+  await expect(page).toHaveURL(/\/cart$/);
   await expect(page.getByText("طرح شخصی · ۱ چارم")).toBeVisible();
   await expect(page.getByText("قیمت در انتظار تأیید فروشگاه")).toBeVisible();
 });

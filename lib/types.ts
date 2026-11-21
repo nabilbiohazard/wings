@@ -1,3 +1,4 @@
+import type { CharmLayout } from "./charm-layout";
 export type Category = "all" | string;
 
 
@@ -6,6 +7,7 @@ export type Category = "all" | string;
 ========================= */
 
 export type Product = {
+  charmLayout?: CharmLayout;
 
   id: number;
 

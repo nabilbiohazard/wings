@@ -1,3 +1,4 @@
+import "server-only";
 const baseUrl = process.env.WP_API_URL;
 
 export async function wpFetch<T>(
@@ -9,9 +10,14 @@ export async function wpFetch<T>(
   }
 
   const url = `${baseUrl.replace(/\/$/, "")}/${path.replace(/^\//, "")}`;
+  if (process.env.NODE_ENV === "production" && new URL(url).protocol !== "https:") {
+    throw new Error("WP_API_URL must use HTTPS");
+  }
 
   const res = await fetch(url, {
     ...options,
+    redirect: "error",
+    signal: options.signal ?? AbortSignal.timeout(15000),
 
     headers: {
       "Content-Type": "application/json",
@@ -27,11 +33,7 @@ export async function wpFetch<T>(
   });
 
   if (!res.ok) {
-    const errorText = await res.text();
-
-    throw new Error(
-      `WordPress API error: ${res.status} ${errorText}`
-    );
+    throw new Error(`WordPress API error: ${res.status}`);
   }
 
   const contentType = res.headers.get("content-type") ?? "";

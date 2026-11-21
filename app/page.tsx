@@ -4,11 +4,8 @@ import { Collections } from "@/components/homepage/collections";
 import { NewArrivals } from "@/components/homepage/new-arrivals";
 import { Charms } from "@/components/homepage/charms";
 import { AboutJournal } from "@/components/homepage/about-journal";
-import { EditorialSection } from "@/components/homepage/editorial-section";
 import { ServiceBar } from "@/components/homepage/service-bar";
 
-import { CustomDesignFeature } from "@/components/homepage/custom-design-feature";
-import { WingsManifesto } from "@/components/homepage/wings-manifesto";
 import { HomeJournal } from "@/components/homepage/home-journal";
 import { HoverVideoSection } from "@/components/homepage/hover-video-section";
 
@@ -41,7 +38,7 @@ export default async function Home() {
 
         <Charms />
 
-        <div className="bg-[#24151f]">
+        <div className="bg-[#140d12] pt-16 sm:pt-20 lg:pt-24">
           <AboutJournal />
 
           <HoverVideoSection
@@ -83,13 +80,7 @@ export default async function Home() {
           </HoverVideoSection>
         </div>
 
-        <CustomDesignFeature />
-
-        <EditorialSection />
-
-        <WingsManifesto />
-
-        <HomeJournal posts={posts.slice(0, 3)} />
+        <HomeJournal posts={posts.slice(0, 5)} />
 
         <ServiceBar />
       </main>

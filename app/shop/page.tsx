@@ -15,7 +15,7 @@ export default async function ShopPage() {
     .catch(() => ({ products: [], failed: true }));
 
   return (
-    <main className="min-h-screen bg-[#faf7f3]">
+    <main className="min-h-screen bg-[#fff8fb]">
       <HeaderBackdrop />
       <div className="site-container">
         <ShopCatalogue products={products} failed={failed} />

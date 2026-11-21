@@ -1,3 +1,4 @@
+import { sanitizePostContent } from "@/lib/blog-content";
 import { HeaderBackdrop } from "@/components/header-backdrop";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -412,7 +413,7 @@ export default async function ProductPage({
                 sm:leading-10
               "
               dangerouslySetInnerHTML={{
-                __html: product.description,
+                __html: sanitizePostContent(product.description),
               }}
             />
           </div>

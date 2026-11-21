@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:commerce": "node --test tests/commerce.test.mjs tests/design-rules.test.mjs",
+    "test:commerce": "node --experimental-strip-types --test tests/commerce.test.mjs tests/design-rules.test.mjs tests/security.test.mjs tests/charm-layout.test.cjs tests/request-body.test.cjs",
     "test:wordpress": "php tests/design-rules.php",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "check:launch": "node scripts/check-launch.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -20,7 +21,7 @@
     "entities": "^8.1.0",
     "framer-motion": "^13.4.1",
     "lucide-react": "^1.47.0",
-    "next": "16.3.4",
+    "next": "^16.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "sanitize-html": "^2.18.0",
@@ -34,7 +35,7 @@
     "@types/react-dom": "^19",
     "@types/sanitize-html": "^2.16.2",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
+    "eslint-config-next": "^16.4.6",
     "php-parser": "^3.7.0",
     "prettier": "^3.9.7",
     "prettier-plugin-tailwindcss": "^0.8.1",

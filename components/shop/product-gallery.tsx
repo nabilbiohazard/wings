@@ -39,7 +39,7 @@ export function ProductGallery({
   const currentImage =
     gallery[activeIndex] ||
     fallbackImage ||
-    "/images/product-placeholder.jpg";
+    "/images/product-placeholder.svg";
 
   const previous = useCallback(() => {
     if (!hasMultiple) return;

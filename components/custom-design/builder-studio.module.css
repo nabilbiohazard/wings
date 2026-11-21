@@ -23,16 +23,51 @@
 .heroCopy {
   max-width: 660px;
 }
+.studio .heading.centeredHeading {
+  justify-content: center;
+  text-align: center;
+  margin-bottom: 36px;
+}
+.centeredHeading .heroCopy {
+  width: 100%;
+  max-width: 900px;
+}
+.centeredHeading .atelierLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 24px;
+  color: #e8b9c7;
+}
+.centeredHeading .atelierWordmark {
+  font-size: 32px;
+}
+.centeredHeading .intro {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+@media (max-width: 767px) {
+  .studio .heading.centeredHeading {
+    margin-bottom: 18px;
+  }
+  .centeredHeading .atelierLogo {
+    margin-bottom: 14px;
+  }
+  .centeredHeading .atelierWordmark {
+    font-size: 25px;
+  }
+}
 .eyebrow > span {
   width: 24px;
   height: 1px;
-  background: #cca88f;
+  background: #e8b9c7;
 }
 .heading h1 > svg {
   position: absolute;
   width: 42px;
   height: 42px;
-  color: #d8b68b;
+  color: #e8b9c7;
   top: 12px;
   left: -60px;
   transform: rotate(-12deg);
@@ -40,39 +75,77 @@
 .heroNote {
   color: #f2dbdf;
   text-align: center;
-  padding: 0 50px;
+  padding: 18px 36px;
+  flex: 0 0 auto;
 }
 .heroNote > p {
-  font-size: 18px;
-  margin: 20px 0 10px;
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 400;
+  line-height: 1.9;
+  margin: 0 0 14px;
+}
+.heroNote > p > span {
+  color: #e8b9c7;
 }
 .heroNote > span {
   font-size: 11px;
   color: #bda5af;
 }
-.heroNote .atelierStamp {
-  width: 128px;
-  height: 128px;
+.heroNote .atelierLogo {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  border: 1px solid #a78a665c;
-  border-radius: 50%;
   margin: auto;
-  outline: 1px solid #a78a6626;
-  outline-offset: 8px;
-  transform: rotate(-10deg);
-  color: #d8b68b;
+  color: #e8b9c7;
 }
-.atelierStamp > svg {
-  width: 35px;
-  height: 35px;
+.atelierWordmark {
+  font-size: 42px;
+  line-height: 1;
+  letter-spacing: 9px;
+  padding-left: 9px;
+  color: #fff2f6;
 }
-.atelierStamp > span {
+.atelierCaption {
+  margin-top: 9px;
   font-size: 9px;
-  letter-spacing: 3px;
+  letter-spacing: 6px;
+  padding-left: 6px;
+}
+.atelierDivider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px auto 17px;
+  color: #e8b9c7;
+  font-size: 12px;
+}
+.atelierDivider > span {
+  width: 48px;
+  height: 1px;
+  background: #e8b9c733;
+}
+.atelierSteps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #dec1cd;
+}
+.atelierSteps > i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #c49bac;
+}
+.heroNote > .atelierSignature {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 2;
+  color: #bda5af;
 }
 .journey {
   display: grid;
@@ -98,7 +171,7 @@
 .journey > button:hover:not(:disabled),
 .journey > button[aria-current="step"] {
   background: #ffffff0a;
-  border-color: #d8b68b75;
+  border-color: #e8b9c775;
 }
 .journey > button:disabled {
   opacity: 0.7;
@@ -109,10 +182,10 @@
   height: 40px;
   display: grid;
   place-items: center;
-  border: 1px solid #a88e793d;
+  border: 1px solid #c49bac3d;
   border-radius: 50%;
   font-size: 14px;
-  color: #d8b68b;
+  color: #e8b9c7;
 }
 .journey > .journeyDone .stepNumber {
   background: #e8b9c7;
@@ -142,7 +215,7 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  color: #9c837c;
+  color: #816d75;
   pointer-events: none;
   font-size: 9px;
 }
@@ -169,7 +242,7 @@
   margin: 10px auto 16px;
   border-radius: 50%;
   box-shadow: 0 12px 40px #6141391c;
-  outline: 1px solid #c6ad985c;
+  outline: 1px solid #c49bac5c;
   outline-offset: 9px;
 }
 .inspirationImage img {
@@ -187,8 +260,8 @@
   border-radius: 30px;
   padding: 8px 13px;
   background: #fffaf3;
-  border: 1px solid #e5d5c6;
-  color: #896b59;
+  border: 1px solid #e9d9e0;
+  color: #8c4c65;
   font-size: 9px;
   box-shadow: 0 3px 12px #61413912;
 }
@@ -215,7 +288,7 @@
   gap: 7px;
   font-size: 9px;
   letter-spacing: 1.8px;
-  color: #a5785a;
+  color: #8c4c65;
   margin-bottom: 12px;
 }
 .paletteLoading > p {
@@ -259,9 +332,9 @@
   place-items: center;
   width: 50px;
   height: 50px;
-  border: 1px solid #ddc8b9;
+  border: 1px solid #e9d9e0;
   border-radius: 50%;
-  color: #997c5d;
+  color: #8c4c65;
   flex-shrink: 0;
 }
 .designReceipt h2 {
@@ -276,7 +349,7 @@
 .designReceipt > div:first-child small {
   font-size: 8px;
   letter-spacing: 2px;
-  color: #997c5d;
+  color: #8c4c65;
 }
 .receiptStats {
   display: flex;
@@ -296,7 +369,7 @@
   font-weight: 500;
 }
 .studio button:focus-visible {
-  outline-color: #b78864;
+  outline-color: #8c4c65;
 }
 
 @media (min-width: 1024px) {
@@ -318,10 +391,6 @@
 @media (max-width: 1023px) {
   .heroNote {
     padding-inline: 20px;
-  }
-  .heroNote .atelierStamp {
-    width: 100px;
-    height: 100px;
   }
   .journey {
     gap: 10px;
@@ -535,8 +604,8 @@
   background: #7e5265;
 }
 .unavailableProduct {
-  color: #88664e;
-  background: #f6eee7;
+  color: #8c4c65;
+  background: #f4e9ef;
   padding: 14px 20px;
   border-radius: 12px;
   font-size: 12px;
@@ -655,6 +724,49 @@
 
 .heading h1 span {
   color: #e9b7c7;
+}
+
+@supports (background-clip: text) {
+  .centeredHeading h1 {
+    background: linear-gradient(
+      110deg,
+      #e8b9c7 15%,
+      #fff2f6 35%,
+      #ffffff 45%,
+      #e9b7c7 55%,
+      #c49bac 75%,
+      #e8b9c7 95%
+    );
+    background-size: 240% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 12px #e8b9c730);
+    animation: headlineShimmer 7s ease-in-out infinite alternate;
+  }
+
+  .centeredHeading h1 > span {
+    color: inherit;
+  }
+}
+
+@keyframes headlineShimmer {
+  from {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 10px #e8b9c725);
+  }
+  to {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 18px #e8b9c750);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .centeredHeading h1 {
+    animation: none;
+    background-position: 50% 50%;
+  }
 }
 
 .intro {

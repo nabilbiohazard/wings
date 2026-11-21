@@ -18,12 +18,12 @@ export async function GET() {
     });
 
 
-  } catch(error: unknown){
+  } catch{
 
     return Response.json(
       {
         success:false,
-        message: error instanceof Error ? error.message : "Unable to load products"
+        message: "Unable to load products"
       },
       {
         status:500

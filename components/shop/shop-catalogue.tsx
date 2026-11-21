@@ -26,6 +26,15 @@ type Filters = {
   sale: boolean;
 };
 type Sort = "newest" | "popular" | "low" | "high";
+const heroSlides = [
+  { caption: "دستبند چارم‌دار", alt: "دستبندهای رنگی با چارم‌های فانتزی" },
+  { caption: "گردنبند چارم‌دار", alt: "گردنبندهای طلایی با چارم‌های رنگارنگ" },
+  { caption: "ست گردنبند و دستبند", alt: "ست گردنبند و دستبند با مهره‌های رنگی" },
+  { caption: "دستبند زنجیری", alt: "دستبند زنجیری با آویزهای شخصی" },
+  { caption: "گوشواره مارپیچ", alt: "گوشواره طلایی با طرح مارپیچ" },
+  { caption: "گردنبند مرواریدی", alt: "گردنبند مرواریدی با چارم‌های کریسمس" },
+  { caption: "گردنبند دریایی", alt: "گردنبندهای رنگی با چارم ماهی و خرچنگ" },
+];
 const empty: Filters = {
   category: "all",
   materials: [],
@@ -66,6 +75,13 @@ export function ShopCatalogue({
   const [sort, setSort] = useState<Sort>("newest");
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(24);
+  const [heroIndex, setHeroIndex] = useState(0);
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setHeroIndex((index) => (index + 1) % heroSlides.length);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, []);
   const selected = { ...filters, category };
 
   const availableCategories = useMemo(() => {
@@ -343,20 +359,23 @@ export function ShopCatalogue({
           </span>
         </div>
         <div className={styles.heroArt}>
-          <Image
-            src="/images/shop-hero.png"
-            alt="انتخاب‌های زیورآلات و چارم‌های وینگز"
+          {heroSlides.map((slide, index) => <Image
+            key={index}
+            src={`/images/shop-slide-${index + 1}.png`}
+            alt={index === heroIndex ? slide.alt : ""}
+            aria-hidden={index !== heroIndex}
             fill
-            preload
+            preload={index === 0}
             sizes="(max-width: 767px) 100vw, 55vw"
             className={styles.heroPhoto}
-          />
+            style={{ opacity: index === heroIndex ? 1 : 0, transition: "opacity 600ms ease" }}
+          />)}
           <span className={styles.photoCaption} lang="en" dir="ltr">
             LITTLE THINGS. LOVELY FEELINGS.
           </span>
           <div className={styles.heroStamp} aria-hidden="true">
             <Flower2 size={25} strokeWidth={1} />
-            <span>انتخابی از دل</span>
+            <span>{heroSlides[heroIndex].caption}</span>
             <small>WINGS GALLERY</small>
           </div>
         </div>
@@ -392,14 +411,18 @@ export function ShopCatalogue({
             }}
             className={styles.categoryCard}
           >
-            <span className={styles.categoryImage}>
-              <Image
-                src={item.image}
-                alt=""
-                fill
-                sizes="80px"
-                className="object-cover"
-              />
+            <span className={styles.allCategory}>
+              <svg aria-hidden="true" width="28" height="28" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round">
+                {item.id === "necklace" ? (
+                  <><path d="M7 4C4 17 8 24 16 25C24 24 28 17 25 4" /><path d="m16 21 4 5-4 4-4-4Z" /></>
+                ) : item.id === "bracelet" ? (
+                  <><circle cx="16" cy="17" r="11" /><circle cx="16" cy="6" r="2" /><path d="m8 9 2 2m12-2-2 2M5 17h3m16 0h3M8 25l2-2m12 2-2-2M16 25v3" /></>
+                ) : item.id === "earrings" ? (
+                  <><path d="M10 4v5m12-5v5" /><ellipse cx="10" cy="18" rx="5" ry="9" /><ellipse cx="22" cy="18" rx="5" ry="9" /></>
+                ) : (
+                  <><circle cx="16" cy="5" r="3" /><path d="m16 10 4 6 7 1-5 5 1 7-7-3-7 3 1-7-5-5 7-1Z" /></>
+                )}
+              </svg>
             </span>
             <strong>{item.name}</strong>
             <small lang="en">{item.english}</small>
@@ -415,20 +438,7 @@ export function ShopCatalogue({
           <ArrowUpLeft size={18} />
         </Link>
       </div>
-      <div id="shop-products" className={styles.catalogueHeading}>
-        <div>
-          <p className={styles.eyebrow} lang="en" dir="ltr">
-            CURATED FOR YOUR EVERYDAY
-          </p>
-          <h2>
-            قطعهٔ بعدیِ داستان تو<span>.</span>
-          </h2>
-        </div>
-        <span className={styles.collectionNote}>
-          با سلیقهٔ خودت انتخاب کن <Sparkles size={15} />
-        </span>
-      </div>
-      <div className={styles.toolbar}>
+      <div id="shop-products" className={styles.toolbar}>
         <div className="relative min-w-0 flex-1">
           <label htmlFor="shop-search" className="sr-only">
             جستجو در محصولات

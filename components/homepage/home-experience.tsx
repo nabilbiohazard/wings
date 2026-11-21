@@ -48,14 +48,14 @@ const collections = [
     name: "چارم‌ها",
     english: "Charms",
     note: "کوچک، اما پر از داستان",
-    image: "/images/charms.png",
+    image: "/images/collection-charms-new.png",
   },
   {
     id: "earrings",
     name: "گوشواره‌ها",
     english: "Earrings",
     note: "کمی درخشش، به سبک تو",
-    image: "/images/earrings.png",
+    image: "/images/collection-earrings-new.png",
   },
 ];
 const productFilters = [
@@ -123,7 +123,7 @@ export function HomeExperience({ posts }: { posts: BlogPost[] }) {
             <div className={styles.heroVisual}>
               <div className={styles.heroImage}>
                 <Image
-                  src="/images/hero.png"
+                  src="/images/shop-slide-1.png"
                   alt="گردنبند، گوشواره و دستبند وینگز با چارم‌های گل، قلب و پروانه"
                   fill
                   preload
@@ -359,7 +359,7 @@ export function HomeExperience({ posts }: { posts: BlogPost[] }) {
             <div className={styles.atelierVisual}>
               <div className={styles.atelierImage}>
                 <Image
-                  src="/images/custom-hero.png"
+                  src="/images/collections-personal-bracelet.png"
                   alt="چارم‌ها و ابزار ساخت زیورآلات برای طراحی شخصی وینگز"
                   fill
                   sizes="(max-width: 767px) 100vw, 55vw"
@@ -385,7 +385,7 @@ export function HomeExperience({ posts }: { posts: BlogPost[] }) {
         >
           <div className={styles.charmImage}>
             <Image
-              src="/images/charms.png"
+              src="/images/collection-charms-new.png"
               alt="چارم‌های قلب، پروانه، گیلاس و گل برای روایت علاقه‌های تو"
               fill
               sizes="(max-width: 767px) 100vw, 45vw"
@@ -484,7 +484,7 @@ export function HomeExperience({ posts }: { posts: BlogPost[] }) {
             ) : (
               <>
                 <Image
-                  src="/images/custom-hero.png"
+                  src="/images/collections-personal-bracelet.png"
                   alt="میز ساخت زیورآلات؛ شروع یک قطعهٔ شخصی"
                   fill
                   sizes="100vw"
@@ -539,7 +539,7 @@ export function HomeExperience({ posts }: { posts: BlogPost[] }) {
                     <BlogImage
                       sources={[
                         ...postImageSources(post),
-                        "/images/blog-hero.png",
+                        "/images/about-story-intro.png",
                       ]}
                       alt={plainText(post.title.rendered)}
                       sizes="(max-width: 639px) 100vw, 33vw"

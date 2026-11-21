@@ -5,7 +5,7 @@ export function BlogHero() {
   return (
     <section className="relative min-h-[92vh] overflow-hidden text-white">
       <Image
-        src="/images/blog-hero.png"
+        src="/images/about-story-intro.png"
 
         alt="Wings Journal"
 

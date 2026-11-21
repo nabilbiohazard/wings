@@ -1,3 +1,4 @@
+import { sanitizePostContent } from "@/lib/blog-content";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,7 +14,7 @@ type FeaturedPostProps = {
 function getFeaturedImage(post: BlogPost) {
   return (
     post._embedded?.["wp:featuredmedia"]?.[0]?.source_url ||
-    "/images/hero.png"
+    "/images/shop-slide-1.png"
   );
 }
 
@@ -54,7 +55,7 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
               <h2
                 className="mt-6 font-serif text-4xl leading-relaxed sm:text-5xl"
                 dangerouslySetInnerHTML={{
-                  __html: post.title?.rendered || "",
+                  __html: sanitizePostContent(post.title?.rendered || ""),
                 }}
               />
 
@@ -62,7 +63,7 @@ export function FeaturedPost({ post }: FeaturedPostProps) {
                 <div
                   className="mt-6 text-sm leading-9 text-black/60"
                   dangerouslySetInnerHTML={{
-                    __html: getExcerpt(post),
+                    __html: sanitizePostContent(getExcerpt(post)),
                   }}
                 />
               )}

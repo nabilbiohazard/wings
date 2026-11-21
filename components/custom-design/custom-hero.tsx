@@ -7,7 +7,7 @@ export function CustomHero() {
   return (
     <section className="relative min-h-[92vh] overflow-hidden bg-[#f6f0eb]">
       <Image
-        src="/images/custom-hero.png"
+        src="/images/collections-personal-bracelet.png"
         alt="Create your own jewelry"
         fill
         priority

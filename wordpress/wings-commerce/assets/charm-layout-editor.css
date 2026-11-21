@@ -1,0 +1,99 @@
+#wings-layout-editor {
+  max-width: 1100px;
+}
+.wings-layout-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+.wings-layout-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 600px) minmax(180px, 240px);
+  gap: 24px;
+  align-items: start;
+}
+.wings-layout-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: white;
+  outline: 1px solid #c3c4c7;
+  touch-action: none;
+}
+.wings-layout-canvas:focus-visible {
+  outline: 2px solid #2271b1;
+}
+.wings-layout-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.wings-layout-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.wings-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #2271b1;
+  color: white;
+  box-shadow: 0 1px 6px #0008;
+  cursor: grab;
+  pointer-events: auto;
+  z-index: 2;
+  padding: 0;
+  font: 600 12px sans-serif;
+  touch-action: none;
+}
+.wings-slot.is-selected {
+  background: #a6306a;
+  outline: 3px solid #edb8d1;
+  z-index: 3;
+}
+.wings-preview-charm {
+  position: absolute;
+  width: 12%;
+  height: 14%;
+  object-fit: contain;
+  object-position: top;
+  transform-origin: 50% 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.wings-layout-panel label {
+  display: block;
+  margin: 12px 0;
+}
+.wings-layout-panel input {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+}
+#wings-slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 20px;
+}
+.wings-layout-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.wings-layout-error {
+  color: #b32d2e;
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .wings-layout-workspace {
+    grid-template-columns: 1fr;
+  }
+}

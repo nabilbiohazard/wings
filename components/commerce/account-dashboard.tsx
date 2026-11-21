@@ -19,7 +19,7 @@ export function AccountDashboard() {
         aria-labelledby="studio-invitation"
       >
         <Image
-          src="/images/custom-hero.png"
+          src="/images/collections-personal-bracelet.png"
           alt=""
           fill
           sizes="(max-width: 959px) 100vw, 75vw"

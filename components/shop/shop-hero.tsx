@@ -5,7 +5,7 @@ export function ShopHero() {
   return (
     <section className="relative min-h-[92vh] overflow-hidden text-white">
       <Image
-        src="/images/shop-hero.png"
+        src="/images/shop-slide-1.png"
         alt="Wings collection"
         fill
         priority

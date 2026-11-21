@@ -13,7 +13,7 @@ export function FeaturedCollection() {
 
             <div className="relative aspect-[4/5] overflow-hidden rounded-[40px]">
               <Image
-                src="/images/hero.png"
+                src="/images/shop-slide-1.png"
 
                 alt="Signature collection"
 

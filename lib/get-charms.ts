@@ -39,7 +39,7 @@ export async function getCharms(): Promise<CharmData[]> {
       isCharmProduct(item, ids),
     )) {
       const image =
-        product.image === "/images/product-placeholder.jpg"
+        product.image === "/images/product-placeholder.svg"
           ? ""
           : product.image;
       if (product.hasOptions) {

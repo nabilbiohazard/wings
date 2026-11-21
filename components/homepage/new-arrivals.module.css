@@ -1,3 +1,283 @@
+.section {
+  background: linear-gradient(
+    to bottom,
+    #140d12 0%,
+    #21151d 18%,
+    #38232f 42%,
+    #694359 62%,
+    #bb94a7 80%,
+    #eedce5 93%,
+    #fff8fb 100%
+  );
+}
+.moreCard {
+  display: flex;
+  height: 100%;
+  min-height: 384px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  border: 1px solid #e8b9c74d;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #694359, #38232f);
+  color: #fff2f6;
+  text-align: center;
+  transition: border-color 180ms;
+}
+.moreCard:hover {
+  border-color: #f2c4d7;
+}
+.moreCard:focus-visible {
+  outline: 2px solid #f2c4d7;
+  outline-offset: -5px;
+}
+.editHeading {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 0;
+  padding-block: 48px;
+  padding-inline: 32px;
+  border-radius: 32px 32px 0 0;
+}
+.editCopy {
+  position: relative;
+  z-index: 1;
+}
+.editArtwork {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 240px;
+  padding-inline: 30px;
+  border-inline-start: 1px solid #e8b9c733;
+}
+.editionLabel {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #e8b9c7;
+}
+.editWord {
+  position: relative;
+  color: #f2c4d7;
+  font-size: clamp(72px, 8vw, 120px);
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -4px;
+  padding-right: 0;
+}
+.editWord > span {
+  position: absolute;
+  right: -12px;
+  top: 12px;
+  font-size: 54px;
+  font-style: normal;
+  color: #fff8fb;
+  animation: editTurn 24s linear infinite;
+}
+@keyframes editTurn {
+  to { transform: rotate(360deg); }
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #e8b9c7;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+.eyebrow::after {
+  content: "";
+  width: 32px;
+  height: 1px;
+  background: #c49bac;
+}
+.title {
+  color: #fff8fb;
+  font-size: clamp(24px, 4.5vw, 66px);
+  font-weight: 400;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+.title > span {
+  position: relative;
+  display: inline;
+  color: #f2b4ce;
+}
+.title > span::after {
+  content: none;
+  position: absolute;
+  inset: auto 2% 0;
+  height: 8px;
+  border-top: 2px solid #cc97ae;
+  border-radius: 50%;
+  transform: rotate(-3deg);
+}
+.description {
+  margin-top: 14px;
+  color: #d7bdc9;
+  font-size: 13px;
+  line-height: 2;
+}
+.shopLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 46px;
+  padding: 10px 20px;
+  flex-shrink: 0;
+  border: 1px solid #f2c4d7;
+  border-radius: 4px;
+  background: #f2c4d7;
+  color: #38212e;
+  font-size: 12px;
+  transition: background-color 180ms, border-color 180ms;
+}
+.shopLink:hover {
+  background: #fff8fb;
+  border-color: #fff8fb;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 28px;
+  padding-block: 20px;
+  border-bottom: 1px solid #e8b9c733;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.filter {
+  min-height: 44px;
+  padding: 10px 22px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: #d7bdc9;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 180ms, color 180ms, border-color 180ms;
+}
+.filter:hover {
+  border-color: #c49bac;
+  color: #fff8fb;
+}
+.filter[aria-pressed="true"] {
+  background: #f2c4d7;
+  border-color: #f2c4d7;
+  color: #38212e;
+  box-shadow: 0 4px 12px #8c4c651a;
+}
+.filter:focus-visible,
+.shopLink:focus-visible {
+  outline: 2px solid #f2c4d7;
+  outline-offset: 3px;
+}
+.resultCount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: #d7bdc9;
+}
+.resultCount::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #c49bac;
+}
+@media (max-width: 639px) {
+  .editHeading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 0;
+    padding: 28px 22px;
+    border-radius: 22px 22px 0 0;
+  }
+  .editArtwork {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    min-width: 0;
+    padding: 18px 0 0;
+    border-inline-start: 0;
+    border-top: 1px solid #e8b9c733;
+    gap: 20px;
+  }
+  .editionLabel {
+    display: none;
+  }
+  .editWord {
+    font-size: 56px;
+    letter-spacing: -4px;
+  }
+  .editWord > span {
+    font-size: 30px;
+    right: 0;
+  }
+  .filters {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) 1.5fr;
+    gap: 5px;
+  }
+  .filter {
+    padding: 9px 5px;
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .editWord > span {
+    animation: none;
+  }
+  .filter,
+  .shopLink {
+    transition: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .controls {
+    width: 100%;
+    max-width: var(--site-width);
+    margin-inline: auto;
+    padding-inline: var(--site-gutter);
+  }
+
+  .container {
+    width: 100%;
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .carousel {
+    margin-inline: 48px;
+  }
+
+  .carousel :global(.swiper-slide) > article > div:first-child {
+    aspect-ratio: 5 / 4;
+  }
+
+  .carousel :global(.swiper-slide) > a {
+    min-height: 320px;
+    padding-block: 24px;
+  }
+}
+
 .carousel :global(.swiper-pagination.swiper-pagination-horizontal) {
   position: relative;
   inset: auto;

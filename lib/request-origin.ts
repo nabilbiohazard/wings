@@ -3,8 +3,12 @@ export function isAllowedRequestOrigin(
   configuredUrl: string | undefined,
   development: boolean,
 ) {
-  const expected = new URL(
-    development ? request.url : configuredUrl || request.url,
-  ).origin;
-  return request.headers.get("origin") === expected;
+  if (!development && !configuredUrl) return false;
+  try {
+    const expected = new URL(development ? request.url : configuredUrl!);
+    if (!development && expected.protocol !== "https:") return false;
+    return request.headers.get("origin") === expected.origin;
+  } catch {
+    return false;
+  }
 }

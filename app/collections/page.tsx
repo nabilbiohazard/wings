@@ -43,7 +43,7 @@ const collections = [
     name: "چارم‌ها",
     note: "کوچک، اما پر از معنا",
     description: "از یک علاقهٔ ساده تا یک خاطرهٔ دور؛ برای هر داستان، یک چارم.",
-    image: "/images/charms.png",
+    image: "/images/collection-earrings-new.png",
     tag: "کمی بیشتر شبیه تو",
   },
   {
@@ -53,7 +53,7 @@ const collections = [
     name: "گوشواره‌ها",
     note: "آخرین لمسِ یک استایل",
     description: "درخششی ظریف برای وقتی که می‌خواهی خودت باشی.",
-    image: "/images/earrings.png",
+    image: "/images/collection-charms-new.png",
     tag: "درخشش به سبک تو",
   },
 ] as const;
@@ -272,14 +272,14 @@ export default function CollectionsPage() {
           </div>
           <div className={styles.atelierArt}>
             <Image
-              src="/images/custom-hero.png"
-              alt="میز طراحی زیورآلات و چارم‌ها برای ساخت طرح شخصی"
+              src="/images/collections-personal-bracelet.png"
+              alt="دستبند طلایی با چارم‌های رنگی روی دست"
               fill
               sizes="(max-width: 767px) 100vw, 55vw"
               className={styles.cover}
             />
             <span className={styles.artTag}>
-              <Sparkles size={15} /> این بار، طراح تویی.
+              <Sparkles size={15} /> چارم هاشو خودت انتخاب کن
             </span>
           </div>
         </div>

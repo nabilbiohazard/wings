@@ -17,16 +17,19 @@ type Campaign = {
   id: string;
   name: string;
   english: string;
+  video: string;
   title: string;
   description: string;
   color: string;
   ink: string;
+  cardColor?: string;
   charms: Charm[];
 };
 
 const campaigns: Campaign[] = [
   {
     id: "sea",
+    video: "sea.mp4",
     name: "کنار دریا",
     english: "SUN & SEA",
     color: "#b9dfe8",
@@ -41,10 +44,15 @@ const campaigns: Campaign[] = [
       { name: "ماهی فیروزه‌ای", motif: "fish", color: "#6eafb6" },
       { name: "موج آبی", motif: "wave", color: "#559fae" },
       { name: "آفتاب طلایی", motif: "sun", color: "#ebbf55" },
+      { name: "صدف مرواریدی", motif: "shell", color: "#f5dfd1" },
+      { name: "ستاره مرجانی", motif: "starfish", color: "#ed998a" },
+      { name: "ماهی آبی", motif: "fish", color: "#82b9dc" },
+      { name: "مروارید صورتی", motif: "pearl", color: "#f3d3d9" },
     ],
   },
   {
     id: "garden",
+    video: "nature.mp4",
     name: "طبیعت",
     english: "SECRET GARDEN",
     color: "#c4d5b6",
@@ -59,10 +67,15 @@ const campaigns: Campaign[] = [
       { name: "شبدر خوش‌شانس", motif: "clover", color: "#6a9259" },
       { name: "شکوفه صورتی", motif: "flower", color: "#efb5c3" },
       { name: "پروانه سبز", motif: "butterfly", color: "#b9cf9a" },
+      { name: "گل آفتابی", motif: "flower", color: "#edcb70" },
+      { name: "برگ بهاری", motif: "leaf", color: "#b7ca85" },
+      { name: "پروانه آبی", motif: "butterfly", color: "#9fc9de" },
+      { name: "شبدر طلایی", motif: "clover", color: "#d6bf78" },
     ],
   },
   {
     id: "love",
+    video: "love.mp4",
     name: "love",
     english: "LOVE NOTES",
     color: "#f3c1d5",
@@ -77,10 +90,15 @@ const campaigns: Campaign[] = [
       { name: "قلب گیلاسی", motif: "heart", color: "#c95768" },
       { name: "گل رز", motif: "flower", color: "#da8e9e" },
       { name: "مروارید عشق", motif: "pearl", color: "#fff4ed" },
+      { name: "قلب یاسی", motif: "heart", color: "#c4a2ce" },
+      { name: "پاپیون طلایی", motif: "bow", color: "#dfbf76" },
+      { name: "قفل نقره‌ای", motif: "lock", color: "#cdd0d8" },
+      { name: "گل عشق", motif: "flower", color: "#efbacb" },
     ],
   },
   {
     id: "night",
+    video: "night.mp4",
     name: "night",
     english: "AFTER MIDNIGHT",
     color: "#343653",
@@ -95,14 +113,20 @@ const campaigns: Campaign[] = [
       { name: "ستاره آبی", motif: "star", color: "#91a6c6" },
       { name: "ماه نقره‌ای", motif: "moon", color: "#d4d6e2" },
       { name: "سیاره رویا", motif: "planet", color: "#8da9b1" },
+      { name: "ستاره طلایی", motif: "star", color: "#efcf78" },
+      { name: "ماه یاسی", motif: "moon", color: "#c5afd8" },
+      { name: "سیاره آبی", motif: "planet", color: "#809fc5" },
+      { name: "ستاره نقره‌ای", motif: "star", color: "#dedfe8" },
     ],
   },
   {
     id: "fruit",
-    name: "طعم شادی",
-    english: "FRUIT CLUB",
-    color: "#f6c5a6",
-    ink: "#703d2d",
+    video: "art.mp4",
+    name: "هنر و موسیقی",
+    english: "ART & MUSIC",
+    color: "#d9caed",
+    ink: "#43295e",
+    cardColor: "#f0e7fa",
     title: " یک دنیا رنگ.",
     description:
       "گیلاس‌های قرمز، توت‌فرنگی‌های شیرین و لیموهای آفتابی؛ برای روزهایی که دلت رنگ می‌خواهد.",
@@ -113,6 +137,10 @@ const campaigns: Campaign[] = [
       { name: "پرتقال", motif: "orange", color: "#f1a45b" },
       { name: "گیلاس صورتی", motif: "cherry", color: "#e995ac" },
       { name: "توت‌فرنگی خامه‌ای", motif: "strawberry", color: "#efb4ae" },
+      { name: "لیموی سبز", motif: "lemon", color: "#b8ce72" },
+      { name: "پرتقال طلایی", motif: "orange", color: "#eeb85d" },
+      { name: "گیلاس سرخ", motif: "cherry", color: "#bd4858" },
+      { name: "توت‌فرنگی صورتی", motif: "strawberry", color: "#ed9fb3" },
     ],
   },
 ];
@@ -150,37 +178,67 @@ export function Charms() {
       id="charms"
       dir="rtl"
       aria-labelledby="charms-heading"
-      className="scroll-mt-28 bg-[#fbf9f6] py-16 sm:py-20 lg:py-24"
+      className="scroll-mt-28 pt-16 sm:pt-20 lg:pt-24"
+      style={{
+        background: "linear-gradient(to bottom, #fff8fb 0%, #fff8fb 50%, #140d12 50%, #140d12 100%)",
+      }}
     >
-      <div className="mx-auto site-container  ">
-        <div className="mb-8 flex items-end justify-between gap-6 sm:mb-10">
-          <div>
-            <p
-              className="mb-3 text-[10px] tracking-[3px] text-black/45"
-              lang="en"
-              dir="ltr"
-            >
-              SMALL CHARMS, BIG FEELINGS
+      <div className="w-full">
+        <div className={`site-container ${styles.sectionHeading}`}>
+            <p className={styles.headingEyebrow} lang="en" dir="ltr">
+              Five themes. <span>Endless stories.</span>
             </p>
             <h2
               id="charms-heading"
-              className="text-3xl font-medium text-[#201d1e] sm:text-4xl lg:text-5xl"
+              className={`font-serif ${styles.headingTitle}`}
+              lang="en"
+              dir="ltr"
             >
-              چارم‌ها؛ تکه‌های دنیای تو
+              Find your <em>charms.</em>
             </h2>
-            <p className="mt-4 text-sm leading-7 text-black/55">
-              پنج حال‌وهوا، کلی داستان کوچک. دنیای خودت را پیدا کن.
+            <div className={styles.themePalette} aria-hidden="true">
+              {campaigns.map((theme) => (
+                <span key={theme.id} style={{ backgroundColor: theme.color }} />
+              ))}
+            </div>
+            <p className={styles.headingDescription}>
+              پنج کالکشن با حال‌وهوای متفاوت؛ چارم‌های دلخواهت را پیدا کن و قصه‌ی خودت را بساز.
             </p>
-          </div>
-          <span
-            aria-hidden="true"
-            className="hidden font-['Cormorant_Garamond'] text-6xl italic text-[#b8a69e] lg:block"
-          >
-            Charms
-          </span>
         </div>
 
-        <div className={styles.explorer}>
+        <div className="relative isolate overflow-hidden rounded-[28px] p-[2px]">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-[150%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,#f472b6_180deg,#f9a8d4_220deg,transparent_300deg)] motion-reduce:animate-none"
+          />
+        <div
+          className={styles.explorer}
+          style={{ backgroundColor: campaign.color }}
+        >
+          <video
+            key={campaign.video}
+            className={styles.campaignVideo}
+            aria-hidden="true"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source
+              src={`/videos/campaigns/${campaign.video}`}
+              type="video/mp4"
+              media="(prefers-reduced-motion: no-preference)"
+            />
+          </video>
+          <div className={styles.campaignNavigation}>
+            <button
+              type="button"
+              className={styles.campaignArrow}
+              aria-label="کمپین قبلی"
+              onClick={() => activate((activeIndex - 1 + campaigns.length) % campaigns.length)}
+            >
+              <Icon name="arrow" size={20} style={{ transform: "rotate(90deg)" }} />
+            </button>
           <div
             role="tablist"
             aria-label="کالکشن‌های چارم"
@@ -224,6 +282,15 @@ export function Charms() {
               </button>
             ))}
           </div>
+            <button
+              type="button"
+              className={styles.campaignArrow}
+              aria-label="کمپین بعدی"
+              onClick={() => activate((activeIndex + 1) % campaigns.length)}
+            >
+              <Icon name="arrow" size={20} style={{ transform: "rotate(-90deg)" }} />
+            </button>
+          </div>
 
           {campaigns.map((item, index) => (
             <div
@@ -236,8 +303,9 @@ export function Charms() {
               className={styles.panel}
               style={
                 {
-                  "--campaign-color": item.color,
                   "--campaign-ink": item.ink,
+                  "--charm-card-color": item.cardColor,
+                  "--charm-card-ink": item.cardColor ? item.ink : undefined,
                 } as CSSProperties
               }
             >
@@ -320,6 +388,7 @@ export function Charms() {
               )}
             </div>
           ))}
+        </div>
         </div>
       </div>
     </section>

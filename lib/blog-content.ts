@@ -46,7 +46,7 @@ export function sanitizePostContent(html: string) {
       "maps.google.com",
       "api.testvedad.ir",
     ],
-    allowIframeRelativeUrls: true,
+    allowIframeRelativeUrls: false,
     allowedStyles: {
       "*": {
         "text-align": [/^(left|right|center|justify)$/],

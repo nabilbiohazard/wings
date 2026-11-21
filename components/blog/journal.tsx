@@ -50,7 +50,7 @@ function PostPicture({
   post: BlogPost;
   featured?: boolean;
 }) {
-  const sources = [...postImageSources(post), "/images/blog-hero.png"];
+  const sources = [...postImageSources(post), "/images/about-story-intro.png"];
   return (
     <BlogImage
       key={sources.join("|")}
@@ -404,7 +404,7 @@ export function Journal({
       >
         <div className={styles.ctaImage}>
           <Image
-            src="/images/custom-hero.png"
+            src="/images/collections-personal-bracelet.png"
             alt="چارم‌ها و ابزار ساخت زیورآلات شخصی وینگز"
             fill
             sizes="(max-width: 767px) 100vw, 45vw"
