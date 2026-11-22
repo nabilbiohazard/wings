@@ -24,17 +24,17 @@ const services: {
 
 export function ServiceBar() {
   return (
-    <section className="w-full py-12 sm:py-16 lg:py-20" aria-label="خدمات وینگز">
-      <div className="mx-auto grid w-full site-container grid-cols-1 gap-8  md:grid-cols-3 md:gap-6">
+    <section dir="rtl" className="w-full py-12 sm:py-16 lg:py-20" aria-label="خدمات وینگز">
+      <div className="mx-auto grid w-full site-container grid-cols-1 gap-6 md:grid-cols-3">
         {services.map((service) => (
-          <div key={service.icon} className="flex items-center justify-end gap-5 text-right">
-            <div>
+          <div key={service.icon} className="flex items-center gap-4 text-right md:justify-end md:gap-5">
+            <div className="min-w-0">
               <h3 className="text-base font-medium sm:text-lg">{service.title}</h3>
 
-              <p className="mt-2 text-sm leading-7 text-black/60">{service.description}</p>
+              <p className="mt-1 text-sm leading-7 text-black/60 md:mt-2">{service.description}</p>
             </div>
 
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black/[0.04]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-black/[0.04] max-md:order-first">
               <Icon name={service.icon} size={33} />
             </div>
           </div>

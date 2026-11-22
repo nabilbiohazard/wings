@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FooterDesignPromo } from "./footer-design-promo";
 import { Wordmark } from "./wordmark";
 
 const shopLinks = [
@@ -86,37 +87,39 @@ export function Footer() {
     >
       <div className="mx-auto site-container   ">
         {/* BUILD YOUR OWN */}
-        <div className="border-b border-[#443039]/15 py-8 sm:py-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
-            <div className="flex items-start gap-4 sm:items-center sm:gap-5">
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-[#92576b]/20 bg-[#f7f0eb] text-[#92576b] sm:h-[72px] sm:w-[72px]">
-                <BraceletIcon />
-              </span>
+        <FooterDesignPromo>
+          <div className="border-b border-[#443039]/15 py-8 sm:py-10">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-10">
+              <div className="flex items-start gap-4 sm:items-center sm:gap-5">
+                <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-[#92576b]/20 bg-[#f7f0eb] text-[#92576b] sm:h-[72px] sm:w-[72px]">
+                  <BraceletIcon />
+                </span>
 
-              <div>
-                <p className="mb-2 text-xs font-medium text-[#805b68]">
-                  یک انتخاب شخصی‌تر
-                </p>
+                <div>
+                  <p className="mb-2 text-xs font-medium text-[#805b68]">
+                    یک انتخاب شخصی‌تر
+                  </p>
 
-                <h2 className="text-xl font-semibold leading-relaxed tracking-tight sm:text-2xl">
-                  دستبندی که داستان تو را می‌گوید.
-                </h2>
+                  <h2 className="text-xl font-semibold leading-relaxed tracking-tight sm:text-2xl">
+                    دستبندی که داستان تو را می‌گوید.
+                  </h2>
 
-                <p className="mt-2 max-w-lg text-sm leading-7 text-[#69585e]">
-                  چارم‌های دلخواهت را کنار هم بچین و ترکیب خودت را بساز.
-                </p>
+                  <p className="mt-2 max-w-lg text-sm leading-7 text-[#69585e]">
+                    چارم‌های دلخواهت را کنار هم بچین و ترکیب خودت را بساز.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <Link
-              href="/#build-your-own"
-              className={`group inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-6 rounded-full bg-[#443039] px-7 py-3 text-sm font-medium text-[#fffaf7] transition-colors hover:bg-[#654451] md:w-auto ${focusClasses}`}
-            >
-              خودت بساز
-              <ArrowIcon className="transition-transform motion-safe:group-hover:-translate-x-1" />
-            </Link>
+              <Link
+                href="/#build-your-own"
+                className={`group inline-flex min-h-12 w-full shrink-0 items-center justify-center gap-6 rounded-full bg-[#443039] px-7 py-3 text-sm font-medium text-[#fffaf7] transition-colors hover:bg-[#654451] md:w-auto ${focusClasses}`}
+              >
+                خودت بساز
+                <ArrowIcon className="transition-transform motion-safe:group-hover:-translate-x-1" />
+              </Link>
+            </div>
           </div>
-        </div>
+        </FooterDesignPromo>
 
         {/* MAIN FOOTER */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 py-10 sm:gap-x-10 sm:py-14 lg:grid-cols-12 lg:gap-8 lg:py-16">
