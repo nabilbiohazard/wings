@@ -310,7 +310,7 @@ export function NewArrivals() {
                     />
                   </SwiperSlide>
                 ))}
-                <SwiperSlide className="!h-auto">
+                <SwiperSlide className="!h-auto max-sm:hidden!">
                   <Link
                     href="/shop"
                     className={`group ${styles.moreCard}`}
@@ -332,12 +332,6 @@ export function NewArrivals() {
               </Swiper>
             )}
           </div>
-          <Link
-            href="/shop"
-            className="mt-7 flex items-center justify-center gap-3 py-3 text-sm sm:hidden"
-          >
-            دیدن همه محصولات <Icon name="arrow" size={17} />
-          </Link>
         </Reveal>
       </div>
     </section>
