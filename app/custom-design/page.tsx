@@ -2,7 +2,6 @@ import { HeaderBackdrop } from "@/components/header-backdrop";
 import { DesignStudio } from "@/components/custom-design/DesignStudio";
 import { getProducts } from "@/lib/get-products";
 import { isCustomizable, toDesignProduct } from "@/lib/design-products";
-import { designRules } from "@/lib/design-rules";
 export const metadata = {
   title: "Charm Builder",
 };
@@ -22,15 +21,10 @@ export default async function CharmBuilderPage({
     .then((items) => ({
       products: items
         .filter(
-          (product) => {
-            const rules = designRules(product);
-            return (
-              product.isInStock !== false &&
-              Boolean(product.charmLayout) &&
-              isCustomizable(product) &&
-              !(rules.kind === "necklace" && rules.single)
-            );
-          },
+          (product) =>
+            product.isInStock !== false &&
+            Boolean(product.charmLayout) &&
+            isCustomizable(product),
         )
         .map(toDesignProduct),
       failed: false,

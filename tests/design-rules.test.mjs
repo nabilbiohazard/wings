@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { designRules } from "../lib/design-rules.ts";
 
-test("category data distinguishes ordinary and single-charm necklaces and bracelets", () => {
+test("single-charm categories only restrict bracelets among necklaces and bracelets", () => {
   for (const [kind, name] of [
     ["necklace", "گردنبند"],
     ["bracelet", "دستبند"],
@@ -24,7 +24,7 @@ test("category data distinguishes ordinary and single-charm necklaces and bracel
         },
       ],
     };
-    assert.equal(designRules(single).single, true);
+    assert.equal(designRules(single).single, kind === "bracelet");
     assert.deepEqual(
       designRules(single).anchor,
       kind === "necklace"
@@ -34,7 +34,7 @@ test("category data distinguishes ordinary and single-charm necklaces and bracel
     assert.equal(
       designRules({ ...single, categories: single.categories.toReversed() })
         .single,
-      true,
+      kind === "bracelet",
     );
     assert.equal(
       designRules({ ...base, name: `${name} تک چارم` }).single,
@@ -50,7 +50,7 @@ test("encoded and English category slugs and legacy snapshots remain usable", ()
       name: "New",
       category: encodeURIComponent("گردنبند-تک-چارم"),
     }).single,
-    true,
+    false,
   );
   assert.equal(
     designRules({ name: "New", category: "single-charm-bracelet" }).single,
@@ -58,7 +58,7 @@ test("encoded and English category slugs and legacy snapshots remain usable", ()
   );
   assert.equal(
     designRules({ name: "گردنبند تک‌چارم", category: "" }).single,
-    true,
+    false,
   );
   assert.equal(
     designRules({ name: "New", category: "necklace" }).single,

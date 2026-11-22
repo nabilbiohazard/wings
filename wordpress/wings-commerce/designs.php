@@ -26,8 +26,8 @@ final class Wings_Designs {
         $text = preg_replace('/[\s\x{200C}_-]+/u', ' ', $text);
         if (!preg_match('/گردنبند|دستبند|necklace|bracelet/iu', $text)) $text .= ' ' . $product->get_name();
         $kind = preg_match('/گردنبند|necklace/iu', $text) ? 'necklace' : (preg_match('/دستبند|bracelet/iu', $text) ? 'bracelet' : 'other');
-        $single = (bool) preg_match('/تک\s*چارم|single\s*charm|one\s*charm/iu', $text);
-        return array('single' => $single, 'categories' => $categories,
+        $single = $kind !== 'necklace' && (bool) preg_match('/تک\s*چارم|single\s*charm|one\s*charm/iu', $text);
+        return array('kind' => $kind, 'single' => $single, 'categories' => $categories,
             'label' => ($kind === 'necklace' ? 'گردنبند' : ($kind === 'bracelet' ? 'دستبند' : 'محصول')) . ($single ? ' تک‌چارم' : ' چندچارم'),
             'anchor' => $kind === 'necklace' ? array('x' => 300, 'y' => 578, 'rotation' => 0) : ($kind === 'bracelet' && $single ? array('x' => 298, 'y' => 472, 'rotation' => 0) : array('x' => 289, 'y' => 516, 'rotation' => 0)));
     }
@@ -100,7 +100,9 @@ final class Wings_Designs {
         $placed = $raw['charms'] ?? null;
         if (!is_array($placed) || count($placed) < 1 || count($placed) > 30) self::fail('طرح باید بین یک تا سی چارم داشته باشد.');
         $rules = self::rules($base);
-        if (count($placed) > $layout['maxCharms']) self::fail('The charm limit for this product has changed. Reopen the design.', 409);
+        $max_charms = $rules['kind'] === 'necklace' && $layout['maxCharms'] === 1
+            ? count($layout['slots']) : $layout['maxCharms'];
+        if (count($placed) > $max_charms) self::fail('The charm limit for this product has changed. Reopen the design.', 409);
         $used_slots = array();
         $known = array_column(self::catalogue(), null, 'id');
         $charms = array(); $components = array(); $instances = array(); $currency = get_woocommerce_currency();

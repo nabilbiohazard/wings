@@ -33,7 +33,8 @@ export function designRules(product: CategorizedProduct) {
     : /دستبند|bracelet/.test(text)
       ? "bracelet"
       : "other";
-  const single = /تک\s*چارم|single\s*charm|one\s*charm/.test(text);
+  const single =
+    kind !== "necklace" && /تک\s*چارم|single\s*charm|one\s*charm/.test(text);
   return {
     kind,
     single,

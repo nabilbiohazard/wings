@@ -28,9 +28,13 @@ export function isCustomizable(
 
 export function toDesignProduct(product: Product): DesignProduct {
   const rules = designRules(product);
+  const layout = product.charmLayout;
   return {
     id: product.id,
-    charmLayout: product.charmLayout,
+    charmLayout:
+      rules.kind === "necklace" && layout?.maxCharms === 1
+        ? { ...layout, maxCharms: layout.slots.length }
+        : layout,
     name: product.name,
     slug: product.slug,
     image: product.image,
