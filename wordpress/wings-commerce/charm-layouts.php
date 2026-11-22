@@ -4,16 +4,9 @@ defined('ABSPATH') || exit;
 final class Wings_Charm_Layouts {
     const KEY = '_wings_charm_layout';
 
-    public static function defaults($product) {
-        if (!preg_match('/\bbc[\s_-]*2\b/i', $product->get_name() . ' ' . $product->get_slug())) return null;
-        $layout = json_decode(file_get_contents(__DIR__ . '/assets/bc2-layout.json'), true);
-        $layout['image'] = plugins_url('assets/bracelet-bc-2.webp', __FILE__);
-        return $layout;
-    }
-
     public static function get($product) {
         $saved = $product->get_meta(self::KEY, true);
-        return (is_array($saved) ? self::validate($saved) : null) ?: self::defaults($product);
+        return is_array($saved) ? self::validate($saved) : false;
     }
 
     public static function validate($value) {
@@ -60,7 +53,7 @@ final class Wings_Charm_Layouts {
         $image = $layout['image'] ?? wp_get_attachment_image_url($product->get_image_id(), 'full');
         wp_nonce_field('wings_charm_layout', 'wings_layout_nonce');
         echo '<div id="wings-layout-editor" dir="ltr" data-initial="' . esc_attr(wp_json_encode($layout)) . '" data-image="' . esc_url($image ?: '') . '">';
-        echo '<p><label><input type="checkbox" id="wings-layout-enabled"' . checked((bool)$layout, true, false) . '> Use custom fixed slots (uncheck to restore default placement)</label></p>';
+        echo '<p><label><input type="checkbox" id="wings-layout-enabled"' . checked((bool)$layout, true, false) . '> Enable charm placement for this product</label></p>';
         echo '<p>Drag numbered slots onto the links. Arrow keys move a selected slot by 1 unit; Shift + arrow moves it by 10. Customers never see these markers.</p>';
         echo '<div class="wings-layout-toolbar"><button type="button" class="button" data-action="image">Choose product image</button> <button type="button" class="button" data-action="add">Add slot</button> <button type="button" class="button" data-action="undo">Undo</button> <button type="button" class="button" data-action="preview">Choose preview charm</button> <label><input type="checkbox" id="wings-show-preview"> Preview charms</label></div>';
         echo '<div class="wings-layout-workspace"><div class="wings-layout-canvas" tabindex="0" aria-label="Charm placement canvas"><img class="wings-layout-image" alt="Product placement background" draggable="false"><div class="wings-layout-markers"></div></div><div class="wings-layout-panel"><label>Maximum charms <input id="wings-layout-max" type="number" min="1" max="30"></label><p id="wings-layout-count"></p><div id="wings-slot-fields"><strong id="wings-slot-title"></strong><label>X <input data-axis="x" type="number" min="0" max="600" step="1"></label><label>Y <input data-axis="y" type="number" min="0" max="600" step="1"></label><label>Rotation (degrees) <input data-axis="rotation" type="number" min="-360" max="360" step="1" placeholder="Automatic"></label><button type="button" class="button" data-action="remove">Remove selected slot</button></div><div id="wings-slot-list" aria-label="Select a slot"></div></div></div>';

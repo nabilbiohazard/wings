@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 
+const wooApiUrl = process.env.WC_API_URL;
+const wooOrigin = wooApiUrl && URL.canParse(wooApiUrl) ? new URL(wooApiUrl) : undefined;
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
@@ -23,6 +26,9 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "api.testvedad.ir",
       },
+      ...(wooOrigin?.protocol === "https:"
+        ? [{ protocol: "https" as const, hostname: wooOrigin.hostname, port: wooOrigin.port }]
+        : []),
     ],
   },
 };

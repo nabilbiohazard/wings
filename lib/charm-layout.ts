@@ -1,5 +1,3 @@
-import { BC2_SLOTS, isBC2 } from "./bracelet-layouts";
-
 export type CharmSlot = { x: number; y: number; rotation?: number };
 export type CharmLayout = {
   version: 1;
@@ -49,7 +47,7 @@ export function placementSlots(product: {
   slug?: string;
   charmLayout?: CharmLayout;
 }): readonly CharmSlot[] | undefined {
-  return product.charmLayout?.slots ?? (isBC2(product) ? BC2_SLOTS : undefined);
+  return product.charmLayout?.slots;
 }
 
 export function nearestSlot(

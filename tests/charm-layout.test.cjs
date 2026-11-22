@@ -26,7 +26,7 @@ const layout = {
   ],
 };
 
-test("saved layouts override BC-2 defaults, control images, and snap to the closest slot", () => {
+test("saved layouts control images and snap to the closest slot", () => {
   const product = mapWooProduct({
     id: 88,
     name: "BC-2",
@@ -41,7 +41,7 @@ test("saved layouts override BC-2 defaults, control images, and snap to the clos
     nearestSlot(placementSlots(product), { x: 380, y: 470 }).rotation,
     20,
   );
-  assert.equal(placementSlots({ name: "BC-2" }).length, 11);
+  assert.equal(placementSlots({ name: "BC-2" }), undefined);
   assert.equal(placementSlots({ name: "BC-1" }), undefined);
 });
 
@@ -59,14 +59,6 @@ test("malformed, duplicate, and out-of-range saved layouts are rejected", () => 
     { ...layout, slots: [{ x: 1, y: 2, rotation: NaN }] },
   ])
     assert.equal(parseCharmLayout(value), undefined);
-});
-
-test("packaged BC-2 defaults match all finalized storefront positions", () => {
-  const defaults = JSON.parse(
-    fs.readFileSync("wordpress/wings-commerce/assets/bc2-layout.json"),
-  );
-  assert.deepEqual(defaults.slots, placementSlots({ name: "BC-2" }));
-  assert.equal(defaults.maxCharms, 11);
 });
 
 test("WordPress plugin PHP files parse successfully", () => {

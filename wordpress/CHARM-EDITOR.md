@@ -1,10 +1,10 @@
-# Visual charm placement editor — Wings Commerce 1.3.0
+# Visual charm placement editor — Wings Commerce 1.3.1
 
-Install `wings-commerce-1.3.0.zip` using WordPress → Plugins → Add New → Upload Plugin. Replace the installed Wings Commerce version when prompted. This keeps existing settings and products.
+Install `wings-commerce-1.3.1.zip` using WordPress → Plugins → Add New → Upload Plugin. Replace the installed Wings Commerce version when prompted. This keeps existing settings and products.
 
 Go to Products → edit a bracelet or necklace → **Wings — Charm placement editor**.
 
-1. Enable custom fixed slots. BC-2 starts with the 11 positions finalized in the storefront.
+1. Enable charm placement for the product. Add the slots you want customers to use.
 2. Choose a product image from the WordPress media library if needed. The editor and customer builder use this same image. Changing the image requires reviewing the slots.
 3. Add slots and drag their numbered markers onto the chain links. Select a marker or its number in the sidebar to edit its X/Y coordinates. Arrow keys nudge by 1 unit; Shift + arrow nudges by 10. Coordinates use a 600×600 square, with images contained inside it.
 4. Leave Rotation blank for automatic outward rotation, or enter an angle. Choose a preview charm from the media library to inspect its placement; preview selection is temporary and never changes the actual charm catalogue.

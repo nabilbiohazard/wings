@@ -94,13 +94,13 @@ final class Wings_Designs {
     public static function clean($raw, $base, $quantity) {
         if (!is_array($raw) || ($raw['version'] ?? null) !== 1 || !isset($raw['product']) || !is_array($raw['product']) || !self::eligible($base) || (int) ($raw['product']['id'] ?? 0) !== $base->get_id()) self::fail('این محصول قابلیت شخصی‌سازی ندارد.');
         $layout = class_exists('Wings_Charm_Layouts') ? Wings_Charm_Layouts::get($base) : null;
-        $image = $layout['image'] ?? (wp_get_attachment_image_url($base->get_image_id(), 'full') ?: '/images/product-placeholder.jpg');
+        if (!$layout) self::fail('Charm placement has not been configured for this product.', 409);
+        $image = $layout['image'];
         if (($raw['product']['image'] ?? '') !== $image) self::fail('تصویر محصول پایه تغییر کرده است؛ طرح را باز کنید و دوباره بررسی کنید.', 409);
         $placed = $raw['charms'] ?? null;
         if (!is_array($placed) || count($placed) < 1 || count($placed) > 30) self::fail('طرح باید بین یک تا سی چارم داشته باشد.');
         $rules = self::rules($base);
-        if (!$layout && $rules['single'] && count($placed) !== 1) self::fail('این محصول فقط یک چارم در جایگاه ثابت می‌پذیرد.');
-        if ($layout && count($placed) > $layout['maxCharms']) self::fail('The charm limit for this product has changed. Reopen the design.', 409);
+        if (count($placed) > $layout['maxCharms']) self::fail('The charm limit for this product has changed. Reopen the design.', 409);
         $used_slots = array();
         $known = array_column(self::catalogue(), null, 'id');
         $charms = array(); $components = array(); $instances = array(); $currency = get_woocommerce_currency();
@@ -112,23 +112,15 @@ final class Wings_Designs {
                 $value = $item[$field] ?? null;
                 if ((!is_int($value) && !is_float($value)) || !is_finite((float) $value) || ($field === 'rotation' ? abs($value) > 3600 : $value < 0 || $value > 600)) self::fail('موقعیت چارم‌های طرح معتبر نیست.');
             }
-            if ($layout) {
-                $match = null;
-                foreach ($layout['slots'] as $index => $slot) {
-                    if (abs($item['x'] - $slot['x']) < 0.01 && abs($item['y'] - $slot['y']) < 0.01) { $match = $index; break; }
-                }
-                if ($match === null || isset($used_slots[$match])) self::fail('Charm slots have changed. Reopen the design.', 409);
-                $used_slots[$match] = true;
-                $slot = $layout['slots'][$match];
-                $item['x'] = $slot['x']; $item['y'] = $slot['y'];
-                $item['rotation'] = $slot['rotation'] ?? rad2deg(atan2($slot['y'] - 300, $slot['x'] - 300)) - 90;
+            $match = null;
+            foreach ($layout['slots'] as $index => $slot) {
+                if (abs($item['x'] - $slot['x']) < 0.01 && abs($item['y'] - $slot['y']) < 0.01) { $match = $index; break; }
             }
-            if (!$layout && $rules['single']) {
-                foreach ($rules['anchor'] as $field => $expected) {
-                    if (abs($item[$field] - $expected) > 0.01) self::fail('جای اتصال چارم این محصول ثابت است؛ طرح را دوباره باز کنید.', 409);
-                    $item[$field] = $expected;
-                }
-            }
+            if ($match === null || isset($used_slots[$match])) self::fail('Charm slots have changed. Reopen the design.', 409);
+            $used_slots[$match] = true;
+            $slot = $layout['slots'][$match];
+            $item['x'] = $slot['x']; $item['y'] = $slot['y'];
+            $item['rotation'] = $slot['rotation'] ?? rad2deg(atan2($slot['y'] - 300, $slot['x'] - 300)) - 90;
             $instances[$instance] = true; $product = self::linked($id); $pid = $product->get_id();
             $definition = isset($known[$id]) ? $known[$id] : self::entry($product);
             if (!$definition['image']) self::fail('تصویر این چارم هنوز در فروشگاه ثبت نشده است.', 409);

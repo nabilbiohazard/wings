@@ -2,6 +2,7 @@ import { HeaderBackdrop } from "@/components/header-backdrop";
 import { ShopCatalogue } from "@/components/shop/shop-catalogue";
 import { getProducts } from "@/lib/get-products";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 
 export const metadata: Metadata = {
   title: "فروشگاه وینگز | زیورآلات و چارم‌های دوست‌داشتنی",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
+  await connection();
   const { products, failed } = await getProducts()
     .then((products) => ({ products, failed: false }))
     .catch(() => ({ products: [], failed: true }));

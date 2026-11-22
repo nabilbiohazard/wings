@@ -10,11 +10,12 @@ import { HomeJournal } from "@/components/homepage/home-journal";
 import { HoverVideoSection } from "@/components/homepage/hover-video-section";
 
 import { getPosts } from "@/lib/get-posts";
+import { journalArticles } from "@/lib/journal-articles";
 
 export default async function Home() {
   const posts = await getPosts().catch((error: unknown) => {
     console.error("Homepage journal could not be loaded:", error);
-    return [];
+    return journalArticles;
   });
 
   return (
