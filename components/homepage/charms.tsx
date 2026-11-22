@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -149,8 +150,38 @@ export function Charms() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedCharm, setSelectedCharm] = useState(0);
   const tabs = useRef<(HTMLButtonElement | null)[]>([]);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const campaign = campaigns[activeIndex];
   const featured = campaign.charms[selectedCharm];
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting || !motion.matches) {
+        video.pause();
+        return;
+      }
+      if (!video.hasAttribute("src")) video.src = `/videos/campaigns/${campaign.video}`;
+      void video.play().catch(() => {});
+    });
+
+    const updatePlayback = () => {
+      observer.disconnect();
+      if (motion.matches) observer.observe(video);
+      else video.pause();
+    };
+
+    updatePlayback();
+    motion.addEventListener("change", updatePlayback);
+    return () => {
+      observer.disconnect();
+      video.pause();
+      motion.removeEventListener("change", updatePlayback);
+    };
+  }, [campaign.video]);
 
   function activate(index: number) {
     setActiveIndex(index);
@@ -216,20 +247,15 @@ export function Charms() {
           style={{ backgroundColor: campaign.color }}
         >
           <video
+            ref={videoRef}
             key={campaign.video}
             className={styles.campaignVideo}
             aria-hidden="true"
-            autoPlay
             loop
             muted
             playsInline
-          >
-            <source
-              src={`/videos/campaigns/${campaign.video}`}
-              type="video/mp4"
-              media="(prefers-reduced-motion: no-preference)"
-            />
-          </video>
+            preload="none"
+          />
           <div className={styles.campaignNavigation}>
             <button
               type="button"

@@ -1,57 +1,121 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Icon } from "../icon";
-import { Reveal } from "../reveal";
+
+const mobileViewport = "(max-width: 767px), (hover: none)";
 
 export function Hero() {
   const [word, setWord] = useState<"style" | "story">("style");
   const [visible, setVisible] = useState(true);
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const posterRef = useRef<HTMLImageElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let timeout: ReturnType<typeof setTimeout>;
     const interval = setInterval(() => {
       setVisible(false);
 
-      const timeout = setTimeout(() => {
+      timeout = setTimeout(() => {
         setWord((current) =>
           current === "style" ? "story" : "style"
         );
 
         setVisible(true);
       }, 400);
-
-      return () => clearTimeout(timeout);
     }, 3000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  useEffect(() => {
+    const poster = posterRef.current;
+    const video = videoRef.current;
+    if (!poster || !video) return;
+
+    const playback = window.matchMedia("(prefers-reduced-motion: no-preference)");
+    video.muted = true;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.intersectionRatio < 0.1 || !playback.matches) {
+        video.pause();
+        return;
+      }
+
+      // Keep the film out of the initial request queue while the poster loads.
+      if (!video.hasAttribute("src")) {
+        video.src = window.matchMedia(mobileViewport).matches
+          ? "/videos/home-hero-mobile.mp4"
+          : "/videos/videoplayback.mp4";
+      }
+      void video.play().catch(() => {});
+    }, { threshold: 0.1 });
+
+    const updatePlayback = () => {
+      observer.disconnect();
+      if (playback.matches && poster.complete) {
+        observer.observe(video);
+      } else {
+        video.pause();
+        setVideoPlaying(false);
+      }
+    };
+
+    updatePlayback();
+    poster.addEventListener("load", updatePlayback);
+    poster.addEventListener("error", updatePlayback);
+    playback.addEventListener("change", updatePlayback);
+    return () => {
+      observer.disconnect();
+      video.pause();
+      poster.removeEventListener("load", updatePlayback);
+      poster.removeEventListener("error", updatePlayback);
+      playback.removeEventListener("change", updatePlayback);
+    };
   }, []);
 
   return (
-    <section className="relative h-dvh min-h-dvh overflow-hidden text-white">
+    <section className="relative h-dvh min-h-dvh overflow-hidden bg-[#39242f] text-white">
       
       {/* HERO BACKGROUND */}
       <div className="absolute inset-0 overflow-hidden">
+        <picture>
+          <source media="(max-width: 767px) and (orientation: portrait)" srcSet="/images/home-hero-mobile.webp" />
+          <img
+            ref={posterRef}
+            src="/images/home-hero.webp"
+            alt=""
+            width={1280}
+            height={720}
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </picture>
         <video
-          autoPlay
+          ref={videoRef}
+          aria-hidden="true"
           loop
           muted
           playsInline
-          className="absolute inset-0 h-full w-full object-cover"
-        >
-          <source
-            src="/videos/videoplayback.mp4"
-            type="video/mp4"
-          />
-        </video>
+          preload="none"
+          onPlaying={() => setVideoPlaying(true)}
+          className={`absolute inset-0 h-full w-full object-cover ${videoPlaying ? "opacity-100" : "opacity-0"}`}
+        />
 
         <div className="absolute inset-0 bg-linear-to-l from-black/80 via-black/45 to-black/20" />
 
-        <div className="absolute top-1/2 -left-30 h-137.5 w-137.5 -translate-y-1/2 rounded-full bg-pink-300/10 blur-[130px]" />
+        <div className="absolute top-1/2 -left-30 hidden h-137.5 w-137.5 -translate-y-1/2 rounded-full bg-pink-300/10 blur-[130px] md:block" />
       </div>
 
       {/* HERO CONTENT */}
       <div className="relative z-10 flex h-full items-center justify-center px-5 pt-20 text-center sm:px-8">
-        <Reveal className="mx-auto w-full site-container ">
+        <div className="site-container">
           <div className="items-center gap-12">
             <div className="mx-auto max-w-xl text-center">
 
@@ -83,14 +147,14 @@ export function Hero() {
 
               {/* BUILD YOUR OWN */}
               <div className="relative mx-auto mt-8 w-full max-w-[420px]">
-                <div className="absolute -inset-3 animate-pulse rounded-[30px] bg-pink-300/20 blur-2xl" />
+                <div className="absolute -inset-3 hidden rounded-[30px] bg-pink-300/20 blur-2xl md:block motion-safe:md:animate-pulse" />
 
                 <div className="group relative overflow-hidden rounded-[26px] p-[1px]">
-                  <div className="absolute -inset-[150%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,white_180deg,#f9a8d4_220deg,transparent_300deg)]" />
+                  <div className="absolute inset-0 bg-linear-to-br from-pink-300/70 via-white/25 to-pink-400/60 motion-safe:md:-inset-[150%] motion-safe:md:animate-[spin_5s_linear_infinite] motion-safe:md:bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,white_180deg,#f9a8d4_220deg,transparent_300deg)]" />
 
                   <a
                     href="/custom-design"
-                    className="relative flex items-center justify-between rounded-[25px] border border-white/10 bg-black/85 px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur-2xl transition-all duration-500 hover:-translate-y-1 hover:bg-black/90"
+                    className="relative flex items-center justify-between rounded-[25px] border border-white/10 bg-black/85 px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.25)] transition-all duration-500 hover:-translate-y-1 hover:bg-black/90 md:backdrop-blur-2xl"
                   >
                     <div className="flex items-center gap-4">
                       <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white text-lg text-black shadow-[0_0_25px_rgba(249,168,212,0.55)] transition-transform duration-500 group-hover:rotate-45">
@@ -123,7 +187,7 @@ export function Hero() {
               <div className="mt-10 flex items-center justify-center gap-5">
                 <a
                   href="#new-arrivals"
-                  className="group relative inline-flex items-center gap-5 overflow-hidden rounded-full border border-white/25 bg-white/10 py-1.5 pr-6 pl-1.5 text-white shadow-[0_16px_50px_rgba(0,0,0,0.2)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-1 hover:border-pink-300/70 hover:bg-white/15 hover:shadow-[0_20px_60px_rgba(249,168,212,0.2)]"
+                  className="group relative inline-flex items-center gap-5 overflow-hidden rounded-full border border-white/25 bg-white/10 py-1.5 pr-6 pl-1.5 text-white shadow-[0_16px_50px_rgba(0,0,0,0.2)] transition-all duration-500 hover:-translate-y-1 hover:border-pink-300/70 hover:bg-white/15 hover:shadow-[0_20px_60px_rgba(249,168,212,0.2)] md:backdrop-blur-xl"
                 >
                   <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
 
@@ -144,7 +208,7 @@ export function Hero() {
 
             </div>
           </div>
-        </Reveal>
+        </div>
       </div>
 
       {/* SCROLL */}

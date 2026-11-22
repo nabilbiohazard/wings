@@ -203,8 +203,6 @@
   .editHeading {
     justify-content: center;
     padding: 34px 16px 24px;
-    border-radius: 22px 22px 0 0;
-    background: radial-gradient(ellipse at top, #f2b4ce24, transparent 72%);
   }
   .editCopy {
     text-align: center;

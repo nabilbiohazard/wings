@@ -13,6 +13,7 @@ export function AboutJournal() {
       <HoverVideoSection
         as="article"
         src="/videos/about_us.mp4"
+        poster="/images/home-about-us.webp"
         aria-labelledby="about-preview-heading"
         className="group relative isolate flex min-h-[480px] flex-col justify-between overflow-hidden bg-[#623c50] px-6 py-9 text-white grayscale transition-[filter] duration-500 hover:grayscale-0 focus-within:grayscale-0 motion-reduce:transition-none sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-16 lg:py-14 xl:px-20"
       >
@@ -58,6 +59,7 @@ export function AboutJournal() {
       <HoverVideoSection
         as="article"
         src="/videos/magazine.mp4"
+        poster="/images/home-magazine.webp"
         aria-labelledby="journal-preview-heading"
         className="group relative isolate flex min-h-[480px] flex-col justify-between overflow-hidden bg-[#542f3d] px-6 py-9 text-white grayscale transition-[filter] duration-500 hover:grayscale-0 focus-within:grayscale-0 motion-reduce:transition-none sm:px-10 sm:py-12 lg:min-h-[620px] lg:px-16 lg:py-14 xl:px-20"
       >

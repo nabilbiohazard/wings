@@ -3,7 +3,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Icon } from "../icon";
-import { Reveal } from "../reveal";
 import { useShop } from "../shop-provider";
 
 const collectionCards = [
@@ -13,7 +12,7 @@ const collectionCards = [
     name: "انگشتر و چارم",
     english: "RINGS & CHARMS",
     tagline: "جزئیاتی کوچک با حضوری فراموش‌نشدنی",
-    image: "/images/collection-rings.png",
+    image: "/images/collection-rings.webp",
   },
   {
     id: "necklace",
@@ -21,7 +20,7 @@ const collectionCards = [
     name: "گردنبند",
     english: "NECKLACES",
     tagline: "داستانی که همیشه نزدیک قلب تو می‌ماند",
-    image: "/images/collection-necklaces.png",
+    image: "/images/collection-necklaces.webp",
   },
   {
     id: "bracelet",
@@ -29,7 +28,7 @@ const collectionCards = [
     name: "دستبند",
     english: "BRACELETS",
     tagline: "تکه‌های شادی برای همراهی هر روز تو",
-    image: "/images/collection-bracelets.png",
+    image: "/images/collection-bracelets.webp",
   },
 ] as const;
 
@@ -39,10 +38,10 @@ type CollectionCardProps = {
 
 function PinkBorder({ children }: { children: ReactNode }) {
   return (
-    <div className="relative isolate overflow-hidden rounded-[35px] p-[3px]">
+    <div className="relative isolate overflow-hidden rounded-[33.5px] p-[1.5px]">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-[150%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,#f472b6_180deg,#f9a8d4_220deg,transparent_300deg)] motion-reduce:animate-none"
+        className="pointer-events-none absolute inset-0 bg-linear-to-br from-pink-300/75 via-transparent to-pink-400/75 motion-safe:-inset-[150%] motion-safe:animate-[spin_5s_linear_infinite] motion-safe:bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,#f472b6_180deg,#f9a8d4_220deg,transparent_300deg)]"
       />
       {children}
     </div>
@@ -62,7 +61,7 @@ function CollectionCard({ card }: CollectionCardProps) {
         src={card.image}
         alt={card.name}
         fill
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+        unoptimized
         className="object-cover transition duration-1000 ease-out group-hover:scale-[1.06] group-hover:brightness-110"
       />
 
@@ -117,7 +116,7 @@ function CustomDesignCard() {
 
       <div className="relative flex flex-1 items-center justify-center">
         <div className="relative flex h-40 w-40 items-center justify-center rounded-full border border-white/10 sm:h-44 sm:w-44">
-          <div className="absolute inset-4 animate-[spin_12s_linear_infinite] rounded-full border border-dashed border-pink-300/35" />
+          <div className="absolute inset-4 rounded-full border border-dashed border-pink-300/35 motion-safe:animate-[spin_12s_linear_infinite]" />
           <span className="text-5xl text-pink-300 transition-transform duration-700 group-hover:rotate-45 group-hover:scale-110">
             ✦
           </span>
@@ -187,7 +186,7 @@ export function Collections() {
           </div>
         </div>
 
-        <Reveal className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
           {collectionCards.map((card) => (
             <PinkBorder key={card.id}>
               <CollectionCard card={card} />
@@ -196,7 +195,7 @@ export function Collections() {
           <PinkBorder>
             <CustomDesignCard />
           </PinkBorder>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

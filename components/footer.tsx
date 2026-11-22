@@ -230,10 +230,6 @@ export function Footer() {
 
         {/* BOTTOM BAR */}
         <div className="flex flex-col items-center gap-3 border-t border-[#443039]/15 py-5 text-xs text-[#69585e] lg:flex-row lg:justify-between lg:gap-6">
-          <p className="text-center leading-6 lg:text-start">
-            © ۱۴۰۵ وینگز گالری. با عشق، برای تو.
-          </p>
-
           <nav aria-label="اطلاعات حقوقی و ارسال">
             <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
               {legalLinks.map((link) => (

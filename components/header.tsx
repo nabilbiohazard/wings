@@ -75,6 +75,8 @@ export function Header() {
 
   const isHome = pathname === "/";
   const solid = !isHome || scrolled || mobileOpen;
+  const mobileCurrentPage =
+    "max-md:aria-[current=page]:bg-black max-md:aria-[current=page]:text-white";
 
   useEffect(() => {
     const getScrollTop = () => {
@@ -296,13 +298,7 @@ export function Header() {
                     items-center justify-center
                     rounded-full
                     transition-all duration-300
-                    hover:scale-105
                     md:hidden
-                    ${
-                      solid
-                        ? "hover:bg-black hover:text-white"
-                        : "hover:bg-white hover:text-black"
-                    }
                   `}
                 >
                   <Icon name={mobileOpen ? "close" : "menu"} size={19} />
@@ -319,12 +315,12 @@ export function Header() {
                     items-center justify-center
                     rounded-full
                     transition-all duration-300
-                    hover:scale-105
+                    md:hover:scale-105
                     lg:hidden
                     ${
                       solid
-                        ? "hover:bg-black hover:text-white"
-                        : "hover:bg-white hover:text-black"
+                        ? "md:hover:bg-black md:hover:text-white"
+                        : "md:hover:bg-white md:hover:text-black"
                     }
                   `}
                 >
@@ -335,7 +331,7 @@ export function Header() {
                   href="/shop"
                   aria-label="فروشگاه"
                   aria-current={isActive("/shop") ? "page" : undefined}
-                  className="flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+                  className={`flex h-9 w-9 items-center justify-center rounded-full md:hidden ${mobileCurrentPage}`}
                 >
                   <Store size={19} strokeWidth={1.5} aria-hidden="true" />
                 </Link>
@@ -345,6 +341,7 @@ export function Header() {
                 <button
                   type="button"
                   aria-label="سبد خرید"
+                  aria-current={pathname === "/cart" ? "page" : undefined}
                   onClick={() => openPanel("cart")}
                   className={`
                     relative
@@ -352,19 +349,12 @@ export function Header() {
                     items-center justify-center
                     rounded-full
                     transition-all duration-300
-                    hover:scale-105
+                    md:hover:scale-105
+                    ${mobileCurrentPage}
                     ${
                       solid
-                        ? `
-                          bg-black
-                          text-white
-                          hover:bg-black/80
-                        `
-                        : `
-                          bg-white
-                          text-black
-                          hover:bg-white/85
-                        `
+                        ? "md:bg-black md:text-white md:hover:bg-black/80"
+                        : "md:bg-white md:text-black md:hover:bg-white/85"
                     }
                   `}
                 >
@@ -403,16 +393,18 @@ export function Header() {
                 <Link
                   href="/account/profile"
                   aria-label="حساب کاربری"
+                  aria-current={isActive("/account") ? "page" : undefined}
                   className={`
                     flex h-9 w-9
                     items-center justify-center
                     rounded-full
                     transition-all duration-300
-                    hover:scale-105
+                    md:hover:scale-105
+                    ${mobileCurrentPage}
                     ${
                       solid
-                        ? "hover:bg-black hover:text-white"
-                        : "hover:bg-white hover:text-black"
+                        ? "md:hover:bg-black md:hover:text-white"
+                        : "md:hover:bg-white md:hover:text-black"
                     }
                   `}
                 >

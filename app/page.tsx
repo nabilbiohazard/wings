@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Hero } from "@/components/homepage/hero";
 import { Collections } from "@/components/homepage/collections";
 import { NewArrivals } from "@/components/homepage/new-arrivals";
@@ -12,12 +13,16 @@ import { HoverVideoSection } from "@/components/homepage/hover-video-section";
 import { getPosts } from "@/lib/get-posts";
 import { journalArticles } from "@/lib/journal-articles";
 
-export default async function Home() {
+async function HomepageJournal() {
   const posts = await getPosts().catch((error: unknown) => {
     console.error("Homepage journal could not be loaded:", error);
     return journalArticles;
   });
 
+  return <HomeJournal posts={posts.slice(0, 5)} />;
+}
+
+export default function Home() {
   return (
     <>
       <a
@@ -44,6 +49,7 @@ export default async function Home() {
 
           <HoverVideoSection
             src="/videos/handcraft.mp4"
+            poster="/images/home-handcraft.webp"
             aria-labelledby="handmade-heading"
             className="relative isolate w-full overflow-hidden bg-[#756058] text-white"
           >
@@ -81,7 +87,9 @@ export default async function Home() {
           </HoverVideoSection>
         </div>
 
-        <HomeJournal posts={posts.slice(0, 5)} />
+        <Suspense>
+          <HomepageJournal />
+        </Suspense>
 
         <ServiceBar />
       </main>
