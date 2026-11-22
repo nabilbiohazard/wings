@@ -1,6 +1,19 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+
+const scrollPreviewQuery = "(max-width: 767px), (hover: none)";
+
+function playVideo(video: HTMLVideoElement | null) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  void video?.play().catch(() => {});
+}
+
+function pauseVideo(video: HTMLVideoElement | null) {
+  if (!video) return;
+  video.pause();
+  video.currentTime = 0;
+}
 
 type HoverVideoSectionProps = {
   as?: "article" | "section";
@@ -19,34 +32,64 @@ export function HoverVideoSection({
   src,
   ...sectionProps
 }: HoverVideoSectionProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [scrollPreview, setScrollPreview] = useState(false);
+  const [inView, setInView] = useState(false);
 
-  function playVideo() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const playAttempt = videoRef.current?.play();
-    void playAttempt?.catch(() => {});
-  }
-
-  function pauseVideo() {
+  useEffect(() => {
+    const section = sectionRef.current;
     const video = videoRef.current;
-    if (!video) return;
+    if (!section || !video) return;
 
-    video.pause();
-    video.currentTime = 0;
-  }
+    const media = window.matchMedia(scrollPreviewQuery);
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Wait until enough of the card is visible to preview it.
+    const observer = new IntersectionObserver(([entry]) => {
+      const visible = media.matches && entry.intersectionRatio >= 0.35;
+      setInView(visible);
+      if (visible) playVideo(video);
+      else pauseVideo(video);
+    }, { threshold: 0.35 });
+
+    const updatePreview = () => {
+      observer.disconnect();
+      setScrollPreview(media.matches);
+      setInView(false);
+      pauseVideo(video);
+      if (media.matches) observer.observe(section);
+    };
+
+    updatePreview();
+    media.addEventListener("change", updatePreview);
+    motion.addEventListener("change", updatePreview);
+    return () => {
+      observer.disconnect();
+      media.removeEventListener("change", updatePreview);
+      motion.removeEventListener("change", updatePreview);
+    };
+  }, []);
 
   return (
     <div
+      ref={sectionRef}
       className="relative isolate overflow-hidden rounded-[26px] p-[2px]"
-      onMouseEnter={playVideo}
-      onMouseLeave={pauseVideo}
+      onPointerEnter={(event) => {
+        if (event.pointerType === "mouse" && !scrollPreview) playVideo(videoRef.current);
+      }}
+      onPointerLeave={(event) => {
+        if (event.pointerType === "mouse" && !scrollPreview) pauseVideo(videoRef.current);
+      }}
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -inset-[150%] animate-[spin_5s_linear_infinite] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_80deg,#f9a8d4_140deg,#f472b6_180deg,#f9a8d4_220deg,transparent_300deg)] motion-reduce:animate-none"
       />
-      <Tag {...sectionProps} className={`${sectionProps.className} z-10 rounded-[24px]`}>
+      <Tag
+        {...sectionProps}
+        data-scroll-preview={scrollPreview ? (inView ? "active" : "inactive") : undefined}
+        className={`${sectionProps.className} z-10 rounded-[24px] transition-[filter] duration-500 data-[scroll-preview=active]:[filter:none]! data-[scroll-preview=inactive]:[filter:grayscale(1)]! motion-reduce:transition-none`}
+      >
         <video
           ref={videoRef}
           aria-hidden="true"

@@ -64,6 +64,7 @@ export function Header() {
   }, []);
 
   const [scrolled, setScrolled] = useState(false);
+  const [hiddenOnScroll, setHiddenOnScroll] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const { openPanel, favorites, cart } = useShop();
@@ -75,18 +76,37 @@ export function Header() {
   const solid = !isHome || scrolled || mobileOpen;
 
   useEffect(() => {
+    const getScrollTop = () => {
+      const root = document.scrollingElement ?? document.documentElement;
+      return Math.max(
+        0,
+        Math.min(window.scrollY, root.scrollHeight - root.clientHeight),
+      );
+    };
+    let previousScrollTop = getScrollTop();
+
     const handleScroll = () => {
-      setScrolled(window.scrollY > 30);
+      const scrollTop = getScrollTop();
+      setScrolled(scrollTop > 30);
+
+      if (scrollTop <= 30) {
+        setHiddenOnScroll(false);
+      } else if (Math.abs(scrollTop - previousScrollTop) >= 8) {
+        setHiddenOnScroll(scrollTop > previousScrollTop && !mobileOpen);
+      } else {
+        return;
+      }
+      previousScrollTop = scrollTop;
     };
 
     handleScroll();
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [mobileOpen, pathname]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
@@ -117,7 +137,12 @@ export function Header() {
         className={`
           fixed left-0 top-0 z-100
           w-full
-          transition-all duration-500
+          transition-[translate,opacity,color] duration-300 motion-reduce:transition-none
+          ${
+            hiddenOnScroll && !mobileOpen
+              ? "pointer-events-none -translate-y-full opacity-0 has-[:focus-visible]:pointer-events-auto has-[:focus-visible]:translate-y-0 has-[:focus-visible]:opacity-100"
+              : "translate-y-0 opacity-100"
+          }
           ${solid ? "text-black" : "text-white"}
         `}
       >
