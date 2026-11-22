@@ -447,28 +447,9 @@
   }
   .hero {
     grid-template-columns: 1fr;
-    gap: 24px;
     margin-block: 24px 26px;
   }
   .heroCopy {
-    padding: 0;
-  }
-  .eyebrow {
-    font-size: 8px;
-  }
-  .hero h1 {
-    font-size: 43px;
-    margin-top: 13px;
-    line-height: 1.45;
-  }
-  .heroDescription {
-    font-size: 11px;
-    margin-top: 12px;
-  }
-  .heroLink {
-    margin-top: 17px;
-  }
-  .heroEnglish {
     display: none;
   }
   .heroArt {
@@ -501,8 +482,9 @@
     letter-spacing: 0.1em;
   }
   .categoryStrip {
-    padding-block: 16px;
+    padding-block: 16px 0;
     gap: 3px;
+    border-block-end: 0;
   }
   .categoryCard {
     gap: 8px;
@@ -529,8 +511,8 @@
     border-radius: 12px;
     font-size: 10px;
   }
-  .customCategory svg:first-child {
-    width: 18px;
+  .customCategory > svg:first-child {
+    display: none;
   }
   .catalogueHeading {
     margin-top: 28px;
@@ -543,9 +525,10 @@
   }
   .toolbar {
     flex-direction: column;
+    border-block-start: 0;
     gap: 10px;
-    padding-block: 14px;
-    margin-top: 15px;
+    padding-block: 0 14px;
+    margin-top: 12px;
   }
   .toolbar > div:last-child {
     width: 100%;
@@ -611,9 +594,6 @@
   }
 }
 @media (max-width: 360px) {
-  .hero h1 {
-    font-size: 38px;
-  }
   .categoryImage,
   .allCategory {
     width: 40px;

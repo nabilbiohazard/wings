@@ -253,13 +253,16 @@ export function ShopProvider({ children }: { children: React.ReactNode }) {
         onClose={() => setPanel(null)}
       >
         <div className="mb-6 flex items-center justify-between border-b border-black/10 pb-5">
-          <h2 id="dialog-title" className="text-lg font-medium">
+          <h2
+            id="dialog-title"
+            className={`text-lg font-medium ${panel === "search" ? "max-md:sr-only" : ""}`}
+          >
             {panel ? titles[panel] : "وینگز گالری"}
           </h2>
 
           <button
             onClick={() => setPanel(null)}
-            className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5"
+            className="ms-auto flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-black/5"
             aria-label="بستن پنجره"
           >
             <Icon name="close" />

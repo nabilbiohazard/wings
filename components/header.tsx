@@ -5,6 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Store } from "lucide-react";
 
 import { Icon } from "./icon";
 import { useShop } from "./shop-provider";
@@ -330,6 +331,15 @@ export function Header() {
                   <Icon name="search" size={18} />
                 </button>
 
+                <Link
+                  href="/shop"
+                  aria-label="فروشگاه"
+                  aria-current={isActive("/shop") ? "page" : undefined}
+                  className="flex h-9 w-9 items-center justify-center rounded-full md:hidden"
+                >
+                  <Store size={19} strokeWidth={1.5} aria-hidden="true" />
+                </Link>
+
                 {/* CART */}
 
                 <button
@@ -371,7 +381,7 @@ export function Header() {
                   onClick={() => openPanel("wishlist")}
                   className={`
                     relative
-                    flex h-9 w-9
+                    hidden h-9 w-9 md:flex
                     items-center justify-center
                     rounded-full
                     transition-all duration-300

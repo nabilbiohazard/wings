@@ -121,12 +121,12 @@ export function Footer() {
         {/* MAIN FOOTER */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-9 py-10 sm:gap-x-10 sm:py-14 lg:grid-cols-12 lg:gap-8 lg:py-16">
           {/* BRAND */}
-          <div className="col-span-2 lg:col-span-4 lg:pe-10">
-            <div className="flex justify-start">
+          <div className="col-span-2 max-md:text-center lg:col-span-4 lg:pe-10">
+            <div className="flex justify-center md:justify-start">
               <Wordmark />
             </div>
 
-            <p className="mt-5 max-w-sm text-sm leading-8 text-[#69585e]">
+            <p className="mt-5 max-w-sm text-sm leading-8 text-[#69585e] max-md:mx-auto">
               تکه‌های کوچک، حس‌های بزرگ.
               <br />
               جزئیاتی برای کامل‌تر کردن استایل تو.
@@ -135,14 +135,14 @@ export function Footer() {
             <p
               lang="en"
               dir="ltr"
-              className="mt-6 w-fit font-serif text-2xl italic tracking-tight text-[#92576b] sm:text-3xl"
+              className="mt-6 w-fit font-serif text-2xl italic tracking-tight text-[#92576b] max-md:mx-auto sm:text-3xl"
             >
               A little more sparkle.
             </p>
           </div>
 
           {/* SHOP */}
-          <div className="lg:col-span-2">
+          <div className="max-md:text-center lg:col-span-2">
             <h3 className="mb-3 text-sm font-semibold">کشف وینگز</h3>
 
             <nav aria-label="لینک‌های فروشگاه">
@@ -155,7 +155,7 @@ export function Footer() {
                     >
                       <span
                         aria-hidden="true"
-                        className="h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                        className="hidden h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 md:block"
                       />
                       {link.label}
                     </Link>
@@ -166,7 +166,7 @@ export function Footer() {
           </div>
 
           {/* COMPANY */}
-          <div className="lg:col-span-2">
+          <div className="max-md:text-center lg:col-span-2">
             <h3 className="mb-3 text-sm font-semibold">درباره ما</h3>
 
             <nav aria-label="لینک‌های آشنایی با وینگز">
@@ -179,7 +179,7 @@ export function Footer() {
                     >
                       <span
                         aria-hidden="true"
-                        className="h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+                        className="hidden h-1 w-1 shrink-0 rounded-full bg-[#92576b] opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 md:block"
                       />
                       {link.label}
                     </Link>

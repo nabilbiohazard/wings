@@ -15,12 +15,12 @@ export function ShoppingPage({ kind }: { kind: "cart" | "wishlist" }) {
   const designs = useSavedDesigns();
   const [error, setError] = useState("");
   const isCart = kind === "cart";
-  const title = isCart ? "سبد کوچک شادی تو" : "دوست‌داشتنی‌های تو";
+  const title = isCart ? "سبد تو" : "دوست‌داشتنی‌های تو";
   return <main className={styles.page} dir="rtl" data-shopping-kind={kind}>
     <HeaderBackdrop />
     <div className={`site-container ${styles.container}`}>
       <nav className={styles.breadcrumb} aria-label="مسیر صفحه"><Link href="/">خانه</Link><span>/</span><span aria-current="page">{isCart ? "سبد خرید" : "علاقه‌مندی‌ها"}</span></nav>
-      <header className={styles.hero}><div><p lang="en" dir="ltr">{isCart ? "YOUR LITTLE BAG OF JOY" : "THE THINGS YOU LOVE"}</p><h1>{title}<span>.</span></h1><p>{isCart ? "انتخاب‌های قشنگت اینجاست؛ چند قدم تا رسیدن یک بسته شادی." : "محصولات محبوب و طرح‌های شخصی‌ات، کنار هم در گوشه‌ای برای خودت."}</p></div><div className={styles.signature} aria-hidden="true"><Flower2 size={42} strokeWidth={.8} /><span lang="en" dir="ltr">A little more<br /><em>{isCart ? "joy." : "love."}</em></span></div></header>
+      <header className={styles.hero}><div><p lang="en" dir="ltr">{isCart ? "YOUR LITTLE BAG OF JOY" : "THE THINGS YOU LOVE"}</p><h1>{title}<span>.</span></h1><p>{isCart ? "انتخاب‌هات اینجاست. قبل از ثبت سفارش، می‌تونی مرورشون کنی." : "محصولات محبوب و طرح‌های شخصی‌ات، کنار هم در گوشه‌ای برای خودت."}</p></div><div className={styles.signature} aria-hidden="true"><Flower2 size={42} strokeWidth={.8} /><span lang="en" dir="ltr">A little more<br /><em>{isCart ? "joy." : "love."}</em></span></div></header>
       <nav className={styles.tabs} aria-label="انتخاب‌های من"><Link href="/wishlist" aria-current={!isCart ? "page" : undefined}><Heart size={17} /> علاقه‌مندی‌ها</Link><Link href="/cart" aria-current={isCart ? "page" : undefined}><ShoppingBag size={17} /> سبد خرید</Link><Link href="/shop">ادامه گشت‌وگذار <ArrowUpLeft size={16} /></Link></nav>
       <div className={styles.layout}>
         <section className={styles.panel} aria-label={title}>{isCart ? <CartView onClose={() => openPanel(null)} standalone /> : <Wishlist products={products} favorites={favorites} designs={designs} loading={productsLoading} failed={productsError} error={error} onRemoveProduct={toggleFavorite} onRemoveDesign={id => setError(removeSavedDesign(id) ? "" : "حذف طرح انجام نشد؛ دوباره تلاش کن.")} onClose={() => openPanel(null)} />}</section>
